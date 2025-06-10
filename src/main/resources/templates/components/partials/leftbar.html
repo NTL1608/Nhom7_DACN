@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+
+<body>
+<div th:fragment="leftbar">
+
+    <div class="startbar d-print-none">
+
+        <div class="brand">
+            <a th:href="@{/}" class="logo">
+                <span>
+                    <img th:src="@{/images/logo-sm.png}" alt="logo-small" class="logo-sm">
+                </span>
+                <span class="">
+                    <img th:src="@{/images/logo-light.png}" alt="logo-large" class="logo-lg logo-light">
+                    <img th:src="@{/images/logo-dark.png}" alt="logo-large" class="logo-lg logo-dark">
+                </span>
+            </a>
+        </div>
+
+        <div class="startbar-menu">
+            <div class="startbar-collapse" id="startbarCollapse" data-simplebar>
+                <div class="d-flex align-items-start flex-column w-100">
+
+                    <ul class="navbar-nav mb-auto w-100">
+                        <li class="menu-label pt-0 mt-0">
+                            <!-- <small class="label-border">
+                                <div class="border_left hidden-xs"></div>
+                                <div class="border_right"></div>
+                            </small> -->
+                            <span>Main Menu</span>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                            <a class="nav-link" th:href="@{/}">
+                                <i class="iconoir-home-simple menu-icon"></i>
+                                <span>Dashboards</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                            <a class="nav-link" href="#sidebarUserManagement" data-bs-toggle="collapse" role="button"
+                               aria-expanded="false" aria-controls="sidebarUserManagement">
+                                <i class="iconoir-user menu-icon"></i>
+                                <span>Users</span>
+                            </a>
+                            <div class="collapse " id="sidebarUserManagement">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/admin/users}">All Users</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/admin/users/create}">Add New User</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="#sidebarBookManagement" data-bs-toggle="collapse" role="button"
+                               aria-expanded="false" aria-controls="sidebarBookManagement">
+                                <i class="iconoir-book menu-icon"></i>
+                                <span>Books</span>
+                            </a>
+                            <div class="collapse " id="sidebarBookManagement">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/admin/books}">All Books</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/admin/books/create}">Add New Book</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="#sidebarCategoryManagement" data-bs-toggle="collapse" role="button"
+                               aria-expanded="false" aria-controls="sidebarCategoryManagement">
+                                <i class="iconoir-bookmark menu-icon"></i>
+                                <span>Categories</span>
+                            </a>
+                            <div class="collapse " id="sidebarCategoryManagement">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/admin/categories}">All Categories</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/admin/categories/create}">Add New Category</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="#sidebarOrderManagement" data-bs-toggle="collapse" role="button"
+                               aria-expanded="false" aria-controls="sidebarOrderManagement">
+                                <i class="iconoir-cart menu-icon"></i>
+                                <span>Orders</span>
+                            </a>
+                            <div class="collapse " id="sidebarOrderManagement">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/admin/orders}">All Orders</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/admin/orders/by-status/PENDING}">Pending Orders</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="#sidebarPromotionManagement" data-bs-toggle="collapse" role="button"
+                               aria-expanded="false" aria-controls="sidebarPromotionManagement">
+                                <i class="iconoir-home-sale menu-icon"></i>
+                                <span>Promotions</span>
+                            </a>
+                            <div class="collapse " id="sidebarPromotionManagement">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/admin/promotions}">All Promotions</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/admin/promotions/create}">Add New Promotion</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="#sidebarBlogManagement" data-bs-toggle="collapse" role="button"
+                               aria-expanded="false" aria-controls="sidebarBlogManagement">
+                                <i class="iconoir-journal-page menu-icon"></i>
+                                <span>Blogs</span>
+                            </a>
+                            <div class="collapse " id="sidebarBlogManagement">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/admin/blogs}">All Blogs</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" th:href="@{/admin/blogs/create}">Add New Blog</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div class="update-msg text-center">
+                        <div
+                            class="d-flex justify-content-center align-items-center thumb-lg update-icon-box  rounded-circle mx-auto">
+                            <i class="iconoir-peace-hand h3 align-self-center mb-0 text-primary"></i>
+                        </div>
+                        <h5 class="mt-3">NTDzVEKNY</h5>
+                        <p class="mb-3 text-muted">Hey there! Are you a magician? Because whenever I look at you,
+                            everyone else disappears!</p>
+                        <a href="#" class="btn text-primary shadow-sm rounded-pill">Upgrade your
+                            plan</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="startbar-overlay d-print-none"></div>
+
+</div>
+</body>
+</html>

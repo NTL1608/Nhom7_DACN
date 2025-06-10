@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{components/layouts/main}">
+<head>
+    <title>Manage Book Images - GreenBook Admin</title>
+
+    <th:block layout:fragment="stylesheets">
+        <style>
+            .book-info-card {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border-radius: 1rem;
+                border: none;
+            }
+
+            .book-info-card .card-body {
+                padding: 2rem;
+            }
+
+            .upload-area {
+                border: 3px dashed #dee2e6;
+                border-radius: 1rem;
+                padding: 3rem 2rem;
+                text-align: center;
+                transition: all 0.3s ease;
+                background: #f8f9fa;
+                cursor: pointer;
+            }
+
+            .upload-area:hover,
+            .upload-area.dragover {
+                border-color: #0d6efd;
+                background: #e7f3ff;
+                transform: translateY(-2px);
+            }
+
+            .upload-area.dragover {
+                border-color: #198754;
+                background: #d1e7dd;
+            }
+
+            .upload-icon {
+                font-size: 4rem;
+                color: #6c757d;
+                margin-bottom: 1rem;
+                transition: all 0.3s ease;
+            }
+
+            .upload-area:hover .upload-icon {
+                color: #0d6efd;
+                transform: scale(1.1);
+            }
+
+            .image-gallery {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 1.5rem;
+                margin-top: 2rem;
+            }
+
+            .image-card {
+                background: white;
+                border-radius: 1rem;
+                overflow: hidden;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+                position: relative;
+            }
+
+            .image-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            }
+
+            .image-card img {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+            }
+
+            .image-card-body {
+                padding: 1rem;
+            }
+
+            .main-image-badge {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+                color: white;
+                padding: 0.5rem 1rem;
+                border-radius: 2rem;
+                font-size: 0.875rem;
+                font-weight: 600;
+                box-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
+            }
+
+            .image-actions {
+                display: flex;
+                gap: 0.5rem;
+                justify-content: center;
+                margin-top: 1rem;
+            }
+
+            .btn-delete {
+                background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+                border: none;
+                color: white;
+                transition: all 0.3s ease;
+            }
+
+            .btn-delete:hover {
+                background: linear-gradient(45deg, #ee5a24, #ff6b6b);
+                transform: scale(1.05);
+                color: white;
+            }
+
+            .progress-bar {
+                height: 6px;
+                border-radius: 3px;
+                background: linear-gradient(90deg, #667eea, #764ba2);
+                transition: width 0.3s ease;
+            }
+
+            .loading-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+
+            .loading-overlay.show {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .loading-spinner {
+                background: white;
+                padding: 2rem;
+                border-radius: 1rem;
+                text-align: center;
+            }
+
+            .no-images-state {
+                text-align: center;
+                padding: 4rem 2rem;
+                color: #6c757d;
+            }
+
+            .no-images-state i {
+                font-size: 4rem;
+                margin-bottom: 1rem;
+                opacity: 0.5;
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+<th:block layout:fragment="content">
+    <div class="container-xxl">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/admin/books}">Books</a></li>
+                            <li class="breadcrumb-item active">Manage Images</li>
+                        </ol>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-info fs-6">
+                            <i class="fas fa-hashtag me-1"></i>Book ID: <span th:text="${book.id}">1</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Book Information -->
+            <div class="col-lg-4">
+                <div class="card book-info-card mb-4">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-white bg-opacity-20 rounded-circle me-3 position-relative overflow-hidden"
+                                 style="height: 100px; width: 100px; min-width: 100px;">
+
+                                <div th:if="${book.imageUrls != null && !book.imageUrls.isEmpty()}">
+                                    <img style="width: 100%; height: 100%; object-fit: cover;"
+                                         th:src="${book.imageUrls[0]}"
+                                         alt="Book Cover"
+                                         class="rounded-circle">
+                                </div>
+
+                                <div th:unless="${book.imageUrls != null && !book.imageUrls.isEmpty()}"
+                                     class="d-flex align-items-center justify-content-center h-100">
+                                    <i class="fas fa-book fa-2x text-white opacity-50"></i>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h5 class="mb-1" th:text="${book.title}">Book Title</h5>
+                                <p class="mb-0 opacity-75">
+                                    <span th:text="${book.imageUrls != null ? book.imageUrls.size() : 0} + ' images uploaded'">0 images uploaded</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-6" th:if="${book.author != null}">
+                                <div class="bg-white bg-opacity-10 rounded p-2">
+                                    <small class="opacity-75">Author</small>
+                                    <div class="fw-semibold" th:text="${book.author}">Author Name</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-white bg-opacity-10 rounded p-2">
+                                    <small class="opacity-75">Category</small>
+                                    <div class="fw-semibold" th:text="${book.categoryName}">Category Name</div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="bg-white bg-opacity-10 rounded p-2">
+                                    <small class="opacity-75">Price</small>
+                                    <div class="fw-semibold fs-5" th:text="${#numbers.formatDecimal(book.originalPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">100,000 VND</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/admin/books/edit/{id}(id=${book.id})}" class="btn btn-light">
+                                <i class="fas fa-edit me-2"></i>Edit Book Details
+                            </a>
+                            <a th:href="@{/admin/books}" class="btn btn-outline-light">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Books
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Statistics -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-bar me-1"></i>Image Statistics
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3 text-center">
+                            <div class="col-6">
+                                <div class="bg-primary bg-opacity-10 rounded p-3">
+                                    <div class="fs-4 fw-bold text-primary" th:text="${book.imageUrls != null ? book.imageUrls.size() : 0}">0</div>
+                                    <small class="text-muted">Total Images</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-success bg-opacity-10 rounded p-3">
+                                    <div class="fs-4 fw-bold text-success">5MB</div>
+                                    <small class="text-muted">Max Size</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-cloud-upload-alt me-1"></i>Upload New Images
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/books/images/{id}/upload(id=${book.id})}" method="post" enctype="multipart/form-data" id="uploadForm">
+                            <div class="upload-area" id="uploadArea">
+                                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                <h4 class="mb-3">Drag & Drop Images Here</h4>
+                                <p class="text-muted mb-3">or click to browse files</p>
+                                <input class="form-control d-none" type="file" id="imageFile" name="imageFile" accept="image/*" multiple>
+                                <div class="btn btn-primary">
+                                    <i class="fas fa-folder-open me-2"></i>Choose Files
+                                </div>
+                                <div class="mt-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Supported formats: JPG, JPEG, PNG • Max size: 5MB per file
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div id="uploadProgress" class="mt-3" style="display: none;">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Uploading...</span>
+                                    <span id="progressText">0%</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Current Images -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-images me-1"></i>Current Images
+                        </div>
+                        <span class="badge bg-primary" th:text="${book.imageUrls != null ? book.imageUrls.size() : 0} + ' images'">0 images</span>
+                    </div>
+                    <div class="card-body">
+                        <!-- No images state -->
+                        <div th:if="${book.imageUrls == null || book.imageUrls.isEmpty()}" class="no-images-state">
+                            <i class="fas fa-images"></i>
+                            <h4 class="mb-3">No Images Yet</h4>
+                            <p class="mb-0">Upload your first image to get started. The first image will be set as the main book cover.</p>
+                        </div>
+
+                        <!-- Images gallery -->
+                        <div th:if="${book.imageUrls != null && !book.imageUrls.isEmpty()}" class="image-gallery">
+                            <div th:each="imageUrl, status : ${book.imageUrls}" class="image-card">
+                                <div th:if="${status.index == 0}" class="main-image-badge">
+                                    <i class="fas fa-star me-1"></i>Main Cover
+                                </div>
+                                <img th:src="${imageUrl}" th:alt="'Book image ' + ${status.count}" loading="lazy">
+                                <div class="image-card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="fw-semibold">Image <span th:text="${status.count}">1</span></div>
+                                            <small class="text-muted">Book cover image</small>
+                                        </div>
+                                        <div class="image-actions">
+                                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                                    onclick="previewImage(this)"
+                                                    th:data-image-url="${imageUrl}">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <a th:href="@{/admin/books/images/{id}/delete/{imageUrl}(id=${book.id}, imageUrl=${pathUtils.getFileName(imageUrl)})}"
+                                               class="btn btn-sm btn-delete"
+                                               onclick="return confirmDelete()">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner-border text-primary mb-3" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <h5>Uploading Images...</h5>
+            <p class="mb-0 text-muted">Please wait while we process your images</p>
+        </div>
+    </div>
+
+    <!-- Image preview modal -->
+    <div class="modal fade" id="imagePreviewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Image Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="previewImage" src="" alt="Preview" class="img-fluid rounded">
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="javascripts">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('imageFile');
+            const uploadForm = document.getElementById('uploadForm');
+            const uploadProgress = document.getElementById('uploadProgress');
+            const progressBar = uploadProgress.querySelector('.progress-bar');
+            const progressText = document.getElementById('progressText');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+
+            // Drag and drop functionality
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    handleFileUpload();
+                }
+            });
+
+            fileInput.addEventListener('change', handleFileUpload);
+
+            function handleFileUpload() {
+                const files = fileInput.files;
+                if (files.length === 0) return;
+
+                // Validate files
+                for (let file of files) {
+                    if (!file.type.startsWith('image/')) {
+                        alert('Please select only image files.');
+                        return;
+                    }
+                    if (file.size > 5 * 1024 * 1024) { // 5MB
+                        alert(`File ${file.name} is too large. Max size is 5MB.`);
+                        return;
+                    }
+                }
+
+                // Show loading overlay
+                loadingOverlay.classList.add('show');
+
+                // Simulate upload progress (replace with actual upload logic)
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.random() * 30;
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            uploadForm.submit();
+                        }, 500);
+                    }
+                    updateProgress(progress);
+                }, 200);
+            }
+
+            function updateProgress(progress) {
+                uploadProgress.style.display = 'block';
+                progressBar.style.width = progress + '%';
+                progressText.textContent = Math.round(progress) + '%';
+            }
+
+            // Image preview functionality
+            window.previewImage = function(button) {
+                const imageUrl = button.getAttribute('data-image-url');
+                const previewImg = document.getElementById('previewImage');
+                previewImg.src = imageUrl;
+
+                const modal = new bootstrap.Modal(document.getElementById('imagePreviewModal'));
+                modal.show();
+            };
+
+            // Delete confirmation
+            window.confirmDelete = function() {
+                return confirm('Are you sure you want to delete this image? This action cannot be undone.');
+            };
+        });
+    </script>
+</th:block>
+</body>
+</html>

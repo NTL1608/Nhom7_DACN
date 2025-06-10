@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{components/layouts/main}">
+<head>
+    <title>Blog Management</title>
+
+    <th:block layout:fragment="stylesheets">
+        <link th:href="@{/libs/simple-datatables/style.css}" rel="stylesheet" type="text/css"/>
+    </th:block>
+</head>
+
+<body>
+<th:block layout:fragment="content">
+    <div class="container-xxl">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Blogs</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <i class="fas fa-filter me-1"></i> Search & Filter
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/blogs}" method="get" class="row g-3">
+                            <div class="col-md-6">
+                                <label for="keyword" class="form-label">Search</label>
+                                <input type="text" class="form-control" id="keyword" name="keyword"
+                                       placeholder="Search by title or author..." th:value="${keyword}">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" id="status" name="status">
+                                    <option value="">All Statuses</option>
+                                    <option th:each="blogStatus : ${blogStatuses}"
+                                            th:value="${blogStatus}"
+                                            th:text="${blogStatus}"
+                                            th:selected="${status != null && status == blogStatus}">
+                                        Status
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-search me-1"></i> Search
+                                </button>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end">
+                                <a th:href="@{/admin/blogs}" class="btn btn-secondary w-100">
+                                    <i class="fas fa-redo me-1"></i> Reset
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blog List -->
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <i class="fas fa-blog me-1"></i> Blog List
+                        <a th:href="@{/admin/blogs/create}" class="btn btn-sm btn-primary float-end">
+                            <i class="fas fa-plus-circle"></i> Add New Blog
+                        </a>
+                    </div>
+                    <div class="card-body pt-0">
+                        <div class="table-responsive">
+                            <table class="table datatable" id="blogsTable">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Image</th>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Status</th>
+                                    <th>Published Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:if="${blogs.isEmpty()}">
+                                    <td colspan="7" class="text-center">No blogs found</td>
+                                </tr>
+                                <tr th:each="blog : ${blogs}">
+                                    <td th:text="${blog.id}">1</td>
+                                    <td>
+                                        <div class="position-relative">
+                                            <img th:if="${blog.imageUrl != null && !blog.imageUrl.isEmpty()}"
+                                                 th:src="${blog.imageUrl}"
+                                                 alt="Blog thumbnail"
+                                                 class="img-thumbnail rounded"
+                                                 style="width: 80px; height: 60px; object-fit: cover;">
+                                            <div th:if="${blog.imageUrl == null || blog.imageUrl.isEmpty()}"
+                                                 class="d-flex align-items-center justify-content-center bg-light rounded"
+                                                 style="width: 80px; height: 60px;">
+                                                <i class="fas fa-image text-muted fa-2x"></i>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold" th:text="${blog.title}">Blog Title</div>
+                                        <small class="text-muted" th:text="${#strings.abbreviate(blog.content ?: 'No content', 50)}">Content preview...</small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-sm rounded-circle bg-info d-flex align-items-center justify-content-center me-2">
+                                                <span class="text-white fw-bold" th:text="${#strings.substring(blog.authorName ?: 'A',0,1).toUpperCase()}">A</span>
+                                            </div>
+                                            <div>
+                                                <div class="fw-semibold" th:text="${blog.authorName ?: 'Unknown'}">Author Name</div>
+                                                <small class="text-muted">Author</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span th:if="${blog.status.name() == 'DRAFT'}" class="badge bg-warning">
+                                            <i class="fas fa-edit me-1"></i>Draft
+                                        </span>
+                                        <span th:if="${blog.status.name() == 'PUBLISHED'}" class="badge bg-success">
+                                            <i class="fas fa-check-circle me-1"></i>Published
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div th:if="${blog.publishedDateFormatted != null}">
+                                            <div class="fw-semibold" th:text="${#strings.substring(blog.publishedDateFormatted, 0, 10)}">2023-01-01</div>
+                                            <small class="text-muted" th:text="${#strings.substring(blog.publishedDateFormatted, 11)}">10:00</small>
+                                        </div>
+                                        <span th:unless="${blog.publishedDateFormatted != null}" class="text-muted">-</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a th:href="@{/admin/blogs/edit/{id}(id=${blog.id})}"
+                                               class="btn btn-sm btn-primary" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a th:if="${blog.status.name() == 'DRAFT'}"
+                                               th:href="@{/admin/blogs/change-status/{id}/{status}(id=${blog.id}, status='PUBLISHED')}"
+                                               class="btn btn-sm btn-success btn-publish" title="Publish">
+                                                <i class="fas fa-rocket"></i>
+                                            </a>
+                                            <a th:if="${blog.status.name() == 'PUBLISHED'}"
+                                               th:href="@{/admin/blogs/change-status/{id}/{status}(id=${blog.id}, status='DRAFT')}"
+                                               class="btn btn-sm btn-warning btn-unpublish" title="Unpublish">
+                                                <i class="fas fa-pause"></i>
+                                            </a>
+                                            <a th:href="@{/admin/blogs/upload-image/{id}(id=${blog.id})}"
+                                               class="btn btn-sm btn-info" title="Upload Image">
+                                                <i class="fas fa-camera"></i>
+                                            </a>
+                                            <a th:href="@{/admin/blogs/delete/{id}(id=${blog.id})}"
+                                               class="btn btn-sm btn-danger btn-delete" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="javascripts">
+    <script th:src="@{/libs/simple-datatables/umd/simple-datatables.js}"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            try {
+                new simpleDatatables.DataTable("#blogsTable", {
+                    searchable: true,
+                    fixedHeight: false,
+                    perPage: 10,
+                    perPageSelect: [5, 10, 15, 20, 25],
+                    labels: {
+                        placeholder: "Search blogs...",
+                        perPage: "{select} entries per page",
+                        noRows: "No blogs found",
+                        info: "Showing {start} to {end} of {rows} entries"
+                    },
+                    columns: [
+                        { select: 0, sort: "desc" }, // Sort by ID descending (newest first)
+                        { select: 1, sortable: false, searchable: false }, // Image column
+                        { select: 6, sortable: false, searchable: false } // Actions column
+                    ],
+                    tableRender: function(data) {
+                        return `<div class="table-responsive">
+                                  <table class="table datatable">${data}</table>
+                                </div>`;
+                    }
+                });
+            } catch (e) {
+                console.error("Error initializing DataTable:", e);
+            }
+        });
+
+        // Delete confirmation
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-delete')) {
+                e.preventDefault();
+                const link = e.target.closest('.btn-delete');
+                if (confirm('Are you sure you want to delete this blog? This action cannot be undone.')) {
+                    window.location.href = link.href;
+                }
+            }
+        });
+
+        // Publish confirmation
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-publish')) {
+                e.preventDefault();
+                const link = e.target.closest('.btn-publish');
+                if (confirm('Are you sure you want to publish this blog? It will be visible to all users.')) {
+                    window.location.href = link.href;
+                }
+            }
+        });
+
+        // Unpublish confirmation
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-unpublish')) {
+                e.preventDefault();
+                const link = e.target.closest('.btn-unpublish');
+                if (confirm('Are you sure you want to unpublish this blog? It will no longer be visible to users.')) {
+                    window.location.href = link.href;
+                }
+            }
+        });
+    </script>
+</th:block>
+</body>
+</html>

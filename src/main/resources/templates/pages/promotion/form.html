@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{components/layouts/main}">
+<head>
+    <title th:text="${promotion.id == null ? 'Add Promotion' : 'Edit Promotion'} + ' - GreenBook Admin'">Add/Edit Promotion - GreenBook Admin</title>
+
+    <th:block layout:fragment="stylesheets">
+        <style>
+            .required-field::after {
+                content: " *";
+                color: #dc3545;
+                font-weight: bold;
+            }
+
+            .promotion-header {
+                background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+                color: white;
+                border-radius: 1rem;
+                padding: 2rem;
+                margin-bottom: 2rem;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .promotion-header::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 200%;
+                height: 200%;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+                animation: float 20s infinite linear;
+            }
+
+            @keyframes float {
+                0% { transform: translateX(-100px) translateY(-100px); }
+                100% { transform: translateX(100px) translateY(100px); }
+            }
+
+            .promotion-icon {
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 50%;
+                width: 80px;
+                height: 80px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 1rem;
+                backdrop-filter: blur(10px);
+            }
+
+            .promotion-icon i {
+                font-size: 2rem;
+                color: white;
+            }
+
+            .preview-card {
+                background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+                border: 2px solid #ff6b6b;
+                border-radius: 1rem;
+                padding: 2rem;
+                margin-bottom: 2rem;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .preview-card::before {
+                content: '';
+                position: absolute;
+                top: -10px;
+                right: -10px;
+                width: 100px;
+                height: 100px;
+                background: rgba(255, 107, 107, 0.1);
+                border-radius: 50%;
+                animation: pulse 3s infinite;
+            }
+
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); opacity: 0.5; }
+                50% { transform: scale(1.1); opacity: 0.8; }
+            }
+
+            .preview-title {
+                color: #ff6b6b;
+                font-weight: 700;
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                font-size: 1.2rem;
+            }
+
+            .promotion-code-display {
+                background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+                color: white;
+                padding: 0.75rem 1.5rem;
+                border-radius: 2rem;
+                font-weight: 700;
+                font-size: 1.1rem;
+                display: inline-block;
+                margin-bottom: 1rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            }
+
+            .discount-preview {
+                font-size: 2rem;
+                font-weight: 700;
+                color: #28a745;
+                margin-bottom: 0.5rem;
+            }
+
+            .section-card {
+                background: white;
+                border-radius: 1rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                border: none;
+                margin-bottom: 2rem;
+                overflow: hidden;
+            }
+
+            .section-header {
+                background: linear-gradient(45deg, #667eea, #764ba2);
+                color: white;
+                padding: 1.5rem;
+                border-bottom: none;
+            }
+
+            .section-header h4 {
+                margin: 0;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+            }
+
+            .section-header i {
+                margin-right: 0.75rem;
+                font-size: 1.2rem;
+            }
+
+            .form-floating-label {
+                position: relative;
+                margin-bottom: 2rem;
+            }
+
+            .form-floating-label input,
+            .form-floating-label textarea,
+            .form-floating-label select {
+                width: 100%;
+                padding: 1rem 1rem 0.5rem;
+                border: 2px solid #e9ecef;
+                border-radius: 0.75rem;
+                background: #f8f9fa;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+            }
+
+            .form-floating-label input:focus,
+            .form-floating-label textarea:focus,
+            .form-floating-label select:focus {
+                border-color: #ff6b6b;
+                background: white;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(255, 107, 107, 0.15);
+            }
+
+            .form-floating-label label {
+                position: absolute;
+                top: 1rem;
+                left: 1rem;
+                font-size: 1rem;
+                color: #6c757d;
+                transition: all 0.3s ease;
+                pointer-events: none;
+                background: transparent;
+                padding: 0 0.25rem;
+            }
+
+            .form-floating-label input:focus + label,
+            .form-floating-label input:not(:placeholder-shown) + label,
+            .form-floating-label textarea:focus + label,
+            .form-floating-label textarea:not(:placeholder-shown) + label,
+            .form-floating-label select:focus + label,
+            .form-floating-label select:not([value=""]) + label {
+                top: -0.5rem;
+                font-size: 0.875rem;
+                color: #ff6b6b;
+                background: white;
+                font-weight: 600;
+            }
+
+            .input-group-modern {
+                display: flex;
+                align-items: stretch;
+                margin-bottom: 2rem;
+                position: relative;
+            }
+
+            .input-group-modern input {
+                flex: 1;
+                padding: 1rem 1rem 0.5rem 1rem;
+                border: 2px solid #e9ecef;
+                border-right: none;
+                border-radius: 0.75rem 0 0 0.75rem;
+                background: #f8f9fa;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+                margin: 0;
+            }
+
+            .input-group-modern .input-group-text {
+                background: #ff6b6b;
+                color: white;
+                border: 2px solid #ff6b6b;
+                border-left: none;
+                border-radius: 0 0.75rem 0.75rem 0;
+                font-weight: 600;
+                padding: 1rem 1.5rem;
+                font-size: 1.1rem;
+                display: flex;
+                align-items: center;
+                min-width: 80px;
+                justify-content: center;
+            }
+
+            .input-group-modern input:focus {
+                border-color: #ff6b6b;
+                background: white;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(255, 107, 107, 0.15);
+                z-index: 2;
+            }
+
+            .input-group-modern input:focus + .input-group-text {
+                border-color: #ff6b6b;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(255, 107, 107, 0.15);
+                z-index: 1;
+            }
+
+            .date-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .status-toggle-card {
+                background: #f8f9fa;
+                border: 2px solid #e9ecef;
+                border-radius: 0.75rem;
+                padding: 1.5rem;
+                transition: all 0.3s ease;
+                margin-bottom: 2rem;
+            }
+
+            .status-toggle-card.active {
+                background: #e8f5e8;
+                border-color: #28a745;
+            }
+
+            .status-toggle-card.inactive {
+                background: #fff3cd;
+                border-color: #ffc107;
+            }
+
+            .status-switch {
+                transform: scale(1.3);
+                margin-right: 1rem;
+            }
+
+            .status-text {
+                font-weight: 600;
+                font-size: 1.1rem;
+                transition: all 0.3s ease;
+            }
+
+            .status-description {
+                font-size: 0.9rem;
+                opacity: 0.8;
+                margin-top: 0.25rem;
+            }
+
+            .btn-save {
+                background: linear-gradient(45deg, #28a745, #20c997);
+                border: none;
+                color: white;
+                padding: 0.75rem 2.5rem;
+                font-weight: 600;
+                border-radius: 0.75rem;
+                transition: all 0.3s ease;
+                font-size: 1.1rem;
+            }
+
+            .btn-save:hover {
+                background: linear-gradient(45deg, #20c997, #28a745);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+                color: white;
+            }
+
+            .btn-cancel {
+                background: #6c757d;
+                border: none;
+                color: white;
+                padding: 0.75rem 2rem;
+                font-weight: 600;
+                border-radius: 0.75rem;
+                transition: all 0.3s ease;
+            }
+
+            .btn-cancel:hover {
+                background: #5a6268;
+                transform: translateY(-2px);
+                color: white;
+            }
+
+            .action-buttons {
+                background: white;
+                padding: 2rem;
+                border-radius: 1rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .form-help {
+                background: #e7f3ff;
+                border: 1px solid #b6d7ff;
+                border-radius: 0.5rem;
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+                color: #0c5460;
+                margin-top: 0.5rem;
+                display: flex;
+                align-items: center;
+            }
+
+            .form-help i {
+                margin-right: 0.5rem;
+                color: #0d6efd;
+            }
+
+            .code-generator {
+                background: #f8f9fa;
+                border: 1px solid #dee2e6;
+                border-radius: 0.5rem;
+                padding: 0.75rem;
+                margin-top: 0.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .btn-generate {
+                background: #6f42c1;
+                color: white;
+                border: none;
+                padding: 0.5rem 1rem;
+                border-radius: 0.5rem;
+                font-size: 0.875rem;
+                transition: all 0.3s ease;
+            }
+
+            .btn-generate:hover {
+                background: #5a2d91;
+                transform: scale(1.05);
+                color: white;
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+<th:block layout:fragment="content">
+    <div class="container-xxl">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/admin/promotions}">Promotions</a></li>
+                            <li class="breadcrumb-item active" th:text="${promotion.id == null ? 'Add New' : 'Edit'}">Add/Edit</li>
+                        </ol>
+                    </div>
+                    <div class="text-end" th:if="${promotion.id != null}">
+                        <span class="badge bg-info fs-6">
+                            <i class="fas fa-hashtag me-1"></i>ID: <span th:text="${promotion.id}">1</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Promotion Header -->
+        <div class="promotion-header">
+            <div class="promotion-icon">
+                <i th:class="${promotion.id == null ? 'fas fa-plus' : 'fas fa-edit'}"></i>
+            </div>
+            <h3 class="text-center mb-2" th:text="${promotion.id == null ? 'Create New Promotion' : 'Edit Promotion Details'}">Promotion Form</h3>
+            <p class="text-center mb-0 opacity-75">
+                <span th:if="${promotion.id == null}">Set up a new promotion to boost your sales</span>
+                <span th:if="${promotion.id != null}">Update promotion settings and discount details</span>
+            </p>
+        </div>
+
+        <!-- Preview Card -->
+        <div class="preview-card" th:if="${promotion.id != null}">
+            <div class="preview-title">
+                <i class="fas fa-eye me-2"></i>Promotion Preview
+            </div>
+            <div class="promotion-code-display" id="previewCode" th:text="${promotion.code ?: 'PROMO-CODE'}">PROMO-CODE</div>
+            <h4 class="mb-2" id="previewName" th:text="${promotion.name ?: 'Promotion Name'}">Promotion Name</h4>
+            <div class="discount-preview" id="previewDiscount">
+                <span th:if="${promotion.type?.name() == 'PERCENTAGE'}" th:text="${promotion.value ?: 0} + '% OFF'">20% OFF</span>
+                <span th:if="${promotion.type?.name() == 'FIXED_AMOUNT'}" th:text="${#numbers.formatDecimal(promotion.value ?: 0, 0, 'COMMA', 0, 'POINT')} + ' VND OFF'">50,000 VND OFF</span>
+            </div>
+            <p class="mb-0 text-muted" id="previewDescription" th:text="${promotion.description ?: 'Promotion description will appear here'}">Promotion description</p>
+        </div>
+
+        <form th:action="${promotion.id == null ? '/admin/promotions/create' : '/admin/promotions/edit/' + promotion.id}"
+              method="post"
+              th:object="${promotion}"
+              id="promotionForm">
+
+            <div class="row">
+                <!-- Basic Information -->
+                <div class="col-lg-6">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h4><i class="fas fa-info-circle"></i>Basic Information</h4>
+                        </div>
+                        <div class="card-body p-4">
+                            <!-- Promotion Name -->
+                            <div class="form-floating-label">
+                                <input type="text"
+                                       id="name"
+                                       th:field="*{name}"
+                                       required
+                                       placeholder=""
+                                       th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''">
+                                <label for="name" class="required-field">Promotion Name</label>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">
+                                    Name error message
+                                </div>
+                            </div>
+
+                            <!-- Promotion Code -->
+                            <div class="form-floating-label">
+                                <input type="text"
+                                       id="code"
+                                       th:field="*{code}"
+                                       required
+                                       placeholder=""
+                                       style="text-transform: uppercase;"
+                                       th:classappend="${#fields.hasErrors('code')} ? 'is-invalid' : ''">
+                                <label for="code" class="required-field">Promotion Code</label>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('code')}" th:errors="*{code}">
+                                    Code error message
+                                </div>
+                                <div class="code-generator">
+                                    <small class="text-muted">
+                                        <i class="fas fa-lightbulb me-1"></i>
+                                        The code customers will use to apply this promotion
+                                    </small>
+                                    <button type="button" class="btn btn-generate" onclick="generatePromoCode()">
+                                        <i class="fas fa-magic me-1"></i>Generate
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="form-floating-label">
+                                <textarea id="description"
+                                          th:field="*{description}"
+                                          rows="4"
+                                          placeholder=""></textarea>
+                                <label for="description">Description</label>
+                                <div class="form-help">
+                                    <i class="fas fa-info-circle"></i>
+                                    Provide a brief description of this promotion for customer reference
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Discount Details -->
+                <div class="col-lg-6">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h4><i class="fas fa-percent"></i>Discount Details</h4>
+                        </div>
+                        <div class="card-body p-4">
+                            <!-- Discount Type -->
+                            <div class="form-floating-label">
+                                <select id="type" th:field="*{type}" required>
+                                    <option value="">Select discount type</option>
+                                    <option th:each="promotionType : ${promotionTypes}"
+                                            th:value="${promotionType}"
+                                            th:text="${promotionType == 'PERCENTAGE' ? 'Percentage Discount' : 'Fixed Amount Discount'}">
+                                        PERCENTAGE
+                                    </option>
+                                </select>
+                                <label for="type" class="required-field">Discount Type</label>
+                            </div>
+
+                            <!-- Discount Value -->
+                            <div class="input-group-modern">
+                                <input type="number"
+                                       id="value"
+                                       th:field="*{value}"
+                                       required
+                                       step="0.01"
+                                       min="0"
+                                       placeholder="Enter discount value"
+                                       th:classappend="${#fields.hasErrors('value')} ? 'is-invalid' : ''">
+                                <span class="input-group-text" id="valueSymbol">%</span>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('value')}" th:errors="*{value}">
+                                    Value error message
+                                </div>
+                            </div>
+                            <div class="form-help mb-3" id="valueHelp">
+                                <i class="fas fa-calculator"></i>
+                                For percentage, enter a value between 1-100. For fixed amount, enter the discount amount in VND.
+                            </div>
+
+                            <!-- Date Range -->
+                            <div class="date-row">
+                                <div class="form-floating-label">
+                                    <input type="date"
+                                           id="startDate"
+                                           th:field="*{startDate}"
+                                           required
+                                           th:classappend="${#fields.hasErrors('startDate')} ? 'is-invalid' : ''">
+                                    <label for="startDate" class="required-field">Start Date</label>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}">
+                                        Start date error message
+                                    </div>
+                                </div>
+
+                                <div class="form-floating-label">
+                                    <input type="date"
+                                           id="endDate"
+                                           th:field="*{endDate}"
+                                           required
+                                           th:classappend="${#fields.hasErrors('endDate')} ? 'is-invalid' : ''">
+                                    <label for="endDate" class="required-field">End Date</label>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}">
+                                        End date error message
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Status Toggle -->
+                            <div th:if="${promotion.id != null}">
+                                <label class="form-label fw-bold">Promotion Status</label>
+                                <div class="status-toggle-card" id="statusCard">
+                                    <div class="d-flex align-items-center">
+                                        <input class="form-check-input status-switch"
+                                               type="checkbox"
+                                               id="active"
+                                               th:field="*{active}">
+                                        <div>
+                                            <div class="status-text" id="statusText" th:text="*{active} ? 'Active' : 'Inactive'">Status</div>
+                                            <div class="status-description" id="statusDescription">
+                                                <span th:if="*{active}">Promotion is active and can be used by customers</span>
+                                                <span th:unless="*{active}">Promotion is inactive and cannot be used</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons mb-4">
+            <div class="d-flex gap-3">
+                <button type="submit" form="promotionForm" class="btn btn-save">
+                    <i class="fas fa-save me-2"></i>
+                    <span th:text="${promotion.id == null ? 'Create Promotion' : 'Update Promotion'}">Save</span>
+                </button>
+                <a th:href="@{/admin/promotions}" class="btn btn-cancel">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Promotions
+                </a>
+            </div>
+            <div class="text-muted">
+                <small>
+                    <i class="fas fa-shield-alt me-1"></i>
+                    All promotion settings are validated before saving
+                </small>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="javascripts">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeSelect = document.getElementById('type');
+            const valueSymbol = document.getElementById('valueSymbol');
+            const valueHelp = document.getElementById('valueHelp');
+            const activeCheckbox = document.getElementById('active');
+            const statusCard = document.getElementById('statusCard');
+            const statusText = document.getElementById('statusText');
+            const statusDescription = document.getElementById('statusDescription');
+
+            // Form inputs for preview
+            const nameInput = document.getElementById('name');
+            const codeInput = document.getElementById('code');
+            const descriptionInput = document.getElementById('description');
+            const valueInput = document.getElementById('value');
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+
+            // Handle promotion type change
+            function updateValueFields() {
+                if (typeSelect.value === 'PERCENTAGE') {
+                    valueSymbol.textContent = '%';
+                    valueHelp.innerHTML = '<i class="fas fa-percentage"></i> Enter a percentage value between 1-100 for the discount.';
+                } else if (typeSelect.value === 'FIXED_AMOUNT') {
+                    valueSymbol.textContent = 'VND';
+                    valueHelp.innerHTML = '<i class="fas fa-money-bill"></i> Enter the fixed discount amount in Vietnamese Dong (VND).';
+                }
+                updatePreview();
+            }
+
+            if (typeSelect) {
+                typeSelect.addEventListener('change', updateValueFields);
+                updateValueFields(); // Initial update
+            }
+
+            // Status toggle functionality
+            if (activeCheckbox && statusCard) {
+                function updateStatusDisplay() {
+                    if (activeCheckbox.checked) {
+                        statusText.textContent = 'Active';
+                        statusText.className = 'status-text text-success';
+                        statusDescription.innerHTML = '<i class="fas fa-check-circle me-1"></i>Promotion is active and can be used by customers';
+                        statusCard.className = 'status-toggle-card active';
+                    } else {
+                        statusText.textContent = 'Inactive';
+                        statusText.className = 'status-text text-warning';
+                        statusDescription.innerHTML = '<i class="fas fa-pause-circle me-1"></i>Promotion is inactive and cannot be used';
+                        statusCard.className = 'status-toggle-card inactive';
+                    }
+                }
+
+                activeCheckbox.addEventListener('change', updateStatusDisplay);
+                updateStatusDisplay(); // Initialize
+            }
+
+            // Real-time preview update
+            function updatePreview() {
+                const previewName = document.getElementById('previewName');
+                const previewCode = document.getElementById('previewCode');
+                const previewDescription = document.getElementById('previewDescription');
+                const previewDiscount = document.getElementById('previewDiscount');
+
+                if (previewName && nameInput) {
+                    previewName.textContent = nameInput.value || 'Promotion Name';
+                }
+
+                if (previewCode && codeInput) {
+                    previewCode.textContent = codeInput.value.toUpperCase() || 'PROMO-CODE';
+                }
+
+                if (previewDescription && descriptionInput) {
+                    previewDescription.textContent = descriptionInput.value || 'Promotion description will appear here';
+                }
+
+                if (previewDiscount && valueInput && typeSelect) {
+                    const value = valueInput.value || 0;
+                    if (typeSelect.value === 'PERCENTAGE') {
+                        previewDiscount.textContent = value + '% OFF';
+                    } else if (typeSelect.value === 'FIXED_AMOUNT') {
+                        previewDiscount.textContent = parseInt(value).toLocaleString('vi-VN') + ' VND OFF';
+                    } else {
+                        previewDiscount.textContent = 'DISCOUNT';
+                    }
+                }
+            }
+
+            // Add event listeners for real-time preview
+            [nameInput, codeInput, descriptionInput, valueInput].forEach(input => {
+                if (input) {
+                    input.addEventListener('input', updatePreview);
+                }
+            });
+
+            // Auto-uppercase for promo code
+            if (codeInput) {
+                codeInput.addEventListener('input', function() {
+                    this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                });
+            }
+
+            // Date validation
+            function validateDateRange() {
+                const startDate = new Date(startDateInput.value);
+                const endDate = new Date(endDateInput.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                if (startDate < today) {
+                    startDateInput.setCustomValidity('Start date cannot be in the past');
+                } else {
+                    startDateInput.setCustomValidity('');
+                }
+
+                if (startDate > endDate) {
+                    endDateInput.setCustomValidity('End date must be after start date');
+                } else {
+                    endDateInput.setCustomValidity('');
+                }
+            }
+
+            if (startDateInput && endDateInput) {
+                startDateInput.addEventListener('change', validateDateRange);
+                endDateInput.addEventListener('change', validateDateRange);
+            }
+
+            // Form validation
+            const form = document.getElementById('promotionForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    // Validate promotion value
+                    const value = parseFloat(valueInput.value);
+                    if (typeSelect.value === 'PERCENTAGE' && (value <= 0 || value > 100)) {
+                        e.preventDefault();
+                        alert('Percentage discount must be between 1 and 100');
+                        valueInput.focus();
+                        return;
+                    }
+
+                    if (typeSelect.value === 'FIXED_AMOUNT' && value <= 0) {
+                        e.preventDefault();
+                        alert('Fixed amount discount must be greater than 0');
+                        valueInput.focus();
+                        return;
+                    }
+                });
+            }
+        });
+
+        // Generate promotional code
+        function generatePromoCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+
+            // Generate 3-4 random characters
+            for (let i = 0; i < Math.floor(Math.random() * 2) + 3; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+
+            // Add numbers
+            result += Math.floor(Math.random() * 90) + 10;
+
+            document.getElementById('code').value = result;
+            document.getElementById('code').dispatchEvent(new Event('input'));
+        }
+    </script>
+</th:block>
+</body>
+</html>

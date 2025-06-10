@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{components/layouts/main}">
+<head>
+    <title th:text="${category.id == null ? 'Add Category' : 'Edit Category'} + ' - GreenBook Admin'">Add/Edit Category - GreenBook Admin</title>
+
+    <th:block layout:fragment="stylesheets">
+        <style>
+            .required-field::after {
+                content: " *";
+                color: #dc3545;
+                font-weight: bold;
+            }
+
+            .category-form-card {
+                background: white;
+                border-radius: 1rem;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                border: none;
+                overflow: hidden;
+            }
+
+            .form-section {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 2rem;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .form-section::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 200%;
+                height: 200%;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+                animation: float 20s infinite linear;
+            }
+
+            @keyframes float {
+                0% { transform: translateX(-100px) translateY(-100px); }
+                100% { transform: translateX(100px) translateY(100px); }
+            }
+
+            .form-icon {
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 50%;
+                width: 80px;
+                height: 80px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 1rem;
+                backdrop-filter: blur(10px);
+            }
+
+            .form-icon i {
+                font-size: 2rem;
+                color: white;
+            }
+
+            .enhanced-input {
+                border: 2px solid #e9ecef;
+                border-radius: 0.75rem;
+                padding: 0.75rem 1rem;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+                background: #f8f9fa;
+            }
+
+            .enhanced-input:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+                background: white;
+                transform: translateY(-2px);
+            }
+
+            .enhanced-textarea {
+                border: 2px solid #e9ecef;
+                border-radius: 0.75rem;
+                padding: 1rem;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+                background: #f8f9fa;
+                resize: vertical;
+                min-height: 120px;
+            }
+
+            .enhanced-textarea:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+                background: white;
+                transform: translateY(-2px);
+            }
+
+            .status-toggle-card {
+                background: #f8f9fa;
+                border: 2px solid #e9ecef;
+                border-radius: 0.75rem;
+                padding: 1.5rem;
+                transition: all 0.3s ease;
+            }
+
+            .status-toggle-card.active {
+                background: #e8f5e8;
+                border-color: #28a745;
+            }
+
+            .status-toggle-card.inactive {
+                background: #fff3cd;
+                border-color: #ffc107;
+            }
+
+            .status-switch {
+                transform: scale(1.2);
+                margin-right: 1rem;
+            }
+
+            .status-text {
+                font-weight: 600;
+                font-size: 1.1rem;
+                transition: all 0.3s ease;
+            }
+
+            .status-description {
+                font-size: 0.9rem;
+                opacity: 0.8;
+                margin-top: 0.25rem;
+            }
+
+            .btn-save {
+                background: linear-gradient(45deg, #28a745, #20c997);
+                border: none;
+                color: white;
+                padding: 0.75rem 2.5rem;
+                font-weight: 600;
+                border-radius: 0.75rem;
+                transition: all 0.3s ease;
+                font-size: 1.1rem;
+            }
+
+            .btn-save:hover {
+                background: linear-gradient(45deg, #20c997, #28a745);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+                color: white;
+            }
+
+            .btn-cancel {
+                background: #6c757d;
+                border: none;
+                color: white;
+                padding: 0.75rem 2rem;
+                font-weight: 600;
+                border-radius: 0.75rem;
+                transition: all 0.3s ease;
+            }
+
+            .btn-cancel:hover {
+                background: #5a6268;
+                transform: translateY(-2px);
+                color: white;
+            }
+
+            .form-floating-label {
+                position: relative;
+                margin-bottom: 2rem;
+            }
+
+            .form-floating-label input,
+            .form-floating-label textarea {
+                width: 100%;
+                padding: 1rem 1rem 0.5rem;
+                border: 2px solid #e9ecef;
+                border-radius: 0.75rem;
+                background: #f8f9fa;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+            }
+
+            .form-floating-label input:focus,
+            .form-floating-label textarea:focus {
+                border-color: #667eea;
+                background: white;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+            }
+
+            .form-floating-label label {
+                position: absolute;
+                top: 1rem;
+                left: 1rem;
+                font-size: 1rem;
+                color: #6c757d;
+                transition: all 0.3s ease;
+                pointer-events: none;
+                background: transparent;
+                padding: 0 0.25rem;
+            }
+
+            .form-floating-label input:focus + label,
+            .form-floating-label input:not(:placeholder-shown) + label,
+            .form-floating-label textarea:focus + label,
+            .form-floating-label textarea:not(:placeholder-shown) + label {
+                top: -0.5rem;
+                font-size: 0.875rem;
+                color: #667eea;
+                background: white;
+                font-weight: 600;
+            }
+
+            .action-buttons {
+                background: #f8f9fa;
+                padding: 2rem;
+                border-radius: 0 0 1rem 1rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .preview-card {
+                background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+                border: 2px solid #2196f3;
+                border-radius: 0.75rem;
+                padding: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .preview-title {
+                color: #1976d2;
+                font-weight: 600;
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+            }
+
+            .category-icon {
+                background: linear-gradient(45deg, #2196f3, #21cbf3);
+                color: white;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 1rem;
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+<th:block layout:fragment="content">
+    <div class="container-xxl">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/admin/categories}">Categories</a></li>
+                            <li class="breadcrumb-item active" th:text="${category.id == null ? 'Add New' : 'Edit'}">Add/Edit</li>
+                        </ol>
+                    </div>
+                    <div class="text-end" th:if="${category.id != null}">
+                        <span class="badge bg-info fs-6">
+                            <i class="fas fa-hashtag me-1"></i>ID: <span th:text="${category.id}">1</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Preview Card -->
+                <div class="preview-card" th:if="${category.id != null}">
+                    <div class="preview-title">
+                        <i class="fas fa-eye me-2"></i>Category Preview
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="category-icon">
+                            <i class="fas fa-tag"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-1" th:text="${category.name ?: 'Category Name'}">Category Name</h5>
+                            <p class="mb-0 text-muted" th:text="${category.description ?: 'No description provided'}">Category description</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card category-form-card">
+                    <!-- Header Section -->
+                    <div class="form-section">
+                        <div class="form-icon">
+                            <i th:class="${category.id == null ? 'fas fa-plus' : 'fas fa-edit'}"></i>
+                        </div>
+                        <h3 class="text-center mb-2" th:text="${category.id == null ? 'Create New Category' : 'Edit Category Details'}">Category Form</h3>
+                        <p class="text-center mb-0 opacity-75">
+                            <span th:if="${category.id == null}">Add a new category to organize your books</span>
+                            <span th:if="${category.id != null}">Update category information and settings</span>
+                        </p>
+                    </div>
+
+                    <div class="card-body p-4 pd-0">
+                        <form th:action="${category.id == null ? '/admin/categories/create' : '/admin/categories/edit/' + category.id}"
+                              method="post"
+                              th:object="${category}"
+                              id="categoryForm">
+
+                            <!-- Category Name -->
+                            <div class="form-floating-label">
+                                <input type="text"
+                                       id="name"
+                                       th:field="*{name}"
+                                       required
+                                       placeholder=""
+                                       th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''">
+                                <label for="name" class="required-field">Category Name</label>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">
+                                    Name error message
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="form-floating-label">
+                                <textarea id="description"
+                                          th:field="*{description}"
+                                          rows="4"
+                                          placeholder=""></textarea>
+                                <div class="mt-2 text-end">
+                                    <button type="button" class="btn btn-outline-primary" id="generateCategoryDescription">
+                                        <i class="fas fa-magic me-1"></i> Gợi ý mô tả với AI
+                                    </button>
+                                    <div class="form-text text-muted">Dựa vào tên thể loại để gợi ý nội dung mô tả phù hợp.</div>
+                                </div>
+                                <label for="description">Description</label>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Provide a brief description to help users understand this category
+                                </div>
+                            </div>
+
+                            <!-- Status Toggle -->
+                            <div th:if="${category.id != null}">
+                                <label class="form-label fw-bold">Category Status</label>
+                                <div class="status-toggle-card" id="statusCard">
+                                    <div class="d-flex align-items-center">
+                                        <input class="form-check-input status-switch"
+                                               type="checkbox"
+                                               id="active"
+                                               th:field="*{active}">
+                                        <div>
+                                            <div class="status-text" id="statusText" th:text="*{active} ? 'Active' : 'Inactive'">Status</div>
+                                            <div class="status-description" id="statusDescription">
+                                                <span th:if="*{active}">Category is visible and available for book assignment</span>
+                                                <span th:unless="*{active}">Category is hidden and cannot be assigned to new books</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons mb-4">
+                        <div class="d-flex gap-3">
+                            <button type="submit" form="categoryForm" class="btn btn-save">
+                                <i class="fas fa-save me-2"></i>
+                                <span th:text="${category.id == null ? 'Create Category' : 'Update Category'}">Save</span>
+                            </button>
+                            <a th:href="@{/admin/categories}" class="btn btn-cancel">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Categories
+                            </a>
+                        </div>
+                        <div class="text-muted">
+                            <small>
+                                <i class="fas fa-shield-alt me-1"></i>
+                                All changes are saved automatically upon submission
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="javascripts">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeCheckbox = document.getElementById('active');
+            const statusCard = document.getElementById('statusCard');
+            const statusText = document.getElementById('statusText');
+            const statusDescription = document.getElementById('statusDescription');
+            const form = document.getElementById('categoryForm');
+            const nameInput = document.getElementById('name');
+            const descriptionInput = document.getElementById('description');
+
+            // Status toggle functionality
+            if (activeCheckbox && statusCard) {
+                function updateStatusDisplay() {
+                    if (activeCheckbox.checked) {
+                        statusText.textContent = 'Active';
+                        statusText.className = 'status-text text-success';
+                        statusDescription.innerHTML = '<i class="fas fa-check-circle me-1"></i>Category is visible and available for book assignment';
+                        statusCard.className = 'status-toggle-card active';
+                    } else {
+                        statusText.textContent = 'Inactive';
+                        statusText.className = 'status-text text-warning';
+                        statusDescription.innerHTML = '<i class="fas fa-pause-circle me-1"></i>Category is hidden and cannot be assigned to new books';
+                        statusCard.className = 'status-toggle-card inactive';
+                    }
+                }
+
+                activeCheckbox.addEventListener('change', updateStatusDisplay);
+                // Initialize on page load
+                updateStatusDisplay();
+            }
+
+            // Real-time preview update
+            function updatePreview() {
+                const previewName = document.querySelector('.preview-card h5');
+                const previewDesc = document.querySelector('.preview-card .text-muted');
+
+                if (previewName && nameInput) {
+                    previewName.textContent = nameInput.value || 'Category Name';
+                }
+
+                if (previewDesc && descriptionInput) {
+                    previewDesc.textContent = descriptionInput.value || 'No description provided';
+                }
+            }
+
+            // Add event listeners for real-time preview
+            if (nameInput) {
+                nameInput.addEventListener('input', updatePreview);
+            }
+            if (descriptionInput) {
+                descriptionInput.addEventListener('input', updatePreview);
+            }
+
+            // Form validation enhancement
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const nameValue = nameInput.value.trim();
+
+                    if (!nameValue) {
+                        e.preventDefault();
+                        nameInput.classList.add('is-invalid');
+                        nameInput.focus();
+                        return;
+                    }
+
+                    if (nameValue.length < 2) {
+                        e.preventDefault();
+                        alert('Category name must be at least 2 characters long');
+                        nameInput.focus();
+                        return;
+                    }
+
+                    nameInput.classList.remove('is-invalid');
+                });
+            }
+
+            // Enhanced input effects
+            const inputs = document.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.closest('.form-floating-label')?.classList.add('focused');
+                });
+
+                input.addEventListener('blur', function() {
+                    this.closest('.form-floating-label')?.classList.remove('focused');
+                });
+            });
+
+            // Auto-resize textarea
+            if (descriptionInput) {
+                descriptionInput.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = Math.max(120, this.scrollHeight) + 'px';
+                });
+            }
+        });
+    </script>
+    <script>
+        const generateCategoryDescriptionBtn = document.getElementById('generateCategoryDescription');
+if (generateCategoryDescriptionBtn) {
+    generateCategoryDescriptionBtn.addEventListener('click', async function () {
+        const nameInput = document.getElementById('name');
+        const descriptionInput = document.getElementById('description');
+
+        const name = nameInput?.value.trim();
+        if (!name) {
+            alert('Vui lòng nhập tên thể loại trước khi dùng AI.');
+            return;
+        }
+
+        generateCategoryDescriptionBtn.disabled = true;
+        generateCategoryDescriptionBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang gợi ý...';
+
+        try {
+            const response = await fetch(`/admin/categories/suggest-description?name=${encodeURIComponent(name)}`);
+            const data = await response.json();
+
+            descriptionInput.value = data.description;
+            descriptionInput.dispatchEvent(new Event('input')); // cập nhật preview + autosize
+        } catch (error) {
+            alert('Không thể lấy mô tả từ AI: ' + error.message);
+        } finally {
+            generateCategoryDescriptionBtn.disabled = false;
+            generateCategoryDescriptionBtn.innerHTML = '<i class="fas fa-magic me-1"></i> Gợi ý mô tả với AI';
+        }
+    });
+}
+
+    </script>
+</th:block>
+</body>
+</html>

@@ -10,7 +10,11 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.google.genai.Client;
+import com.google.genai.types.GenerateContentResponse;
+import org.springframework.http.ResponseEntity;
 
+import java.util.Map;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +25,21 @@ public class AdminCategoryController {
 
     private final CategoryService categoryService;
 
+    @GetMapping("/suggest-description")
+    public ResponseEntity<Map<String, String>> suggestCategoryDescription(@RequestParam String name) {
+        try {
+            Client client = new Client();
+
+            String prompt = "Viết một đoạn mô tả ngắn và thu hút cho thể loại sách có tên là: \"" + name + "\". Đoạn mô tả nên giải thích ngắn gọn thể loại này là gì và tại sao người đọc nên quan tâm.";
+
+            GenerateContentResponse response = client.models.generateContent("gemini-1.5-flash", prompt, null);
+
+            return ResponseEntity.ok(Map.of("description", response.text()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("description", "Lỗi AI: " + e.getMessage()));
+        }
+    }
+
     @GetMapping
     public String listCategories(Model model) {
         List<CategoryDTO> categories = categoryService.findAll().stream()
@@ -28,13 +47,13 @@ public class AdminCategoryController {
                 .collect(Collectors.toList());
 
         model.addAttribute("categories", categories);
-        return "admin/categories/list";
+        return "pages/category/index";
     }
 
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("category", new CategoryDTO());
-        return "admin/categories/form";
+        return "pages/category/form";
     }
 
     @PostMapping("/create")
@@ -44,13 +63,13 @@ public class AdminCategoryController {
 
         // Check for validation errors
         if (result.hasErrors()) {
-            return "admin/categories/form";
+            return "pages/category/form";
         }
 
         // Check if category name already exists
         if (categoryService.existsByName(categoryDTO.getName())) {
             result.rejectValue("name", "error.category", "Category name already exists");
-            return "admin/categories/form";
+            return "pages/category/form";
         }
 
         // Set as active by default
@@ -70,7 +89,7 @@ public class AdminCategoryController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid category ID: " + id));
 
         model.addAttribute("category", CategoryDTO.fromEntity(category));
-        return "admin/categories/form";
+        return "pages/category/form";
     }
 
     @PostMapping("/edit/{id}")
@@ -81,7 +100,7 @@ public class AdminCategoryController {
 
         // Check for validation errors
         if (result.hasErrors()) {
-            return "admin/categories/form";
+            return "pages/category/form";
         }
 
         // Get existing category
@@ -92,7 +111,7 @@ public class AdminCategoryController {
         if (!existingCategory.getName().equals(categoryDTO.getName()) &&
                 categoryService.existsByName(categoryDTO.getName())) {
             result.rejectValue("name", "error.category", "Category name already exists");
-            return "admin/categories/form";
+            return "pages/category/form";
         }
 
         // Save category

@@ -5,6 +5,9 @@ import com.sieuvjp.greenbook.entity.Book;
 import com.sieuvjp.greenbook.entity.Category;
 import com.sieuvjp.greenbook.service.BookService;
 import com.sieuvjp.greenbook.service.CategoryService;
+import com.google.genai.Client;
+import com.google.genai.types.GenerateContentResponse;
+import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Map;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +32,20 @@ public class AdminBookController {
 
     private final BookService bookService;
     private final CategoryService categoryService;
+
+    @GetMapping("/suggest-description")
+    public ResponseEntity<Map<String, String>> suggestBookDescription(@RequestParam String title) {
+        try {
+            Client client = new Client();
+            String prompt = "Viết đoạn mô tả hấp dẫn, mang tính giới thiệu cho cuốn sách có tiêu đề: \"" + title + "\". Đoạn mô tả nên súc tích, truyền cảm hứng và thu hút độc giả.";
+
+            GenerateContentResponse response = client.models.generateContent("gemini-1.5-flash", prompt, null);
+
+            return ResponseEntity.ok(Map.of("description", response.text()));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("description", "Lỗi AI: " + e.getMessage()));
+        }
+    }
 
     @GetMapping
     public String listBooks(
@@ -63,14 +81,14 @@ public class AdminBookController {
         List<Category> categories = categoryService.findAllActive();
         model.addAttribute("categories", categories);
 
-        return "admin/books/list";
+        return "pages/book/index";
     }
 
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("book", new BookDTO());
         model.addAttribute("categories", categoryService.findAllActive());
-        return "admin/books/form";
+        return "pages/book/form";
     }
 
     @PostMapping("/create")
@@ -83,7 +101,7 @@ public class AdminBookController {
 
         // Check for validation errors
         if (result.hasErrors()) {
-            return "admin/books/form";
+            return "pages/book/form";
         }
 
         // Get category
@@ -109,7 +127,7 @@ public class AdminBookController {
 
         model.addAttribute("book", BookDTO.fromEntity(book));
         model.addAttribute("categories", categoryService.findAllActive());
-        return "admin/books/form";
+        return "pages/book/form";
     }
 
     @PostMapping("/edit/{id}")
@@ -123,7 +141,7 @@ public class AdminBookController {
 
         // Check for validation errors
         if (result.hasErrors()) {
-            return "admin/books/form";
+            return "pages/book/form";
         }
 
         // Get existing book
@@ -172,7 +190,7 @@ public class AdminBookController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid book ID: " + id));
 
         model.addAttribute("book", BookDTO.fromEntity(book));
-        return "admin/books/images";
+        return "pages/book/images";
     }
 
     @PostMapping("/images/{id}/upload")
@@ -206,7 +224,7 @@ public class AdminBookController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid book ID: " + id));
 
         model.addAttribute("book", BookDTO.fromEntity(book));
-        return "admin/books/update-stock";
+        return "pages/book/update-stock";
     }
 
     @PostMapping("/update-stock/{id}")
@@ -217,5 +235,23 @@ public class AdminBookController {
         bookService.updateStock(id, stockQuantity);
         redirectAttributes.addFlashAttribute("successMessage", "Stock updated successfully");
         return "redirect:/admin/books";
+    }
+
+    @ModelAttribute("pathUtils")
+    public PathUtils pathUtils() {
+        return new PathUtils();
+    }
+
+    public static class PathUtils {
+        public String getFileName(String path) {
+            if (path == null || path.isEmpty()) return "";
+            return path.substring(path.lastIndexOf('/') + 1);
+        }
+
+        public String getFileNameWithoutExtension(String path) {
+            String fileName = getFileName(path);
+            int lastDot = fileName.lastIndexOf('.');
+            return lastDot > 0 ? fileName.substring(0, lastDot) : fileName;
+        }
     }
 }

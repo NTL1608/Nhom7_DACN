@@ -29,14 +29,14 @@ public class AdminUserController {
                 .collect(Collectors.toList());
 
         model.addAttribute("users", users);
-        return "admin/users/list";
+        return "pages/user/index";
     }
 
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("user", new UserDTO());
         model.addAttribute("roles", Role.values());
-        return "admin/users/form";
+        return "pages/user/form";
     }
 
     @PostMapping("/create")
@@ -49,19 +49,19 @@ public class AdminUserController {
 
         // Check for validation errors
         if (result.hasErrors()) {
-            return "admin/users/form";
+            return "pages/user/form";
         }
 
         // Check if username already exists
         if (userService.existsByUsername(userDTO.getUsername())) {
             result.rejectValue("username", "error.user", "Username is already taken");
-            return "admin/users/form";
+            return "pages/user/form";
         }
 
         // Check if email already exists
         if (userService.existsByEmail(userDTO.getEmail())) {
             result.rejectValue("email", "error.user", "Email is already in use");
-            return "admin/users/form";
+            return "pages/user/form";
         }
 
         // Save user
@@ -79,7 +79,7 @@ public class AdminUserController {
 
         model.addAttribute("user", UserDTO.fromEntity(user));
         model.addAttribute("roles", Role.values());
-        return "admin/users/form";
+        return "pages/user/form";
     }
 
     @PostMapping("/edit/{id}")
@@ -93,7 +93,7 @@ public class AdminUserController {
 
         // Check for validation errors
         if (result.hasErrors()) {
-            return "admin/users/form";
+            return "pages/user/form";
         }
 
         // Get existing user
@@ -104,14 +104,14 @@ public class AdminUserController {
         if (!existingUser.getUsername().equals(userDTO.getUsername()) &&
                 userService.existsByUsername(userDTO.getUsername())) {
             result.rejectValue("username", "error.user", "Username is already taken");
-            return "admin/users/form";
+            return "pages/user/form";
         }
 
         // Check if email already exists (except for this user)
         if (!existingUser.getEmail().equals(userDTO.getEmail()) &&
                 userService.existsByEmail(userDTO.getEmail())) {
             result.rejectValue("email", "error.user", "Email is already in use");
-            return "admin/users/form";
+            return "pages/user/form";
         }
 
         // Prepare user for update

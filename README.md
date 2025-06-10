@@ -19,14 +19,14 @@ GreenBook là một ứng dụng web quản lý bán sách trực tuyến đư�
 
 ## Công nghệ sử dụng
 
-- **Backend**: Java 17, Spring Boot 3.2.3, Spring Security, Spring Data JPA
+- **Backend**: Java 24, Spring Boot 3.2.3, Spring Security, Spring Data JPA
 - **Frontend**: Thymeleaf, Bootstrap 5, jQuery, Font Awesome
 - **Database**: MySQL 8
 - **Build Tool**: Maven
 
 ## Yêu cầu hệ thống
 
-- JDK 17
+- JDK 24
 - Maven 3.6.3+
 - MySQL 8.0+
 
@@ -74,7 +74,7 @@ java -jar target/greenbook-0.0.1-SNAPSHOT.jar
 Hoặc chạy trực tiếp:
 
 ```bash
-mvn spring-boot:run
+ GOOGLE_API_KEY=<your-ai-api-key> mvn spring-boot:run
 ```
 
 Sau khi ứng dụng khởi chạy, truy cập: http://localhost:8080
@@ -116,10 +116,6 @@ docker-compose up -d
 
 Ứng dụng sẽ chạy tại: http://localhost:8080
 PHPMyAdmin sẽ chạy tại: http://localhost:8081
-
-## Giấy phép
-
-Dự án được phân phối dưới giấy phép MIT. Xem file `LICENSE` để biết thêm chi tiết.
 
 ---
 

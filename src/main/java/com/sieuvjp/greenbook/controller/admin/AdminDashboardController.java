@@ -22,7 +22,7 @@ public class AdminDashboardController {
     private final BookService bookService;
     private final UserService userService;
 
-    @GetMapping({"", "/", "/dashboard"})
+    @GetMapping({"/dashboard"})
     public String dashboard(Model model) {
         // Total revenue
         double totalRevenue = orderService.getTotalRevenue();
@@ -58,6 +58,6 @@ public class AdminDashboardController {
         model.addAttribute("topSellingBooks", topSellingBooks);
         model.addAttribute("monthlySales", monthlySales);
 
-        return "admin/dashboard/index";
+        return "pages/home/index";
     }
 }

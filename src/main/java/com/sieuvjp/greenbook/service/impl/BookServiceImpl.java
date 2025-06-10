@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
@@ -132,8 +135,12 @@ public class BookServiceImpl implements BookService {
 
             imageUrls.add(imageUrl);
             book.setImageUrls(imageUrls);
+            book.saveImageUrls();
 
             bookRepository.save(book);
+            log.debug(imageUrl);
+            log.debug(book.getTitle());
+            log.debug(book.getImageUrls().toString());
         } catch (IOException e) {
             throw new RuntimeException("Could not store the image file", e);
         }
@@ -151,6 +158,7 @@ public class BookServiceImpl implements BookService {
             book.setImageUrls(imageUrls);
 
             bookRepository.save(book);
+            book.saveImageUrls();
 
             // Remove the file from storage
             try {

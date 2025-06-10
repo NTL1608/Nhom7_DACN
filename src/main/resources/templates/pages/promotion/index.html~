@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{components/layouts/main}">
+<head>
+    <title>Promotions - GreenBook Admin</title>
+
+    <th:block layout:fragment="stylesheets">
+        <link th:href="@{/libs/simple-datatables/style.css}" rel="stylesheet" type="text/css"/>
+    </th:block>
+</head>
+
+<body>
+<th:block layout:fragment="content">
+    <div class="container-xxl">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <ol class="breadcrumb mb-4">
+                    <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Promotions</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Add New Promotion Button -->
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="mb-4">
+                    <a th:href="@{/admin/promotions/create}" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-1"></i> Add New Promotion
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Promotion Tabs -->
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <i class="fas fa-tags me-1"></i> Promotion Management
+                    </div>
+                    <div class="card-body pt-3">
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs" id="promotionTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="active-tab" data-bs-toggle="tab" data-bs-target="#active-promotions" type="button" role="tab">
+                                    <i class="fas fa-tag me-1"></i> Active Promotions
+                                    <span class="badge bg-success ms-1" th:text="${activePromotions.size()}">0</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="upcoming-tab" data-bs-toggle="tab" data-bs-target="#upcoming-promotions" type="button" role="tab">
+                                    <i class="fas fa-clock me-1"></i> Upcoming Promotions
+                                    <span class="badge bg-primary ms-1" th:text="${upcomingPromotions.size()}">0</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="expired-tab" data-bs-toggle="tab" data-bs-target="#expired-promotions" type="button" role="tab">
+                                    <i class="fas fa-history me-1"></i> Expired Promotions
+                                    <span class="badge bg-secondary ms-1" th:text="${expiredPromotions.size()}">0</span>
+                                </button>
+                            </li>
+                        </ul>
+
+                        <!-- Tab panes -->
+                        <div class="tab-content mt-3" id="promotionTabContent">
+                            <!-- Active Promotions Tab -->
+                            <div class="tab-pane fade show active" id="active-promotions" role="tabpanel">
+                                <div class="table-responsive">
+                                    <table class="table datatable" id="activePromotionsTable">
+                                        <thead class="table-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Code</th>
+                                            <th>Type</th>
+                                            <th>Value</th>
+                                            <th>Period</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:if="${activePromotions.isEmpty()}">
+                                            <td colspan="8" class="text-center">No active promotions found</td>
+                                        </tr>
+                                        <tr th:each="promotion : ${activePromotions}">
+                                            <td th:text="${promotion.id}">1</td>
+                                            <td th:text="${promotion.name}">Summer Sale</td>
+                                            <td><span class="badge bg-secondary" th:text="${promotion.code}">SUMMER20</span></td>
+                                            <td>
+                                                <span th:if="${promotion.type.name() == 'PERCENTAGE'}" class="badge bg-info">Percentage</span>
+                                                <span th:if="${promotion.type.name() == 'FIXED_AMOUNT'}" class="badge bg-warning">Fixed Amount</span>
+                                            </td>
+                                            <td>
+                                                <span th:if="${promotion.type.name() == 'PERCENTAGE'}" class="text-success fw-bold" th:text="${promotion.value} + '%'">20%</span>
+                                                <span th:if="${promotion.type.name() == 'FIXED_AMOUNT'}" class="text-success fw-bold" th:text="${#numbers.formatDecimal(promotion.value, 0, 'COMMA', 0, 'POINT')} + ' đ'">50,000 đ</span>
+                                            </td>
+                                            <td>
+                                                <small>
+                                                    <span th:text="${#temporals.format(promotion.startDate, 'dd/MM/yyyy')}">01/06/2023</span><br>
+                                                    to<br>
+                                                    <span th:text="${#temporals.format(promotion.endDate, 'dd/MM/yyyy')}">30/06/2023</span>
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <span th:if="${promotion.current}" class="badge bg-success">Current</span>
+                                                <span th:unless="${promotion.current}" class="badge bg-info">Upcoming</span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a th:href="@{/admin/promotions/edit/{id}(id=${promotion.id})}" class="btn btn-sm btn-primary" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a th:href="@{/admin/promotions/toggle-status/{id}(id=${promotion.id})}"
+                                                       class="btn btn-sm btn-warning btn-toggle-status" title="Toggle Status">
+                                                        <i class="fas fa-sync-alt"></i>
+                                                    </a>
+                                                    <a th:href="@{/admin/promotions/delete/{id}(id=${promotion.id})}"
+                                                       class="btn btn-sm btn-danger btn-delete" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Upcoming Promotions Tab -->
+                            <div class="tab-pane fade" id="upcoming-promotions" role="tabpanel">
+                                <div class="table-responsive">
+                                    <table class="table datatable" id="upcomingPromotionsTable">
+                                        <thead class="table-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Code</th>
+                                            <th>Type</th>
+                                            <th>Value</th>
+                                            <th>Period</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:if="${upcomingPromotions.isEmpty()}">
+                                            <td colspan="8" class="text-center">No upcoming promotions found</td>
+                                        </tr>
+                                        <tr th:each="promotion : ${upcomingPromotions}">
+                                            <td th:text="${promotion.id}">1</td>
+                                            <td th:text="${promotion.name}">Summer Sale</td>
+                                            <td><span class="badge bg-secondary" th:text="${promotion.code}">SUMMER20</span></td>
+                                            <td>
+                                                <span th:if="${promotion.type.name() == 'PERCENTAGE'}" class="badge bg-info">Percentage</span>
+                                                <span th:if="${promotion.type.name() == 'FIXED_AMOUNT'}" class="badge bg-warning">Fixed Amount</span>
+                                            </td>
+                                            <td>
+                                                <span th:if="${promotion.type.name() == 'PERCENTAGE'}" class="text-primary fw-bold" th:text="${promotion.value} + '%'">20%</span>
+                                                <span th:if="${promotion.type.name() == 'FIXED_AMOUNT'}" class="text-primary fw-bold" th:text="${#numbers.formatDecimal(promotion.value, 0, 'COMMA', 0, 'POINT')} + ' đ'">50,000 đ</span>
+                                            </td>
+                                            <td>
+                                                <small>
+                                                    <span th:text="${#temporals.format(promotion.startDate, 'dd/MM/yyyy')}">01/06/2023</span><br>
+                                                    to<br>
+                                                    <span th:text="${#temporals.format(promotion.endDate, 'dd/MM/yyyy')}">30/06/2023</span>
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-primary">Upcoming</span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a th:href="@{/admin/promotions/edit/{id}(id=${promotion.id})}" class="btn btn-sm btn-primary" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a th:href="@{/admin/promotions/toggle-status/{id}(id=${promotion.id})}"
+                                                       class="btn btn-sm btn-warning btn-toggle-status" title="Toggle Status">
+                                                        <i class="fas fa-sync-alt"></i>
+                                                    </a>
+                                                    <a th:href="@{/admin/promotions/delete/{id}(id=${promotion.id})}"
+                                                       class="btn btn-sm btn-danger btn-delete" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Expired Promotions Tab -->
+                            <div class="tab-pane fade" id="expired-promotions" role="tabpanel">
+                                <div class="table-responsive">
+                                    <table class="table datatable" id="expiredPromotionsTable">
+                                        <thead class="table-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Code</th>
+                                            <th>Type</th>
+                                            <th>Value</th>
+                                            <th>Period</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:if="${expiredPromotions.isEmpty()}">
+                                            <td colspan="8" class="text-center">No expired promotions found</td>
+                                        </tr>
+                                        <tr th:each="promotion : ${expiredPromotions}">
+                                            <td th:text="${promotion.id}">1</td>
+                                            <td th:text="${promotion.name}">Summer Sale</td>
+                                            <td><span class="badge bg-secondary" th:text="${promotion.code}">SUMMER20</span></td>
+                                            <td>
+                                                <span th:if="${promotion.type.name() == 'PERCENTAGE'}" class="badge bg-info">Percentage</span>
+                                                <span th:if="${promotion.type.name() == 'FIXED_AMOUNT'}" class="badge bg-warning">Fixed Amount</span>
+                                            </td>
+                                            <td>
+                                                <span th:if="${promotion.type.name() == 'PERCENTAGE'}" class="text-muted" th:text="${promotion.value} + '%'">20%</span>
+                                                <span th:if="${promotion.type.name() == 'FIXED_AMOUNT'}" class="text-muted" th:text="${#numbers.formatDecimal(promotion.value, 0, 'COMMA', 0, 'POINT')} + ' đ'">50,000 đ</span>
+                                            </td>
+                                            <td>
+                                                <small>
+                                                    <span th:text="${#temporals.format(promotion.startDate, 'dd/MM/yyyy')}">01/06/2023</span><br>
+                                                    to<br>
+                                                    <span th:text="${#temporals.format(promotion.endDate, 'dd/MM/yyyy')}">30/06/2023</span>
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-secondary">Expired</span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a th:href="@{/admin/promotions/edit/{id}(id=${promotion.id})}" class="btn btn-sm btn-primary" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a th:href="@{/admin/promotions/delete/{id}(id=${promotion.id})}"
+                                                       class="btn btn-sm btn-danger btn-delete" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="javascripts">
+    <script th:src="@{/libs/simple-datatables/umd/simple-datatables.js}"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Initialize DataTables for each tab
+            const tables = ['activePromotionsTable', 'upcomingPromotionsTable', 'expiredPromotionsTable'];
+
+            tables.forEach(function(tableId) {
+                try {
+                    const table = document.getElementById(tableId);
+                    if (table) {
+                        new simpleDatatables.DataTable("#" + tableId, {
+                            searchable: true,
+                            fixedHeight: false,
+                            perPage: 10,
+                            perPageSelect: [5, 10, 15, 20],
+                            labels: {
+                                placeholder: "Search promotions...",
+                                perPage: "{select} entries per page",
+                                noRows: "No promotions found",
+                                info: "Showing {start} to {end} of {rows} entries"
+                            },
+                            columns: [
+                                { select: 0, sort: "desc" }, // Sort by ID descending
+                                { select: 7, sortable: false, searchable: false } // Actions column
+                            ],
+                            tableRender: function(data) {
+                                return `<div class="table-responsive">
+                                          <table class="table datatable">${data}</table>
+                                        </div>`;
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error("Error initializing DataTable for " + tableId + ":", e);
+                }
+            });
+        });
+
+        // Handle tab switching and refresh DataTables
+        document.addEventListener('shown.bs.tab', function (event) {
+            // Trigger window resize to refresh DataTables after tab switch
+            setTimeout(function() {
+                window.dispatchEvent(new Event('resize'));
+            }, 100);
+        });
+
+        // Delete confirmation
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-delete')) {
+                e.preventDefault();
+                const link = e.target.closest('.btn-delete');
+                if (confirm('Are you sure you want to delete this promotion?')) {
+                    window.location.href = link.href;
+                }
+            }
+        });
+
+        // Toggle status confirmation
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-toggle-status')) {
+                e.preventDefault();
+                const link = e.target.closest('.btn-toggle-status');
+                if (confirm('Are you sure you want to toggle the status of this promotion?')) {
+                    window.location.href = link.href;
+                }
+            }
+        });
+    </script>
+</th:block>
+</body>
+</html>

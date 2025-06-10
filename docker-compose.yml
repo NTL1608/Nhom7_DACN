@@ -15,6 +15,7 @@ services:
             - SPRING_DATASOURCE_PASSWORD=greenbook123
             - SPRING_JPA_HIBERNATE_DDL_AUTO=update
             - SPRING_JPA_SHOW_SQL=false
+            - GOOGLE_API_KEY=AIzaSyD1mmgTNSxU0CMKsYauJzsAiFGYaoKpL9s
         volumes:
             - greenbook-uploads:/app/uploads
         networks:
@@ -25,7 +26,7 @@ services:
         container_name: greenbook-db
         restart: always
         ports:
-            - "3306:3306"
+            - "3307:3306"
         environment:
             - MYSQL_DATABASE=greenbook
             - MYSQL_USER=greenbook

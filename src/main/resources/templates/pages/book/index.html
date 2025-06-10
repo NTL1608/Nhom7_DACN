@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{components/layouts/main}">
+<head>
+    <title>Book Management</title>
+
+    <th:block layout:fragment="stylesheets">
+        <link th:href="@{/libs/simple-datatables/style.css}" rel="stylesheet" type="text/css"/>
+
+    </th:block>
+
+</head>
+
+<body>
+<th:block layout:fragment="content">
+    <div class="container-xxl">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <!-- Search and Filter -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-filter me-1"></i> Search & Filter
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/books}" method="get" class="row g-3">
+                            <div class="col-md-4">
+                                <label for="keyword" class="form-label">Search</label>
+                                <input type="text" class="form-control" id="keyword" name="keyword"
+                                       placeholder="Search by title..." th:value="${keyword}">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="categoryId" class="form-label">Category</label>
+                                <select class="form-select" id="categoryId" name="categoryId">
+                                    <option value="">All Categories</option>
+                                    <option th:each="category : ${categories}"
+                                            th:value="${category.id}"
+                                            th:text="${category.name}"
+                                            th:selected="${categoryId == category.id}">Category
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-search me-1"></i> Search
+                                </button>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <a th:href="@{/admin/books}" class="btn btn-secondary w-100">
+                                    <i class="fas fa-redo me-1"></i> Reset
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Book List -->
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-table me-1"></i> Book List
+                        <a th:href="@{/admin/books/create}" class="btn btn-sm btn-primary float-end">
+                            <i class="fas fa-plus-circle"></i> Add New Book
+                        </a>
+                    </div>
+                    <div class="card-body pt-0">
+                        <div class="table-responsive">
+                            <table class="table datatable" id="booksTable">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Image</th>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Category</th>
+                                    <th>Price (VND)</th>
+                                    <th>Stock</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="book : ${books}">
+                                    <td th:text="${book.id}"></td>
+                                    <td>
+                                        <img th:if="${book.imageUrls != null and !book.imageUrls.isEmpty()}"
+                                             th:src="${book.imageUrls[0]}"
+                                             alt="Book cover"
+                                             class="img-thumbnail" style="width: 50px; height: auto;">
+                                        <span th:if="${book.imageUrls == null or book.imageUrls.isEmpty()}"
+                                              class="text-muted">No image</span>
+                                    </td>
+                                    <td th:text="${book.title}"></td>
+                                    <td th:text="${book.author ?: '-'}"></td>
+                                    <td th:text="${book.categoryName}"></td>
+                                    <td th:text="${#numbers.formatDecimal(book.originalPrice, 0, 'COMMA', 0, 'POINT')}"></td>
+                                    <td>
+                                        <span th:text="${book.stockQuantity}"></span>
+                                        <span th:if="${book.stockQuantity < 5}" class="badge bg-danger ms-1">Low</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${book.active}" class="badge bg-success">Active</span>
+                                        <span th:unless="${book.active}" class="badge bg-danger">Inactive</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a th:href="@{/admin/books/edit/{id}(id=${book.id})}"
+                                               class="btn btn-sm btn-primary" title="Edit"><i
+                                                class="fas fa-edit"></i></a>
+                                            <a th:href="@{/admin/books/images/{id}(id=${book.id})}"
+                                               class="btn btn-sm btn-info" title="Images"><i class="fas fa-images"></i></a>
+                                            <a th:href="@{/admin/books/update-stock/{id}(id=${book.id})}"
+                                               class="btn btn-sm btn-success" title="Stock"><i class="fas fa-boxes"></i></a>
+                                            <a th:href="@{/admin/books/toggle-status/{id}(id=${book.id})}"
+                                               class="btn btn-sm btn-warning" title="Toggle"><i
+                                                class="fas fa-sync-alt"></i></a>
+                                            <a th:href="@{/admin/books/delete/{id}(id=${book.id})}"
+                                               class="btn btn-sm btn-danger btn-delete" title="Delete"><i
+                                                class="fas fa-trash"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</th:block>
+
+</body>
+
+<th:block layout:fragment="javascripts">
+    <script th:src="@{/libs/simple-datatables/umd/simple-datatables.js}"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+  try {
+    new simpleDatatables.DataTable("#booksTable", {
+      searchable: true,
+      fixedHeight: false,
+      perPage: 10,
+      perPageSelect: [5, 10, 15, 20, 25],
+      labels: {
+        placeholder: "Search...",
+        perPage: "{select} entries per page",
+        noRows: "No books found",
+        info: "Showing {start} to {end} of {rows} entries"
+      },
+      columns: [
+        { select: 0, sort: "asc" },
+        { select: 1, sortable: false, searchable: false },
+        { select: 8, sortable: false, searchable: false }
+      ],
+      tableRender: function(data) {
+        return `<div class="table-responsive">
+                  <table class="table datatable">${data}</table>
+                </div>`;
+      }
+    });
+  } catch (e) {
+    console.error("Error initializing DataTable:", e);
+  }
+});
+    </script>
+</th:block>
+</html>

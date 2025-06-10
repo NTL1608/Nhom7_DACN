@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{components/layouts/main}">
+<head>
+    <title th:text="${book.id == null ? 'Add Book' : 'Edit Book'} + ' - GreenBook Admin'">Add/Edit Book - GreenBook
+        Admin</title>
+
+    <th:block layout:fragment="stylesheets">
+        <style>
+            .required-field::after {
+                content: " *";
+                color: #dc3545;
+            }
+
+            .form-section {
+                background: #f8f9fa;
+                border-left: 4px solid #0d6efd;
+                padding: 1rem;
+                margin-bottom: 1.5rem;
+                border-radius: 0.375rem;
+            }
+
+            .form-section h4 {
+                color: #0d6efd;
+                margin-bottom: 1rem;
+                font-weight: 600;
+            }
+
+            .currency-input {
+                text-align: right;
+            }
+
+            .status-indicator {
+                transition: all 0.3s ease;
+            }
+
+            .btn-action-group {
+                background: #fff;
+                padding: 1.5rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            }
+
+            .description-textarea {
+                resize: vertical;
+                min-height: 200px;
+                font-family: inherit;
+                line-height: 1.6;
+            }
+
+            .character-counter {
+                font-size: 0.875rem;
+                color: #6c757d;
+                text-align: right;
+                margin-top: 0.25rem;
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+<th:block layout:fragment="content">
+    <div class="container-xxl">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/admin/books}">Books</a></li>
+                            <li class="breadcrumb-item active" th:text="${book.id == null ? 'Add New Book' : 'Edit'}">
+                                Add/Edit
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="text-end">
+                        <span th:if="${book.id != null}" class="badge bg-info fs-6">
+                            <i class="fas fa-hashtag me-1"></i>ID: <span th:text="${book.id}">1</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <form th:action="${book.id == null ? '/admin/books/create' : '/admin/books/edit/' + book.id}"
+                      method="post"
+                      th:object="${book}">
+
+                    <div class="row">
+                        <!-- Basic Information -->
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <i class="fas fa-info-circle me-2"></i>Basic Information
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="title" class="form-label required-field">Book Title</label>
+                                        <input type="text" class="form-control" id="title" th:field="*{title}" required
+                                               placeholder="Enter book title"
+                                               th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''">
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}"
+                                             th:errors="*{title}">
+                                            Title error message
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="author" class="form-label">Author</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                            <input type="text" class="form-control" id="author" th:field="*{author}"
+                                                   placeholder="Enter author name">
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="categoryId" class="form-label required-field">Category</label>
+                                        <select class="form-select" id="categoryId" th:field="*{categoryId}" required
+                                                th:classappend="${#fields.hasErrors('categoryId')} ? 'is-invalid' : ''">
+                                            <option value="">-- Select a category --</option>
+                                            <option th:each="category : ${categories}"
+                                                    th:value="${category.id}"
+                                                    th:text="${category.name}">
+                                                Category name
+                                            </option>
+                                        </select>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('categoryId')}"
+                                             th:errors="*{categoryId}">
+                                            Category error message
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="publisher" class="form-label">Publisher</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-building"></i></span>
+                                            <input type="text" class="form-control" id="publisher"
+                                                   th:field="*{publisher}"
+                                                   placeholder="Enter publisher name">
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="publishedDate" class="form-label">Published Date</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                            <input type="date" class="form-control" id="publishedDate"
+                                                   th:field="*{publishedDate}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pricing and Stock -->
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header bg-success text-white">
+                                    <i class="fas fa-dollar-sign me-2"></i>Pricing & Inventory
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="originalPrice" class="form-label required-field">Original
+                                            Price</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                            <input type="text" class="form-control currency-input" id="originalPrice"
+                                                   th:field="*{originalPrice}" required
+                                                   placeholder="0"
+                                                   th:classappend="${#fields.hasErrors('originalPrice')} ? 'is-invalid' : ''">
+                                            <span class="input-group-text fw-bold">VND</span>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('originalPrice')}"
+                                                 th:errors="*{originalPrice}">
+                                                Price error message
+                                            </div>
+                                        </div>
+                                        <div class="form-text">
+                                            <i class="fas fa-info-circle me-1"></i>Enter the original selling price
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="stockQuantity" class="form-label required-field">Stock
+                                            Quantity</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-boxes"></i></span>
+                                            <input type="number" class="form-control" id="stockQuantity"
+                                                   th:field="*{stockQuantity}" required min="0"
+                                                   placeholder="0"
+                                                   th:classappend="${#fields.hasErrors('stockQuantity')} ? 'is-invalid' : ''">
+                                            <span class="input-group-text">units</span>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('stockQuantity')}"
+                                                 th:errors="*{stockQuantity}">
+                                                Stock error message
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3" th:if="${book.id != null}">
+                                        <label for="soldQuantity" class="form-label">Sold Quantity</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-chart-line"></i></span>
+                                            <input type="number" class="form-control" id="soldQuantity"
+                                                   th:field="*{soldQuantity}" readonly>
+                                            <span class="input-group-text">sold</span>
+                                        </div>
+                                        <div class="form-text text-muted">
+                                            <i class="fas fa-lock me-1"></i>This field is read-only
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3" th:if="${book.id != null}">
+                                        <label class="form-label">Book Status</label>
+                                        <div class="card bg-light">
+                                            <div class="card-body py-3">
+                                                <div class="form-check form-switch d-flex align-items-center">
+                                                    <input class="form-check-input me-3" type="checkbox" id="active"
+                                                           th:field="*{active}" style="transform: scale(1.2);">
+                                                    <div>
+                                                        <label class="form-check-label fw-bold status-indicator"
+                                                               for="active">
+                                                            <span class="status-text"
+                                                                  th:text="*{active} ? 'Active' : 'Inactive'">Status</span>
+                                                        </label>
+                                                        <div class="form-text mb-0">
+                                                            <span class="status-description"
+                                                                  th:text="*{active} ? 'Book is visible and available for purchase' : 'Book is hidden from customers'">Description</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header bg-info text-white">
+                                    <i class="fas fa-align-left me-2"></i>Book Description
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="description" class="form-label">Description</label>
+                                        <textarea class="form-control description-textarea" id="description"
+                                                  th:field="*{description}" rows="8"
+                                                  placeholder="Enter detailed book description, synopsis, or any additional information..."
+                                                  maxlength="5000"></textarea>
+
+                                        <div class="character-counter">
+                                            <span id="charCount">0</span> / 5000 characters
+                                        </div>
+                                        <div class="form-text">
+                                            <i class="fas fa-lightbulb me-1"></i>Provide a detailed description of the
+                                            book including synopsis, key features, or any additional information that
+                                            would help customers.
+                                        </div>
+                                        <div class="mt-3 text-end">
+                                            <button type="button" class="btn btn-outline-primary"
+                                                    id="generateAiDescription">
+                                                <i class="fas fa-magic me-1"></i> Gợi ý mô tả với AI
+                                            </button>
+                                            <div class="form-text text-muted mt-2">Gợi ý sẽ dựa trên tiêu đề sách.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="btn-action-group mb-4">
+                                <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <i class="fas fa-save me-2"></i>
+                                            <span
+                                                th:text="${book.id == null ? 'Create Book' : 'Update Book'}">Save</span>
+                                        </button>
+                                        <a th:href="@{/admin/books}" class="btn btn-outline-secondary btn-lg">
+                                            <i class="fas fa-arrow-left me-2"></i>Back to Books
+                                        </a>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-2" th:if="${book.id != null}">
+                                        <a th:href="@{/admin/books/images/{id}(id=${book.id})}"
+                                           class="btn btn-outline-info">
+                                            <i class="fas fa-images me-2"></i>Manage Images
+                                        </a>
+                                        <a th:href="@{/admin/books/update-stock/{id}(id=${book.id})}"
+                                           class="btn btn-outline-warning">
+                                            <i class="fas fa-warehouse me-2"></i>Update Stock
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="javascripts">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle active status with visual feedback
+            const activeCheckbox = document.getElementById('active');
+            if (activeCheckbox) {
+                function updateStatusDisplay() {
+                    const statusText = document.querySelector('.status-text');
+                    const statusDescription = document.querySelector('.status-description');
+                    const statusIndicator = document.querySelector('.status-indicator');
+
+                    if (activeCheckbox.checked) {
+                        statusText.textContent = 'Active';
+                        statusText.className = 'text-success fw-bold';
+                        statusDescription.textContent = 'Book is visible and available for purchase';
+                        statusIndicator.className = 'form-check-label fw-bold status-indicator text-success';
+                    } else {
+                        statusText.textContent = 'Inactive';
+                        statusText.className = 'text-warning fw-bold';
+                        statusDescription.textContent = 'Book is hidden from customers';
+                        statusIndicator.className = 'form-check-label fw-bold status-indicator text-warning';
+                    }
+                }
+
+                activeCheckbox.addEventListener('change', updateStatusDisplay);
+                // Initialize on page load
+                updateStatusDisplay();
+            }
+
+            // Enhanced currency formatting
+            const priceInput = document.getElementById('originalPrice');
+            if (priceInput) {
+                function formatCurrency(value) {
+                    // Remove any non-digit characters
+                    const numericValue = value.replace(/[^\d]/g, '');
+
+                    if (numericValue === '') return '';
+
+                    // Format with thousands separators
+                    return parseInt(numericValue).toLocaleString('vi-VN');
+                }
+
+                priceInput.addEventListener('input', function() {
+                    const cursorPosition = this.selectionStart;
+                    const oldLength = this.value.length;
+
+                    this.value = formatCurrency(this.value);
+
+                    // Maintain cursor position after formatting
+                    const newLength = this.value.length;
+                    const newPosition = cursorPosition + (newLength - oldLength);
+                    this.setSelectionRange(newPosition, newPosition);
+                });
+
+                // Format initial value if exists
+                if (priceInput.value) {
+                    priceInput.value = formatCurrency(priceInput.value);
+                }
+
+                // Remove formatting on form submit to send clean numeric value
+                priceInput.closest('form').addEventListener('submit', function() {
+                    priceInput.value = priceInput.value.replace(/[^\d]/g, '');
+                });
+            }
+
+            // Character counter for description
+            const descriptionTextarea = document.getElementById('description');
+            const charCount = document.getElementById('charCount');
+
+            if (descriptionTextarea && charCount) {
+                function updateCharCount() {
+                    const currentLength = descriptionTextarea.value.length;
+                    charCount.textContent = currentLength;
+
+                    // Change color based on usage
+                    if (currentLength > 4500) {
+                        charCount.className = 'text-danger fw-bold';
+                    } else if (currentLength > 4000) {
+                        charCount.className = 'text-warning fw-bold';
+                    } else {
+                        charCount.className = '';
+                    }
+                }
+
+                descriptionTextarea.addEventListener('input', updateCharCount);
+                // Initialize on page load
+                updateCharCount();
+            }
+
+            // Form validation enhancement
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const requiredFields = form.querySelectorAll('[required]');
+                    let isValid = true;
+
+                    requiredFields.forEach(field => {
+                        if (!field.value.trim()) {
+                            field.classList.add('is-invalid');
+                            isValid = false;
+                        } else {
+                            field.classList.remove('is-invalid');
+                        }
+                    });
+
+                    if (!isValid) {
+                        e.preventDefault();
+                        // Scroll to first invalid field
+                        const firstInvalid = form.querySelector('.is-invalid');
+                        if (firstInvalid) {
+                            firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            firstInvalid.focus();
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+    <script>
+        const generateDescBtn = document.getElementById('generateAiDescription');
+if (generateDescBtn) {
+    generateDescBtn.addEventListener('click', async function () {
+        const titleInput = document.getElementById('title');
+        const descriptionTextarea = document.getElementById('description');
+
+        const title = titleInput?.value.trim();
+        if (!title) {
+            alert('Vui lòng nhập tiêu đề sách trước khi sử dụng AI.');
+            return;
+        }
+
+        generateDescBtn.disabled = true;
+        generateDescBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang gợi ý...';
+
+        try {
+            const response = await fetch(`/admin/books/suggest-description?title=${encodeURIComponent(title)}`);
+            const data = await response.json();
+            descriptionTextarea.value = data.description;
+            descriptionTextarea.dispatchEvent(new Event('input')); // để cập nhật đếm ký tự
+        } catch (error) {
+            alert('Không thể lấy mô tả từ AI: ' + error.message);
+        } finally {
+            generateDescBtn.disabled = false;
+            generateDescBtn.innerHTML = '<i class="fas fa-magic me-1"></i> Gợi ý mô tả với AI';
+        }
+    });
+}
+    </script>
+</th:block>
+</body>
+</html>

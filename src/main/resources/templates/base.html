@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="GreenBook is an online book selling web management application developed with Spring Boot, allowing to manage the entire sales process from managing lists, categories, orders, promotions to user and blog management." name="description"/>
+    <meta content="NTDzVEKNY and team" name="author"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+    <title layout:title-pattern="$LAYOUT_TITLE | $CONTENT_TITLE">GreenBook Admin</title>
+
+    <link rel="shortcut icon" th:href="@{/images/favicon.ico}">
+
+    <th:block layout:fragment="css"></th:block>
+
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/icons.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/app.min.css}" rel="stylesheet" type="text/css"/>
+
+
+
+</head>
+
+<body>
+<div id="x-wrapper" data-controller="init">
+    <div class="container-fluid px-4 mt-3">
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}">
+            <span th:text="${successMessage}">Success message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
+            <span th:text="${errorMessage}">Error message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <th:block layout:fragment="body"></th:block>
+
+
+</div>
+
+    <th:block layout:fragment="scripts"></th:block>
+
+</body>
+
+</html>

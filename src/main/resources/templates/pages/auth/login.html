@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{components/layouts/auth}">
+<head>
+    <title>Login - GreenBook Admin</title>
+
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <th:block layout:fragment="stylesheets">
+        <style>
+            body {
+                background: linear-gradient(135deg, #2d8f39 0%, #1e5f28 100%);
+                min-height: 100vh;
+                position: relative;
+                overflow-x: hidden;
+            }
+
+            body::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20,50 Q30,30 40,50 T60,50 T80,50" stroke="rgba(255,255,255,0.05)" stroke-width="1" fill="none"/><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.08)"/><circle cx="75" cy="75" r="1.5" fill="rgba(255,255,255,0.06)"/></svg>') repeat;
+                animation: float 40s infinite linear;
+                pointer-events: none;
+            }
+
+            @keyframes float {
+                0% { transform: translateX(-100px) translateY(-100px); }
+                100% { transform: translateX(100px) translateY(100px); }
+            }
+
+            .login-container {
+                position: relative;
+                z-index: 2;
+                animation: slideInUp 0.8s ease-out;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                padding: 2rem 1rem;
+            }
+
+            @keyframes slideInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .login-card {
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(20px);
+                border-radius: 2rem;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                overflow: hidden;
+                transition: all 0.3s ease;
+                position: relative;
+                max-width: 450px;
+                width: 100%;
+            }
+
+            .login-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+                animation: shimmer 4s infinite;
+            }
+
+            @keyframes shimmer {
+                0% { left: -100%; }
+                100% { left: 100%; }
+            }
+
+            .login-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 25px 80px rgba(0, 0, 0, 0.2);
+            }
+
+            .login-header {
+                background: linear-gradient(135deg, #2d8f39 0%, #1e5f28 100%);
+                color: white;
+                text-align: center;
+                padding: 3rem 2rem 2rem;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .login-header::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+                background-size: 25px 25px;
+                animation: rotate 25s linear infinite;
+            }
+
+            @keyframes rotate {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+
+            .logo-container {
+                position: relative;
+                z-index: 2;
+                margin-bottom: 1rem;
+            }
+
+            .logo-icon {
+                background: rgba(255, 255, 255, 0.15);
+                border-radius: 50%;
+                width: 80px;
+                height: 80px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 1rem;
+                backdrop-filter: blur(10px);
+                animation: pulse 2s infinite;
+                border: 2px solid rgba(255, 255, 255, 0.2);
+            }
+
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.3); }
+                50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+            }
+
+            .logo-icon i {
+                font-size: 2.2rem;
+                color: white;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
+
+            .brand-name {
+                font-size: 2.2rem;
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+                position: relative;
+                z-index: 2;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                letter-spacing: -0.5px;
+            }
+
+            .brand-subtitle {
+                font-size: 1rem;
+                opacity: 0.9;
+                position: relative;
+                z-index: 2;
+                font-weight: 400;
+                letter-spacing: 0.5px;
+            }
+
+            .login-body {
+                padding: 3rem 2rem 2rem;
+                background: rgba(255, 255, 255, 0.9);
+                position: relative;
+            }
+
+            .login-title {
+                text-align: center;
+                color: #2d5016;
+                font-weight: 700;
+                margin-bottom: 2rem;
+                font-size: 1.75rem;
+            }
+
+            .form-floating-modern {
+                position: relative;
+                margin-bottom: 2rem;
+            }
+
+            .form-floating-modern input {
+                width: 100%;
+                padding: 1.25rem 3rem 0.75rem 1rem;
+                border: 2px solid #e9ecef;
+                border-radius: 1rem;
+                background: rgba(248, 249, 250, 0.8);
+                font-size: 1rem;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+            }
+
+            .form-floating-modern input:focus {
+                outline: none;
+                border-color: #2d8f39;
+                background: rgba(255, 255, 255, 0.95);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(45, 143, 57, 0.15);
+            }
+
+            .form-floating-modern label {
+                position: absolute;
+                top: 1rem;
+                left: 1rem;
+                font-size: 1rem;
+                color: #6c757d;
+                transition: all 0.3s ease;
+                pointer-events: none;
+                background: transparent;
+                padding: 0 0.25rem;
+            }
+
+            .form-floating-modern input:focus + label,
+            .form-floating-modern input:not(:placeholder-shown) + label {
+                top: -0.5rem;
+                left: 0.75rem;
+                font-size: 0.875rem;
+                color: #2d8f39;
+                background: rgba(255, 255, 255, 0.9);
+                font-weight: 600;
+                backdrop-filter: blur(5px);
+                border-radius: 0.25rem;
+                padding: 0.25rem 0.5rem;
+            }
+
+            .form-floating-modern .input-icon {
+                position: absolute;
+                right: 1rem;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #6c757d;
+                transition: all 0.3s ease;
+                z-index: 3;
+                cursor: pointer;
+            }
+
+            .form-floating-modern input:focus ~ .input-icon {
+                color: #2d8f39;
+            }
+
+            .password-toggle:hover {
+                color: #2d8f39 !important;
+                transform: translateY(-50%) scale(1.1);
+            }
+
+            .remember-me-container {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                margin-bottom: 2rem;
+                padding: 1rem;
+                background: rgba(45, 143, 57, 0.05);
+                border-radius: 0.75rem;
+                border: 1px solid rgba(45, 143, 57, 0.1);
+                transition: all 0.3s ease;
+            }
+
+            .remember-me-container:hover {
+                background: rgba(45, 143, 57, 0.1);
+                border-color: rgba(45, 143, 57, 0.2);
+            }
+
+            .custom-checkbox {
+                width: 20px;
+                height: 20px;
+                border: 2px solid #2d8f39;
+                border-radius: 0.375rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                background: transparent;
+            }
+
+            .custom-checkbox.checked {
+                background: #2d8f39;
+                border-color: #2d8f39;
+            }
+
+            .custom-checkbox i {
+                color: white;
+                font-size: 0.75rem;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            .custom-checkbox.checked i {
+                opacity: 1;
+            }
+
+            .checkbox-label {
+                font-size: 0.95rem;
+                color: #495057;
+                cursor: pointer;
+                user-select: none;
+            }
+
+            .btn-login {
+                background: linear-gradient(135deg, #2d8f39 0%, #1e5f28 100%);
+                border: none;
+                color: white;
+                width: 100%;
+                padding: 1rem 2rem;
+                font-size: 1.1rem;
+                font-weight: 600;
+                border-radius: 1rem;
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+                text-transform: none;
+            }
+
+            .btn-login::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                transition: left 0.5s ease;
+            }
+
+            .btn-login:hover::before {
+                left: 100%;
+            }
+
+            .btn-login:hover {
+                background: linear-gradient(135deg, #1e5f28 0%, #2d8f39 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(45, 143, 57, 0.3);
+                color: white;
+            }
+
+            .btn-login:active {
+                transform: translateY(0);
+            }
+
+            .login-footer {
+                text-align: center;
+                padding: 2rem;
+                background: rgba(248, 249, 250, 0.8);
+                backdrop-filter: blur(10px);
+                border-top: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
+            .footer-link {
+                color: #2d8f39;
+                text-decoration: none;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+
+            .footer-link:hover {
+                color: #1e5f28;
+                text-decoration: underline;
+                transform: translateY(-1px);
+            }
+
+            .alert-modern {
+                border: none;
+                border-radius: 0.75rem;
+                padding: 1rem 1.5rem;
+                margin-bottom: 1.5rem;
+                backdrop-filter: blur(10px);
+                animation: slideInDown 0.5s ease-out;
+                display: flex;
+                align-items: center;
+            }
+
+            @keyframes slideInDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .alert-success-modern {
+                background: rgba(40, 167, 69, 0.1);
+                color: #155724;
+                border: 1px solid rgba(40, 167, 69, 0.2);
+            }
+
+            .alert-danger-modern {
+                background: rgba(220, 53, 69, 0.1);
+                color: #721c24;
+                border: 1px solid rgba(220, 53, 69, 0.2);
+            }
+
+            .loading-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(255, 255, 255, 0.9);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 2rem;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                z-index: 1000;
+            }
+
+            .loading-overlay.show {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .loading-spinner {
+                width: 40px;
+                height: 40px;
+                border: 4px solid rgba(45, 143, 57, 0.2);
+                border-left: 4px solid #2d8f39;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            /* Enhanced visual effects */
+            .login-card::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M10,90 Q50,10 90,90" stroke="rgba(45,143,57,0.02)" stroke-width="0.5" fill="none"/></svg>') repeat;
+                pointer-events: none;
+                z-index: 1;
+            }
+
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .login-container {
+                    padding: 1rem;
+                }
+
+                .login-header {
+                    padding: 2rem 1.5rem 1.5rem;
+                }
+
+                .login-body {
+                    padding: 2rem 1.5rem 1.5rem;
+                }
+
+                .brand-name {
+                    font-size: 1.9rem;
+                }
+
+                .login-title {
+                    font-size: 1.5rem;
+                }
+
+                .form-floating-modern input {
+                    padding: 1.1rem 3rem 0.7rem 1rem;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .login-container {
+                    padding: 0.5rem;
+                }
+
+                .login-card {
+                    border-radius: 1.5rem;
+                }
+
+                .brand-name {
+                    font-size: 1.7rem;
+                }
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+
+<th:block layout:fragment="content">
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Loading Overlay -->
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="loading-spinner"></div>
+            </div>
+
+            <!-- Login Header -->
+            <div class="login-header">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="brand-name">GreenBook</div>
+                    <div class="brand-subtitle">Admin Dashboard</div>
+                </div>
+            </div>
+
+            <!-- Login Body -->
+            <div class="login-body">
+                <!-- Alert Messages -->
+                <div th:if="${param.error}" class="alert alert-danger-modern alert-modern">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <div>
+                        <strong>Login Failed!</strong> Invalid username or password.
+                    </div>
+                </div>
+                <div th:if="${param.logout}" class="alert alert-success-modern alert-modern">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <div>
+                        <strong>Success!</strong> You have been logged out successfully.
+                    </div>
+                </div>
+                <div th:if="${param.registered}" class="alert alert-success-modern alert-modern">
+                    <i class="fas fa-user-plus me-2"></i>
+                    <div>
+                        <strong>Welcome!</strong> Registration successful! Please login with your credentials.
+                    </div>
+                </div>
+
+                <h3 class="login-title">Welcome Back</h3>
+
+                <!-- Login Form -->
+                <form th:action="@{/login}" method="post" id="loginForm">
+                    <!-- Username Field -->
+                    <div class="form-floating-modern">
+                        <input type="text"
+                               id="username"
+                               name="username"
+                               placeholder=""
+                               required
+                               autofocus>
+                        <label for="username">Username</label>
+                        <div class="input-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="form-floating-modern">
+                        <input type="password"
+                               id="password"
+                               name="password"
+                               placeholder=""
+                               required>
+                        <label for="password">Password</label>
+                        <div class="input-icon password-toggle" onclick="togglePassword()">
+                            <i class="fas fa-eye" id="passwordIcon"></i>
+                        </div>
+                    </div>
+
+                    <!-- Remember Me -->
+                    <div class="remember-me-container">
+                        <div class="custom-checkbox" id="customCheckbox" onclick="toggleCheckbox()">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <input type="checkbox" id="remember-me" name="remember-me" style="display: none;">
+                        <label class="checkbox-label" for="remember-me" onclick="toggleCheckbox()">
+                            Keep me signed in
+                        </label>
+                    </div>
+
+                    <!-- Login Button -->
+                    <button class="btn btn-login" type="submit">
+                        <i class="fas fa-sign-in-alt me-2"></i>
+                        Sign In to Dashboard
+                    </button>
+                </form>
+            </div>
+
+            <!-- Login Footer -->
+            <div class="login-footer">
+                <p class="mb-0">
+                    Don't have an account?
+                    <a th:href="@{/register}" class="footer-link">
+                        <i class="fas fa-user-plus me-1"></i>Create Account
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="javascripts">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+
+            // Form submission with loading state
+            loginForm.addEventListener('submit', function() {
+                loadingOverlay.classList.add('show');
+            });
+
+            // Auto-hide alerts after 5 seconds
+            const alerts = document.querySelectorAll('.alert-modern');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.animation = 'slideInDown 0.5s ease-out reverse';
+                    setTimeout(() => {
+                        alert.style.display = 'none';
+                    }, 500);
+                }, 5000);
+            });
+
+            // Enhanced form validation
+            const inputs = document.querySelectorAll('input[required]');
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    if (!this.value.trim()) {
+                        this.style.borderColor = '#dc3545';
+                        this.style.boxShadow = '0 0 0 0.2rem rgba(220, 53, 69, 0.25)';
+                    } else {
+                        this.style.borderColor = '#28a745';
+                        this.style.boxShadow = '0 0 0 0.2rem rgba(40, 167, 69, 0.25)';
+                    }
+                });
+
+                input.addEventListener('input', function() {
+                    if (this.value.trim()) {
+                        this.style.borderColor = '#e9ecef';
+                        this.style.boxShadow = 'none';
+                    }
+                });
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Ctrl+Enter to submit form
+                if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault();
+                    loginForm.submit();
+                }
+            });
+
+            // Add subtle parallax effect to background
+            window.addEventListener('mousemove', function(e) {
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+
+                document.body.style.backgroundPosition = `${50 + x * 5}% ${50 + y * 5}%`;
+            });
+        });
+
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const passwordIcon = document.getElementById('passwordIcon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.className = 'fas fa-eye';
+            }
+        }
+
+        // Toggle custom checkbox
+        function toggleCheckbox() {
+            const checkbox = document.getElementById('remember-me');
+            const customCheckbox = document.getElementById('customCheckbox');
+
+            checkbox.checked = !checkbox.checked;
+
+            if (checkbox.checked) {
+                customCheckbox.classList.add('checked');
+            } else {
+                customCheckbox.classList.remove('checked');
+            }
+        }
+    </script>
+</th:block>
+</body>
+</html>

@@ -40,7 +40,7 @@ public class AdminPromotionController {
         model.addAttribute("activePromotions", activePromotions);
         model.addAttribute("upcomingPromotions", upcomingPromotions);
         model.addAttribute("expiredPromotions", expiredPromotions);
-        return "admin/promotions/list";
+        return "pages/promotion/index";
     }
 
     @GetMapping("/create")
@@ -52,7 +52,7 @@ public class AdminPromotionController {
 
         model.addAttribute("promotion", promotion);
         model.addAttribute("promotionTypes", PromotionType.values());
-        return "admin/promotions/form";
+        return "pages/promotion/form";
     }
 
     @PostMapping("/create")
@@ -65,19 +65,19 @@ public class AdminPromotionController {
 
         // Check for validation errors
         if (result.hasErrors()) {
-            return "admin/promotions/form";
+            return "pages/promotion/form";
         }
 
         // Check if promotion code already exists
         if (promotionService.existsByCode(promotionDTO.getCode())) {
             result.rejectValue("code", "error.promotion", "Promotion code already exists");
-            return "admin/promotions/form";
+            return "pages/promotion/form";
         }
 
         // Check if start date is after end date
         if (promotionDTO.getStartDate().isAfter(promotionDTO.getEndDate())) {
             result.rejectValue("startDate", "error.promotion", "Start date cannot be after end date");
-            return "admin/promotions/form";
+            return "pages/promotion/form";
         }
 
         // Save promotion
@@ -95,7 +95,7 @@ public class AdminPromotionController {
 
         model.addAttribute("promotion", PromotionDTO.fromEntity(promotion));
         model.addAttribute("promotionTypes", PromotionType.values());
-        return "admin/promotions/form";
+        return "pages/promotion/form";
     }
 
     @PostMapping("/edit/{id}")
@@ -109,7 +109,7 @@ public class AdminPromotionController {
 
         // Check for validation errors
         if (result.hasErrors()) {
-            return "admin/promotions/form";
+            return "pages/promotion/form";
         }
 
         // Get existing promotion
@@ -120,13 +120,13 @@ public class AdminPromotionController {
         if (!existingPromotion.getCode().equals(promotionDTO.getCode()) &&
                 promotionService.existsByCode(promotionDTO.getCode())) {
             result.rejectValue("code", "error.promotion", "Promotion code already exists");
-            return "admin/promotions/form";
+            return "pages/promotion/form";
         }
 
         // Check if start date is after end date
         if (promotionDTO.getStartDate().isAfter(promotionDTO.getEndDate())) {
             result.rejectValue("startDate", "error.promotion", "Start date cannot be after end date");
-            return "admin/promotions/form";
+            return "pages/promotion/form";
         }
 
         // Save promotion

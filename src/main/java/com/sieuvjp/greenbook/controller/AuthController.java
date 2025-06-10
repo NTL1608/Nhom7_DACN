@@ -6,6 +6,9 @@ import com.sieuvjp.greenbook.enums.Role;
 import com.sieuvjp.greenbook.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,13 +24,23 @@ public class AuthController {
 
     @GetMapping("/login")
     public String login() {
-        return "auth/login";
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
+            return "redirect:/admin";
+        }
+
+        return "pages/auth/login";
     }
 
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
+            return "redirect:/admin";
+        }
+
         model.addAttribute("user", new UserDTO());
-        return "auth/register";
+        return "pages/auth/register";
     }
 
     @PostMapping("/register")
@@ -37,19 +50,19 @@ public class AuthController {
 
         // Check for validation errors
         if (result.hasErrors()) {
-            return "auth/register";
+            return "pages/auth/register";
         }
 
         // Check if username already exists
         if (userService.existsByUsername(userDTO.getUsername())) {
             result.rejectValue("username", "error.user", "Username is already taken");
-            return "auth/register";
+            return "pages/auth/register";
         }
 
         // Check if email already exists
         if (userService.existsByEmail(userDTO.getEmail())) {
             result.rejectValue("email", "error.user", "Email is already in use");
-            return "auth/register";
+            return "pages/auth/register";
         }
 
         // Set default role for new user

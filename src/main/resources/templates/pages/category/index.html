@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{components/layouts/main}">
+<head>
+    <title>Category Management</title>
+
+    <th:block layout:fragment="stylesheets">
+        <link th:href="@{/libs/simple-datatables/style.css}" rel="stylesheet" type="text/css"/>
+    </th:block>
+</head>
+
+<body>
+<th:block layout:fragment="content">
+    <div class="container-xxl">
+        <!-- Category List -->
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-table me-1"></i> Category List
+                        <a th:href="@{/admin/categories/create}" class="btn btn-sm btn-primary float-end">
+                            <i class="fas fa-plus-circle"></i> Add New Category
+                        </a>
+                    </div>
+                    <div class="card-body pt-0">
+                        <div class="table-responsive">
+                            <table class="table datatable" id="categoriesTable">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Books</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="category : ${categories}">
+                                    <td th:text="${category.id}">1</td>
+                                    <td th:text="${category.name}">Fiction</td>
+                                    <td th:text="${category.description != null ? category.description : '-'}">Fiction books</td>
+                                    <td th:text="${category.bookCount}">5</td>
+                                    <td>
+                                        <span th:if="${category.active}" class="badge bg-success">Active</span>
+                                        <span th:unless="${category.active}" class="badge bg-danger">Inactive</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a th:href="@{/admin/categories/edit/{id}(id=${category.id})}"
+                                               class="btn btn-sm btn-primary" title="Edit"><i
+                                                class="fas fa-edit"></i></a>
+                                            <a th:href="@{/admin/categories/toggle-status/{id}(id=${category.id})}"
+                                               class="btn btn-sm btn-warning" title="Toggle"><i
+                                                class="fas fa-sync-alt"></i></a>
+                                            <a th:if="${category.bookCount == 0}" th:href="@{/admin/categories/delete/{id}(id=${category.id})}"
+                                               class="btn btn-sm btn-danger btn-delete" title="Delete"><i
+                                                class="fas fa-trash"></i></a>
+                                            <button th:if="${category.bookCount > 0}"
+                                                    class="btn btn-sm btn-secondary"
+                                                    disabled title="Cannot delete category with books">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="javascripts">
+    <script th:src="@{/libs/simple-datatables/umd/simple-datatables.js}"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            try {
+                new simpleDatatables.DataTable("#categoriesTable", {
+                    searchable: true,
+                    fixedHeight: false,
+                    perPage: 10,
+                    perPageSelect: [5, 10, 15, 20, 25],
+                    labels: {
+                        placeholder: "Search...",
+                        perPage: "{select} entries per page",
+                        noRows: "No categories found",
+                        info: "Showing {start} to {end} of {rows} entries"
+                    },
+                    columns: [
+                        { select: 0, sort: "asc" },
+                        { select: 5, sortable: false, searchable: false }
+                    ],
+                    tableRender: function(data) {
+                        return `<div class="table-responsive">
+                                  <table class="table datatable">${data}</table>
+                                </div>`;
+                    }
+                });
+            } catch (e) {
+                console.error("Error initializing DataTable:", e);
+            }
+        });
+    </script>
+</th:block>
+</body>
+</html>

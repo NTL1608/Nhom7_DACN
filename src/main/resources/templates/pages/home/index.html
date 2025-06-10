@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{components/layouts/main}">
+<head>
+    <title>Dashboard - GreenBook Admin</title>
+
+    <th:block layout:fragment="stylesheets">
+        <style>
+            .dashboard-header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border-radius: 1rem;
+                padding: 2rem;
+                margin-bottom: 2rem;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .dashboard-header::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 200%;
+                height: 200%;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+                animation: float 20s infinite linear;
+            }
+
+            @keyframes float {
+                0% { transform: translateX(-100px) translateY(-100px); }
+                100% { transform: translateX(100px) translateY(100px); }
+            }
+
+            .dashboard-title {
+                font-size: 2.5rem;
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+                position: relative;
+                z-index: 2;
+            }
+
+            .dashboard-subtitle {
+                font-size: 1.1rem;
+                opacity: 0.9;
+                position: relative;
+                z-index: 2;
+            }
+
+            .stat-card {
+                background: white;
+                border-radius: 1rem;
+                border: none;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+                overflow: hidden;
+                position: relative;
+                margin-bottom: 2rem;
+            }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            }
+
+            .stat-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: var(--card-gradient);
+            }
+
+            .stat-card.revenue {
+                --card-gradient: linear-gradient(90deg, #667eea, #764ba2);
+            }
+
+            .stat-card.monthly {
+                --card-gradient: linear-gradient(90deg, #ffc107, #fd7e14);
+            }
+
+            .stat-card.orders {
+                --card-gradient: linear-gradient(90deg, #28a745, #20c997);
+            }
+
+            .stat-card.pending {
+                --card-gradient: linear-gradient(90deg, #dc3545, #c82333);
+            }
+
+            .stat-card-body {
+                padding: 2rem;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .stat-content {
+                flex-grow: 1;
+            }
+
+            .stat-title {
+                font-size: 0.875rem;
+                color: #6c757d;
+                margin-bottom: 0.5rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+                font-weight: 700;
+                color: #2c3e50;
+                margin-bottom: 0.5rem;
+                line-height: 1;
+            }
+
+            .stat-change {
+                font-size: 0.875rem;
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+            }
+
+            .stat-change.positive {
+                color: #28a745;
+            }
+
+            .stat-change.negative {
+                color: #dc3545;
+            }
+
+            .stat-icon {
+                width: 70px;
+                height: 70px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.75rem;
+                color: white;
+                margin-left: 1rem;
+            }
+
+            .stat-icon.revenue { background: linear-gradient(45deg, #667eea, #764ba2); }
+            .stat-icon.monthly { background: linear-gradient(45deg, #ffc107, #fd7e14); }
+            .stat-icon.orders { background: linear-gradient(45deg, #28a745, #20c997); }
+            .stat-icon.pending { background: linear-gradient(45deg, #dc3545, #c82333); }
+
+            .stat-footer {
+                background: #f8f9fa;
+                padding: 1rem 2rem;
+                border-top: 1px solid #e9ecef;
+            }
+
+            .stat-footer a {
+                color: #495057;
+                text-decoration: none;
+                font-size: 0.875rem;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                transition: color 0.3s ease;
+            }
+
+            .stat-footer a:hover {
+                color: #007bff;
+            }
+
+            .chart-card {
+                background: white;
+                border-radius: 1rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                border: none;
+                margin-bottom: 2rem;
+                overflow: hidden;
+            }
+
+            .chart-header {
+                background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+                padding: 1.5rem;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            .chart-title {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #495057;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
+
+            .chart-body {
+                padding: 2rem;
+            }
+
+            .chart-canvas {
+                position: relative;
+                height: 300px;
+            }
+
+            .table-card {
+                background: white;
+                border-radius: 1rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                border: none;
+                margin-bottom: 2rem;
+                overflow: hidden;
+            }
+
+            .table-header {
+                background: linear-gradient(45deg, #495057, #6c757d);
+                color: white;
+                padding: 1.5rem;
+            }
+
+            .table-title {
+                font-size: 1.1rem;
+                font-weight: 600;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
+
+            .modern-table {
+                margin: 0;
+            }
+
+            .modern-table thead th {
+                background: #f8f9fa;
+                border: none;
+                padding: 1rem;
+                font-weight: 600;
+                color: #495057;
+                font-size: 0.875rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .modern-table tbody td {
+                padding: 1rem;
+                border-bottom: 1px solid #f8f9fa;
+                vertical-align: middle;
+            }
+
+            .modern-table tbody tr:hover {
+                background: #f8f9fa;
+            }
+
+            .modern-table tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+            .stock-alert {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.375rem 0.75rem;
+                border-radius: 2rem;
+                font-size: 0.875rem;
+                font-weight: 600;
+            }
+
+            .stock-critical {
+                background: #ffebee;
+                color: #c62828;
+            }
+
+            .stock-low {
+                background: #fff3e0;
+                color: #ef6c00;
+            }
+
+            .btn-update-stock {
+                background: linear-gradient(45deg, #667eea, #764ba2);
+                border: none;
+                color: white;
+                padding: 0.5rem 1rem;
+                border-radius: 0.5rem;
+                font-size: 0.875rem;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+
+            .btn-update-stock:hover {
+                background: linear-gradient(45deg, #764ba2, #667eea);
+                transform: translateY(-1px);
+                color: white;
+            }
+
+            .top-book-rank {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                font-size: 0.875rem;
+                margin-right: 1rem;
+            }
+
+            .rank-1 { background: linear-gradient(45deg, #ffd700, #ffed4e); color: #856404; }
+            .rank-2 { background: linear-gradient(45deg, #c0c0c0, #e0e0e0); color: #495057; }
+            .rank-3 { background: linear-gradient(45deg, #cd7f32, #daa520); color: #7b4423; }
+            .rank-other { background: #f8f9fa; color: #6c757d; }
+
+            .revenue-amount {
+                font-weight: 600;
+                color: #28a745;
+            }
+
+            .no-data-state {
+                text-align: center;
+                padding: 3rem 2rem;
+                color: #6c757d;
+            }
+
+            .no-data-state i {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+                opacity: 0.5;
+            }
+
+            .alert-badge {
+                position: absolute;
+                top: -8px;
+                right: -8px;
+                background: #dc3545;
+                color: white;
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.75rem;
+                font-weight: 600;
+                animation: pulse-badge 2s infinite;
+            }
+            .export-report-wrapper {
+               margin-top: 1rem;
+            }
+
+            @keyframes pulse-badge {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+<th:block layout:fragment="content">
+    <div class="container-xxl">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <!-- Dashboard Header -->
+                <div class="dashboard-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h1 class="dashboard-title">Dashboard</h1>
+                            <p class="dashboard-subtitle mb-0">
+                                Welcome back! Here's what's happening with your bookstore today.
+                            </p>
+                        </div>
+                        <div class="text-end">
+                            <div class="fs-4 fw-bold" id="currentTime">12:34 PM</div>
+                            <div class="opacity-75" id="currentDate">Today</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- Stats Cards -->
+        <div class="row">
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card revenue">
+                    <div class="stat-card-body">
+                        <div class="stat-content">
+                            <div class="stat-title">Total Revenue</div>
+                            <div class="stat-value" th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+12.5% from last month</span>
+                            </div>
+                        </div>
+                        <div class="stat-icon revenue">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <div class="stat-footer">
+                        <a href="#">
+                            <span>View Revenue Details</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card monthly">
+                    <div class="stat-card-body">
+                        <div class="stat-content">
+                            <div class="stat-title">Monthly Revenue</div>
+                            <div class="stat-value" th:text="${#numbers.formatDecimal(monthlyRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+8.2% from last month</span>
+                            </div>
+                        </div>
+                        <div class="stat-icon monthly">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
+                    <div class="stat-footer">
+                        <a href="#">
+                            <span>View Monthly Report</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card orders">
+                    <div class="stat-card-body">
+                        <div class="stat-content">
+                            <div class="stat-title">Total Orders</div>
+                            <div class="stat-value" th:text="${totalOrders}">0</div>
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>+15.3% from last month</span>
+                            </div>
+                        </div>
+                        <div class="stat-icon orders">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                    </div>
+                    <div class="stat-footer">
+                        <a th:href="@{/admin/orders}">
+                            <span>View All Orders</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card pending">
+                    <div class="stat-card-body">
+                        <div class="stat-content">
+                            <div class="stat-title">Pending Orders</div>
+                            <div class="stat-value" th:text="${pendingOrders}">0</div>
+                            <div class="stat-change" th:classappend="${pendingOrders > 0 ? 'negative' : 'positive'}">
+                                <i th:class="${pendingOrders > 0 ? 'fas fa-exclamation-triangle' : 'fas fa-check'}"></i>
+                                <span th:text="${pendingOrders > 0 ? 'Requires attention' : 'All up to date'}">Status</span>
+                            </div>
+                        </div>
+                        <div class="stat-icon pending">
+                            <i class="fas fa-clock"></i>
+                            <div th:if="${pendingOrders > 0}" class="alert-badge" th:text="${pendingOrders}">!</div>
+                        </div>
+                    </div>
+                    <div class="stat-footer">
+                        <a th:href="@{/admin/orders/by-status/PENDING}">
+                            <span>View Pending Orders</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row">
+            <div class="col-xl-7">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h5 class="chart-title">
+                            <i class="fas fa-chart-area"></i>
+                            Monthly Sales Trend
+                        </h5>
+                    </div>
+                    <div class="chart-body">
+                        <div class="chart-canvas">
+                            <canvas id="monthlySalesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-5">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h5 class="chart-title">
+                            <i class="fas fa-chart-pie"></i>
+                            Sales Distribution
+                        </h5>
+                    </div>
+                    <div class="chart-body">
+                        <div class="chart-canvas">
+                            <canvas id="salesDistributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tables Section -->
+        <div class="row">
+            <div class="col-xl-6">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h5 class="table-title">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Low Stock Alert
+                            <span th:if="${lowStockAlerts > 0}" class="badge bg-danger ms-2" th:text="${lowStockAlerts}">0</span>
+                        </h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table modern-table">
+                            <thead>
+                            <tr>
+                                <th>Book</th>
+                                <th>Current Stock</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:if="${lowStockAlerts == 0}">
+                                <td colspan="4">
+                                    <div class="no-data-state">
+                                        <i class="fas fa-check-circle"></i>
+                                        <h5>All Stock Levels Good</h5>
+                                        <p class="mb-0">No low stock alerts at this time</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:each="book : ${lowStockBooks}" th:if="${lowStockAlerts > 0}">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <i class="fas fa-book text-muted"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold" th:text="${book.title}">Book Title</div>
+                                            <small class="text-muted">ID: <span th:text="${book.id}">1</span></small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-bold" th:text="${book.stockQuantity}">5</span>
+                                    <small class="text-muted"> units</small>
+                                </td>
+                                <td>
+                                    <span th:if="${book.stockQuantity <= 2}" class="stock-alert stock-critical">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        Critical
+                                    </span>
+                                    <span th:if="${book.stockQuantity > 2 && book.stockQuantity < 5}" class="stock-alert stock-low">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        Low
+                                    </span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/admin/books/update-stock/{id}(id=${book.id})}" class="btn btn-update-stock">
+                                        <i class="fas fa-plus me-1"></i>Update
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h5 class="table-title">
+                            <i class="fas fa-trophy"></i>
+                            Top Selling Books
+                        </h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table modern-table">
+                            <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Book</th>
+                                <th>Sold</th>
+                                <th>Revenue</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:if="${topSellingBooks.isEmpty()}">
+                                <td colspan="4">
+                                    <div class="no-data-state">
+                                        <i class="fas fa-chart-bar"></i>
+                                        <h5>No Sales Data</h5>
+                                        <p class="mb-0">Sales data will appear here once orders are placed</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:each="book, iterStat : ${topSellingBooks}">
+                                <td>
+                                    <div th:class="'top-book-rank rank-' + ${iterStat.index < 3 ? (iterStat.index + 1) : 'other'}"
+                                         th:text="${iterStat.index + 1}">1</div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <i class="fas fa-book text-muted"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold" th:text="${book.title}">Book Title</div>
+                                            <small class="text-muted">ID: <span th:text="${book.id}">1</span></small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-bold" th:text="${book.soldQuantity}">100</span>
+                                    <small class="text-muted"> units</small>
+                                </td>
+                                <td>
+                                    <div class="revenue-amount" th:text="${#numbers.formatDecimal(book.revenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">1,000,000 đ</div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="export-report-wrapper mt-3 d-flex justify-content-center" style="z-index: 999;">
+                <a href="/admin/report/export" class="btn btn-success">
+                    <i class="fas fa-file-export"></i> Export
+                </a>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="javascripts">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update current time and date
+            function updateDateTime() {
+                const now = new Date();
+                const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
+                const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+
+                document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', timeOptions);
+                document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', dateOptions);
+            }
+
+            updateDateTime();
+            setInterval(updateDateTime, 60000); // Update every minute
+
+            // Chart.js configurations
+            const chartColors = {
+                primary: '#667eea',
+                success: '#28a745',
+                warning: '#ffc107',
+                danger: '#dc3545',
+                info: '#17a2b8'
+            };
+
+            // Monthly Sales Chart
+            const monthlySalesData = /*[[${monthlySales}]]*/ {};
+            const months = Object.keys(monthlySalesData);
+            const salesValues = Object.values(monthlySalesData);
+
+            const monthlySalesCtx = document.getElementById('monthlySalesChart');
+            new Chart(monthlySalesCtx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Revenue (VND)',
+                        data: salesValues,
+                        borderColor: chartColors.primary,
+                        backgroundColor: chartColors.primary + '20',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: chartColors.primary,
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            cornerRadius: 8,
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#6c757d'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            ticks: {
+                                color: '#6c757d',
+                                callback: function(value) {
+                                    return new Intl.NumberFormat('vi-VN').format(value) + ' đ';
+                                }
+                            }
+                        }
+                    },
+                    elements: {
+                        point: {
+                            hoverBackgroundColor: chartColors.primary
+                        }
+                    }
+                }
+            });
+
+            // Sales Distribution Chart
+            const topBooks = /*[[${topSellingBooks}]]*/ [];
+            const bookTitles = topBooks.slice(0, 5).map(book => book.title.length > 15 ? book.title.substring(0, 15) + '...' : book.title);
+            const bookRevenues = topBooks.slice(0, 5).map(book => book.revenue);
+
+            const salesDistributionCtx = document.getElementById('salesDistributionChart');
+            new Chart(salesDistributionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: bookTitles,
+                    datasets: [{
+                        data: bookRevenues,
+                        backgroundColor: [
+                            chartColors.primary,
+                            chartColors.success,
+                            chartColors.warning,
+                            chartColors.danger,
+                            chartColors.info
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                color: '#6c757d'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    const value = new Intl.NumberFormat('vi-VN').format(context.raw);
+                                    return context.label + ': ' + value + ' đ';
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+
+            // Add hover effects to stat cards
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px)';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Animate numbers on page load
+            function animateValue(element, start, end, duration) {
+                const startTimestamp = performance.now();
+                const step = (timestamp) => {
+                    const elapsed = timestamp - startTimestamp;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const current = Math.floor(progress * (end - start) + start);
+                    element.textContent = new Intl.NumberFormat('vi-VN').format(current) + (element.textContent.includes('đ') ? ' đ' : '');
+                    if (progress < 1) {
+                        requestAnimationFrame(step);
+                    }
+                };
+                requestAnimationFrame(step);
+            }
+
+            // Animate stat values
+            const statValues = document.querySelectorAll('.stat-value');
+            statValues.forEach(element => {
+                const text = element.textContent.replace(/[^\d]/g, '');
+                const value = parseInt(text) || 0;
+                if (value > 0) {
+                    element.textContent = '0' + (element.textContent.includes('đ') ? ' đ' : '');
+                    setTimeout(() => {
+                        animateValue(element, 0, value, 2000);
+                    }, 500);
+                }
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

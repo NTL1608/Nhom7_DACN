@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{components/layouts/main}">
+<head>
+    <title>Stock Management - GreenBook Admin</title>
+
+    <th:block layout:fragment="stylesheets">
+        <style>
+            .book-info-card {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border-radius: 1rem;
+                border: none;
+                overflow: hidden;
+            }
+
+            .book-info-card .card-body {
+                padding: 2rem;
+            }
+
+            .book-cover {
+                width: 120px;
+                height: 150px;
+                border-radius: 0.75rem;
+                overflow: hidden;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+                transition: transform 0.3s ease;
+            }
+
+            .book-cover:hover {
+                transform: scale(1.05);
+            }
+
+            .book-cover img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .book-placeholder {
+                background: rgba(255, 255, 255, 0.2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                height: 100%;
+            }
+
+            .stock-stats {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 1rem;
+                margin-top: 2rem;
+            }
+
+            .stat-card {
+                background: rgba(255, 255, 255, 0.15);
+                border-radius: 1rem;
+                padding: 1.5rem;
+                text-align: center;
+                backdrop-filter: blur(10px);
+                transition: all 0.3s ease;
+            }
+
+            .stat-card:hover {
+                background: rgba(255, 255, 255, 0.25);
+                transform: translateY(-2px);
+            }
+
+            .stat-icon {
+                font-size: 2rem;
+                margin-bottom: 0.5rem;
+                opacity: 0.9;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin-bottom: 0.25rem;
+            }
+
+            .stat-label {
+                font-size: 0.875rem;
+                opacity: 0.8;
+            }
+
+            .update-form-card {
+                background: white;
+                border-radius: 1rem;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                border: none;
+                overflow: hidden;
+            }
+
+            .form-section {
+                background: #f8f9fa;
+                border-left: 4px solid #0d6efd;
+                padding: 1.5rem;
+                margin: 1rem 0;
+                border-radius: 0.5rem;
+            }
+
+            .update-type-card {
+                border: 2px solid #e9ecef;
+                border-radius: 0.75rem;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                transition: all 0.3s ease;
+                cursor: pointer;
+            }
+
+            .update-type-card:hover {
+                border-color: #0d6efd;
+                background: #f8f9ff;
+            }
+
+            .update-type-card.active {
+                border-color: #0d6efd;
+                background: #e7f3ff;
+                box-shadow: 0 4px 15px rgba(13, 110, 253, 0.2);
+            }
+
+            .quantity-input {
+                font-size: 1.25rem;
+                text-align: center;
+                font-weight: 600;
+                padding: 1rem;
+                border-radius: 0.75rem;
+                border: 2px solid #e9ecef;
+                transition: all 0.3s ease;
+            }
+
+            .quantity-input:focus {
+                border-color: #0d6efd;
+                box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+            }
+
+            .btn-update {
+                background: linear-gradient(45deg, #28a745, #20c997);
+                border: none;
+                color: white;
+                padding: 0.75rem 2rem;
+                font-weight: 600;
+                border-radius: 0.75rem;
+                transition: all 0.3s ease;
+            }
+
+            .btn-update:hover {
+                background: linear-gradient(45deg, #20c997, #28a745);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+                color: white;
+            }
+
+            .stock-warning {
+                background: linear-gradient(45deg, #ffc107, #fd7e14);
+                color: white;
+                border: none;
+                border-radius: 0.75rem;
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .stock-danger {
+                background: linear-gradient(45deg, #dc3545, #e91e63);
+                color: white;
+                border: none;
+                border-radius: 0.75rem;
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .preview-section {
+                background: #e8f5e8;
+                border: 2px solid #28a745;
+                border-radius: 0.75rem;
+                padding: 1.5rem;
+                margin-top: 1rem;
+                display: none;
+            }
+
+            .quick-actions {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .quick-btn {
+                background: #e9ecef;
+                border: 1px solid #dee2e6;
+                border-radius: 0.5rem;
+                padding: 0.5rem;
+                font-size: 0.875rem;
+                transition: all 0.3s ease;
+                cursor: pointer;
+            }
+
+            .quick-btn:hover {
+                background: #0d6efd;
+                color: white;
+                border-color: #0d6efd;
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+<th:block layout:fragment="content">
+    <div class="container-xxl">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/admin/books}">Books</a></li>
+                            <li class="breadcrumb-item active">Update Stock</li>
+                        </ol>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-info fs-6">
+                            <i class="fas fa-hashtag me-1"></i>Book ID: <span th:text="${book.id}">1</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Book Information & Statistics -->
+            <div class="col-lg-5">
+                <div class="card book-info-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="book-cover me-4">
+                                <img th:if="${book.imageUrls != null && !book.imageUrls.isEmpty()}"
+                                     th:src="${book.imageUrls[0]}"
+                                     alt="Book cover">
+                                <div th:if="${book.imageUrls == null || book.imageUrls.isEmpty()}"
+                                     class="book-placeholder">
+                                    <i class="fas fa-book fa-3x"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h4 class="mb-3" th:text="${book.title}">Book Title</h4>
+
+                                <div class="row g-2 mb-3">
+                                    <div class="col-12" th:if="${book.author != null}">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-user me-2 opacity-75"></i>
+                                            <span th:text="${book.author}">Author Name</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-tag me-2 opacity-75"></i>
+                                            <span th:text="${book.categoryName}">Category Name</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-dollar-sign me-2 opacity-75"></i>
+                                            <span th:text="${#numbers.formatDecimal(book.originalPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">100,000 VND</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stock-stats">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-boxes"></i>
+                                </div>
+                                <div class="stat-value" th:text="${book.stockQuantity}">10</div>
+                                <div class="stat-label">Current Stock</div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="stat-value" th:text="${book.soldQuantity}">5</div>
+                                <div class="stat-label">Total Sold</div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-percentage"></i>
+                                </div>
+                                <div class="stat-value" th:text="${book.soldQuantity > 0 ? #numbers.formatDecimal((book.soldQuantity * 100.0) / (book.stockQuantity + book.soldQuantity), 1, 'POINT', 0, 'POINT') : 0} + '%'">50%</div>
+                                <div class="stat-label">Sold Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-bolt me-1"></i>Quick Actions
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/admin/books/edit/{id}(id=${book.id})}" class="btn btn-outline-primary">
+                                <i class="fas fa-edit me-2"></i>Edit Book Details
+                            </a>
+                            <a th:href="@{/admin/books/images/{id}(id=${book.id})}" class="btn btn-outline-info">
+                                <i class="fas fa-images me-2"></i>Manage Images
+                            </a>
+                            <a th:href="@{/admin/books}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Books
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Update Stock Form -->
+            <div class="col-lg-7">
+                <!-- Stock Alerts -->
+                <div th:if="${book.stockQuantity == 0}" class="alert stock-danger">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+                        <div>
+                            <h5 class="mb-1">Out of Stock!</h5>
+                            <p class="mb-0">This book is currently out of stock. Update inventory immediately.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${book.stockQuantity > 0 && book.stockQuantity < 5}" class="alert stock-warning">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-exclamation-circle fa-2x me-3"></i>
+                        <div>
+                            <h5 class="mb-1">Low Stock Warning</h5>
+                            <p class="mb-0">Stock is running low. Consider restocking soon.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card update-form-card">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fas fa-warehouse me-2"></i>Update Stock Quantity
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/books/update-stock/{id}(id=${book.id})}" method="post" id="stockForm">
+
+                            <!-- Update Type Selection -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Update Method</label>
+
+                                <div class="update-type-card active" data-type="absolute">
+                                    <input class="form-check-input" type="radio" name="updateType" id="updateTypeAbsolute" value="absolute" checked>
+                                    <label class="form-check-label ms-2" for="updateTypeAbsolute">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-edit me-2"></i>
+                                            <div>
+                                                <div class="fw-semibold">Set Absolute Value</div>
+                                                <small class="text-muted">Replace current stock with new value</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="update-type-card" data-type="add">
+                                    <input class="form-check-input" type="radio" name="updateType" id="updateTypeAdd" value="add">
+                                    <label class="form-check-label ms-2" for="updateTypeAdd">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-plus me-2"></i>
+                                            <div>
+                                                <div class="fw-semibold">Add to Current Stock</div>
+                                                <small class="text-muted">Add quantity to existing stock</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Quantity Input -->
+                            <div class="mb-4">
+                                <label for="stockQuantity" class="form-label fw-bold">Quantity</label>
+
+                                <!-- Quick increment buttons -->
+                                <div class="quick-actions">
+                                    <button type="button" class="quick-btn" onclick="setQuickValue(5)">+5</button>
+                                    <button type="button" class="quick-btn" onclick="setQuickValue(10)">+10</button>
+                                    <button type="button" class="quick-btn" onclick="setQuickValue(25)">+25</button>
+                                    <button type="button" class="quick-btn" onclick="setQuickValue(50)">+50</button>
+                                    <button type="button" class="quick-btn" onclick="setQuickValue(100)">+100</button>
+                                </div>
+
+                                <input type="number" class="form-control quantity-input" id="stockQuantity" name="stockQuantity"
+                                       th:value="${book.stockQuantity}" min="0" required placeholder="Enter new stock quantity">
+
+                                <div class="form-text" id="quantityHelp">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    <span id="helpText">Enter the new total stock quantity</span>
+                                </div>
+                            </div>
+
+                            <!-- Preview Section -->
+                            <div class="preview-section" id="previewSection">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Preview Changes</h6>
+                                        <div id="previewText">Current: 10 → New: 15 (+5)</div>
+                                    </div>
+                                    <i class="fas fa-check-circle fa-2x text-success"></i>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button type="submit" class="btn btn-update">
+                                    <i class="fas fa-save me-2"></i>Update Stock
+                                </button>
+                                <a th:href="@{/admin/books}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="javascripts">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const stockInput = document.getElementById('stockQuantity');
+            const absoluteRadio = document.getElementById('updateTypeAbsolute');
+            const addRadio = document.getElementById('updateTypeAdd');
+            const helpText = document.getElementById('helpText');
+            const previewSection = document.getElementById('previewSection');
+            const previewText = document.getElementById('previewText');
+            const currentStock = [[${book.stockQuantity}]];
+
+            // Update type cards
+            const updateTypeCards = document.querySelectorAll('.update-type-card');
+            updateTypeCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const radio = this.querySelector('input[type="radio"]');
+                    radio.checked = true;
+                    updateUI();
+                });
+            });
+
+            // Handle radio button changes
+            function updateUI() {
+                updateTypeCards.forEach(card => {
+                    const radio = card.querySelector('input[type="radio"]');
+                    if (radio.checked) {
+                        card.classList.add('active');
+                    } else {
+                        card.classList.remove('active');
+                    }
+                });
+
+                if (absoluteRadio.checked) {
+                    helpText.textContent = 'Enter the new total stock quantity';
+                    stockInput.placeholder = 'Enter new total stock';
+                    stockInput.value = currentStock;
+                } else {
+                    helpText.textContent = 'Enter quantity to add to current stock';
+                    stockInput.placeholder = 'Enter quantity to add';
+                    stockInput.value = '';
+                }
+                updatePreview();
+            }
+
+            // Update preview
+            function updatePreview() {
+                const inputValue = parseInt(stockInput.value) || 0;
+                let newStock, changeText;
+
+                if (absoluteRadio.checked) {
+                    newStock = inputValue;
+                    changeText = inputValue === currentStock ? 'No change' :
+                                inputValue > currentStock ? `+${inputValue - currentStock}` :
+                                `${inputValue - currentStock}`;
+                } else {
+                    newStock = currentStock + inputValue;
+                    changeText = inputValue > 0 ? `+${inputValue}` : '0';
+                }
+
+                previewText.textContent = `Current: ${currentStock} → New: ${newStock} (${changeText})`;
+
+                if (inputValue > 0 && inputValue !== currentStock) {
+                    previewSection.style.display = 'block';
+                } else {
+                    previewSection.style.display = 'none';
+                }
+            }
+
+            // Event listeners
+            absoluteRadio.addEventListener('change', updateUI);
+            addRadio.addEventListener('change', updateUI);
+            stockInput.addEventListener('input', updatePreview);
+
+            // Quick value buttons
+            window.setQuickValue = function(value) {
+                if (addRadio.checked) {
+                    stockInput.value = value;
+                } else {
+                    stockInput.value = currentStock + value;
+                }
+                updatePreview();
+            };
+
+            // Form validation
+            const form = document.getElementById('stockForm');
+            form.addEventListener('submit', function(e) {
+                const value = parseInt(stockInput.value);
+                if (isNaN(value) || value < 0) {
+                    e.preventDefault();
+                    alert('Please enter a valid quantity (0 or greater)');
+                    stockInput.focus();
+                    return;
+                }
+
+                if (addRadio.checked && value === 0) {
+                    e.preventDefault();
+                    if (!confirm('You are adding 0 items. The stock will remain unchanged. Continue?')) {
+                        return;
+                    }
+                }
+
+                if (absoluteRadio.checked && value === 0) {
+                    if (!confirm('You are setting stock to 0. This will mark the book as out of stock. Continue?')) {
+                        e.preventDefault();
+                        return;
+                    }
+                }
+            });
+
+            // Initialize
+            updateUI();
+        });
+    </script>
+</th:block>
+</body>
+</html>
