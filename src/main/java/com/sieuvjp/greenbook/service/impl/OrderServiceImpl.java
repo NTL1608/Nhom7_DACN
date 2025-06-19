@@ -190,4 +190,5 @@ public class OrderServiceImpl implements OrderService {
         Double discount = orderDetailRepository.getTotalDiscount();
         return discount != null ? discount : 0.0;
     }
+
 }

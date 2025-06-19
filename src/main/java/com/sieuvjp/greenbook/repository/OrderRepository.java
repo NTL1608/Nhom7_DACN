@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -31,4 +32,16 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT MONTH(o.orderDate), YEAR(o.orderDate), SUM(o.finalAmount) FROM Order o WHERE o.status = 'COMPLETED' GROUP BY MONTH(o.orderDate), YEAR(o.orderDate) ORDER BY YEAR(o.orderDate), MONTH(o.orderDate)")
     List<Object[]> getMonthlySales();
+
+    // THÊM MỚI: Tìm ngày order mới nhất
+    @Query("SELECT MAX(o.orderDate) FROM Order o")
+    LocalDateTime findMaxOrderDate();
+
+    // THÊM MỚI: Tìm ngày order cũ nhất
+    @Query("SELECT MIN(o.orderDate) FROM Order o")
+    LocalDateTime findMinOrderDate();
+
+    // THÊM MỚI: Đếm số orders trong khoảng thời gian
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.orderDate >= :start AND o.orderDate <= :end")
+    long countOrdersBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }

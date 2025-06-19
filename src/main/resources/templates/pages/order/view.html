@@ -379,47 +379,87 @@
                     <i class="fas fa-route me-2"></i>Order Progress
                 </h5>
                 <div class="status-timeline">
+                    <!-- Timeline Progress Line -->
                     <div class="timeline-line">
-                        <div class="timeline-progress" style="width: 60%"></div>
+                        <div class="timeline-progress"
+                             th:style="${order.status.name() == 'PENDING' ? 'width: 0%' :
+                                       order.status.name() == 'PROCESSING' ? 'width: 25%' :
+                                       order.status.name() == 'SHIPPED' ? 'width: 50%' :
+                                       order.status.name() == 'DELIVERED' ? 'width: 75%' :
+                                       order.status.name() == 'COMPLETED' ? 'width: 100%' : 'width: 0%'}">
+                        </div>
                     </div>
 
-                    <div class="timeline-step completed">
+                    <!-- Pending Step -->
+                    <div class="timeline-step"
+                         th:classappend="${order.status.name() == 'PENDING' ? 'current' :
+                                         (order.status.name() == 'PROCESSING' or order.status.name() == 'SHIPPED' or
+                                          order.status.name() == 'DELIVERED' or order.status.name() == 'COMPLETED') ? 'completed' :
+                                         order.status.name() == 'CANCELLED' ? 'cancelled' : 'pending'}">
                         <div class="timeline-icon">
-                            <i class="fas fa-check"></i>
+                            <i th:class="${order.status.name() == 'CANCELLED' ? 'fas fa-times' : 'fas fa-clock'}"></i>
                         </div>
                         <div class="timeline-label">Pending</div>
                     </div>
 
-                    <div class="timeline-step completed">
+                    <!-- Processing Step -->
+                    <div class="timeline-step"
+                         th:classappend="${order.status.name() == 'PROCESSING' ? 'current' :
+                                         (order.status.name() == 'SHIPPED' or order.status.name() == 'DELIVERED' or
+                                          order.status.name() == 'COMPLETED') ? 'completed' :
+                                         order.status.name() == 'CANCELLED' ? 'cancelled' : 'pending'}">
                         <div class="timeline-icon">
-                            <i class="fas fa-cog"></i>
+                            <i th:class="${order.status.name() == 'CANCELLED' ? 'fas fa-times' : 'fas fa-cog'}"></i>
                         </div>
                         <div class="timeline-label">Processing</div>
                     </div>
 
-                    <div class="timeline-step current" th:classappend="${order.status.name() == 'SHIPPED' ? 'current' : ''}">
+                    <!-- Shipped Step -->
+                    <div class="timeline-step"
+                         th:classappend="${order.status.name() == 'SHIPPED' ? 'current' :
+                                         (order.status.name() == 'DELIVERED' or order.status.name() == 'COMPLETED') ? 'completed' :
+                                         order.status.name() == 'CANCELLED' ? 'cancelled' : 'pending'}">
                         <div class="timeline-icon">
-                            <i class="fas fa-truck"></i>
+                            <i th:class="${order.status.name() == 'CANCELLED' ? 'fas fa-times' : 'fas fa-truck'}"></i>
                         </div>
                         <div class="timeline-label">Shipped</div>
                     </div>
 
-                    <div class="timeline-step pending">
+                    <!-- Delivered Step -->
+                    <div class="timeline-step"
+                         th:classappend="${order.status.name() == 'DELIVERED' ? 'current' :
+                                         order.status.name() == 'COMPLETED' ? 'completed' :
+                                         order.status.name() == 'CANCELLED' ? 'cancelled' : 'pending'}">
                         <div class="timeline-icon">
-                            <i class="fas fa-home"></i>
+                            <i th:class="${order.status.name() == 'CANCELLED' ? 'fas fa-times' : 'fas fa-home'}"></i>
                         </div>
                         <div class="timeline-label">Delivered</div>
                     </div>
 
-                    <div class="timeline-step pending">
+                    <!-- Completed Step -->
+                    <div class="timeline-step"
+                         th:classappend="${order.status.name() == 'COMPLETED' ? 'current' :
+                                         order.status.name() == 'CANCELLED' ? 'cancelled' : 'pending'}">
                         <div class="timeline-icon">
-                            <i class="fas fa-star"></i>
+                            <i th:class="${order.status.name() == 'CANCELLED' ? 'fas fa-times' : 'fas fa-star'}"></i>
                         </div>
                         <div class="timeline-label">Completed</div>
                     </div>
                 </div>
+
+                <!-- Status Information -->
+                <div class="mt-3 text-center">
+                    <div th:if="${order.status.name() == 'CANCELLED'}" class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        This order has been cancelled.
+                    </div>
+                    <div th:unless="${order.status.name() == 'CANCELLED'}" class="text-muted">
+                        Current Status: <strong th:text="${order.status}">PROCESSING</strong>
+                    </div>
+                </div>
             </div>
         </div>
+
 
         <!-- Status Update -->
         <div class="card status-update-card">

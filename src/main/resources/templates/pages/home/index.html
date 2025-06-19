@@ -646,16 +646,98 @@
                 </div>
             </div>
             <div class="export-report-wrapper mt-3 d-flex justify-content-center" style="z-index: 999;">
-                <a href="/admin/report/export" class="btn btn-success">
-                    <i class="fas fa-file-export"></i> Export
-                </a>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-file-export"></i> Export
+                    </button>
+                    <ul class="dropdown-menu text-center">
+                        <li>
+                            <a class="dropdown-item" href="/admin/report/export" target="_blank">
+                                <i class="fas fa-print"></i> In báo cáo
+                            </a>
+                        </li>
+                        <li>
+                            <button class="dropdown-item" onclick="showQrCode()">
+                                <i class="fas fa-qrcode"></i> Quét QR để tải
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
+
+            <div id="qrCodeContainer" style="width: 300px; margin: 1rem auto; display: none; text-align: center;">
+                <div id="qrCode" style="margin-bottom: 1rem;"></div>
+                <button class="btn btn-secondary" onclick="hideQrCode()">Đóng</button>
+            </div>
+
+            <script>
+                // Hàm tạo và hiển thị mã QR
+                function showQrCode() {
+                    const qrCodeContainer = document.getElementById('qrCodeContainer');
+                    const qrCodeElement = document.getElementById('qrCode');
+
+                    // Xóa mã QR cũ nếu có
+                    qrCodeElement.innerHTML = '';
+
+                    // Tạo mã QR với URL báo cáo
+                    const reportUrl = window.location.origin + "/admin/report/export";
+                    new QRCode(qrCodeElement, {
+                        text: reportUrl,
+                        width: 200,
+                        height: 200,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                    });
+
+                    // Hiển thị container
+                    qrCodeContainer.style.display = "block";
+                }
+
+                // Hàm ẩn mã QR
+                function hideQrCode() {
+                    const qrCodeContainer = document.getElementById('qrCodeContainer');
+                    qrCodeContainer.style.display = "none";
+                }
+            </script>
         </div>
     </div>
 </th:block>
 
 <th:block layout:fragment="javascripts">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <!-- QR Code Generator -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        const reportUrl = window.location.origin + "/admin/report/export";
+        new QRCode(document.getElementById("qr-code"), {
+            text: reportUrl,
+            width: 200,
+            height: 200,
+        });
+    </script>
+
+    <script>
+        function startQrScan() {
+            const qrBox = document.getElementById('reader');
+            qrBox.style.display = "block";
+
+            const html5QrCode = new Html5Qrcode("reader");
+
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: 250 },
+                qrCodeMessage => {
+                    html5QrCode.stop().then(() => {
+                        window.location.href = qrCodeMessage;
+                    }).catch(err => console.error(err));
+                },
+                errorMessage => {
+                    // console.warn(errorMessage);
+                }
+            ).catch(err => console.error("QR init error:", err));
+        }
+    </script>
 
     <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function() {
