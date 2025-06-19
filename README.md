@@ -60,7 +60,7 @@ spring.datasource.username=greenbook
 spring.datasource.password=greenbook123
 ```
 
-password tùy vào mysql server bạn thiết lập
+username và password tùy vào mysql server bạn thiết lập
 
 ### Biên dịch và chạy ứng dụng
 
@@ -103,8 +103,21 @@ com.sieuvjp.greenbook
 ```
 
 ## Triển khai với Docker
+Cấu hình kết nối Ai API ở đây là Gemini của Google trong file `docker-compose.yml`:
 
-Để triển khai ứng dụng bằng Docker, sử dụng lệnh sau:
+```properties
+ environment:
+  - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/greenbook?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+  - SPRING_DATASOURCE_USERNAME=greenbook
+  - SPRING_DATASOURCE_PASSWORD=greenbook123
+  - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+  - SPRING_JPA_SHOW_SQL=false
+  - GOOGLE_API_KEY=
+```
+
+GOOGLE_API_KEY cần điền API key Gemini của bản - đăng ký được trên trang của google
+
+Sau đó để triển khai ứng dụng bằng Docker, sử dụng lệnh sau: (Ở đây có một số Unit tét nên trước khi chạy cái này bạn phải kết nối được db mysql trước để nó thực hiện test trước sau đó nó mới đóng gói lại)
 
 ```bash
 # Đóng gói ứng dụng
