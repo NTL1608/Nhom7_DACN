@@ -50,8 +50,8 @@ FLUSH PRIVILEGES;
 
 ```bash
 git clone https://github.com/NTL1608/Nhom7_DACN
-cd BTL_SpringBoot_Greenbook
-```
+cd Nhom7_DACN
+
 
 2. Cấu hình kết nối database trong file `src/main/resources/application.properties`:
 
