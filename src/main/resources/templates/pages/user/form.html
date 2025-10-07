@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{components/layouts/main}">
 <head>
-    <title th:text="${user.id == null ? 'Add User' : 'Edit User'} + ' - GreenBook Admin'">Add/Edit User - GreenBook Admin</title>
+    <title th:text="${user.id == null ? 'Add User' : 'Edit User'} + ' - GreenBook Admin'">Thêm/Chỉnh sửa người dùng - Quản trị GreenBook</title>
 
     <th:block layout:fragment="stylesheets">
         <style>
@@ -403,9 +403,9 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a th:href="@{/admin/users}">Users</a></li>
-                            <li class="breadcrumb-item active" th:text="${user.id == null ? 'Add New User' : 'Edit User'}">Add/Edit</li>
+                            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Trang tổng quan</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/admin/users}">Người dùng</a></li>
+                            <li class="breadcrumb-item active" th:text="${user.id == null ? 'Thêm người dùng mới' : 'Chỉnh sửa người dùng'}">Thêm/Chỉnh sửa</li>
                         </ol>
                     </div>
                     <div class="text-end" th:if="${user.id != null}">
@@ -422,23 +422,23 @@
             <div class="user-icon">
                 <i th:class="${user.id == null ? 'fas fa-user-plus' : 'fas fa-user-edit'}"></i>
             </div>
-            <h3 class="text-center mb-2" th:text="${user.id == null ? 'Create New User Account' : 'Edit User Account'}">User Form</h3>
+            <h3 class="text-center mb-2" th:text="${user.id == null ? 'Tạo tài khoản người dùng mới' : 'Chỉnh sửa tài khoản người dùng'}">Biểu mẫu người dùng</h3>
             <p class="text-center mb-0 opacity-75">
-                <span th:if="${user.id == null}">Set up a new user account with role-based permissions</span>
-                <span th:if="${user.id != null}">Update user information and account settings</span>
+                <span th:if="${user.id == null}">Thiết lập tài khoản người dùng mới với quyền truy cập theo vai trò</span>
+                <span th:if="${user.id != null}">Cập nhật thông tin người dùng và cài đặt tài khoản</span>
             </p>
         </div>
 
         <!-- Preview Card -->
         <div class="preview-card" th:if="${user.id != null}">
             <div class="preview-title">
-                <i class="fas fa-eye me-2"></i>User Preview
+                <i class="fas fa-eye me-2"></i>Xem trước người dùng
             </div>
             <div class="user-info-preview">
                 <div class="user-avatar" id="previewAvatar" th:text="${#strings.substring(user.fullName ?: user.username ?: 'U', 0, 1).toUpperCase()}">U</div>
-                <div class="user-name-preview" id="previewName" th:text="${user.fullName ?: 'Full Name'}">Full Name</div>
-                <div class="user-email-preview" id="previewEmail" th:text="${user.email ?: 'email@example.com'}">email@example.com</div>
-                <div class="user-role-preview" id="previewRole" th:text="${user.role ?: 'CUSTOMER'}">CUSTOMER</div>
+                <div class="user-name-preview" id="previewName" th:text="${user.fullName ?: 'Full Name'}">Họ và tên</div>
+                <div class="user-email-preview" id="previewEmail" th:text="${user.email ?: 'email@example.com'}">nhom7dacn@gmail.com</div>
+                <div class="user-role-preview" id="previewRole" th:text="${user.role ?: 'CUSTOMER'}">Khách hàng</div>
             </div>
         </div>
 
@@ -452,7 +452,7 @@
                 <div class="col-lg-6">
                     <div class="section-card">
                         <div class="section-header">
-                            <h4><i class="fas fa-user-circle"></i>Account Information</h4>
+                            <h4><i class="fas fa-user-circle"></i>Thông tin tài khoản</h4>
                         </div>
                         <div class="card-body p-4">
                             <!-- Username -->
@@ -464,13 +464,13 @@
                                        placeholder=""
                                        th:readonly="${user.id != null}"
                                        th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''">
-                                <label for="username" class="required-field">Username</label>
+                                <label for="username" class="required-field">Tên đăng nhập</label>
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">
-                                    Username error message
+                                    Thông báo lỗi tên đăng nhập
                                 </div>
                                 <div class="form-help" th:if="${user.id != null}">
                                     <i class="fas fa-lock"></i>
-                                    Username cannot be changed after account creation
+                                    Tên đăng nhập không thể thay đổi sau khi tạo tài khoản
                                 </div>
                             </div>
 
@@ -484,7 +484,7 @@
                                        th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''">
                                 <label for="email" class="required-field">Email Address</label>
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
-                                    Email error message
+                                    Thông báo lỗi email
                                 </div>
                             </div>
 
@@ -499,20 +499,20 @@
                                            th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''">
                                     <label for="password" th:classappend="${user.id == null ? 'required-field' : ''}">
                                         Password
-                                        <span th:if="${user.id != null}" class="text-muted small">(leave blank to keep current)</span>
+                                        <span th:if="${user.id != null}" class="text-muted small">(Để trống nếu muốn giữ nguyên hiện tại)</span>
                                     </label>
                                     <button type="button" class="password-toggle" onclick="togglePassword()">
                                         <i class="fas fa-eye" id="passwordIcon"></i>
                                     </button>
                                     <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">
-                                        Password error message
+                                        Thông báo lỗi mật khẩu
                                     </div>
                                 </div>
                                 <div class="password-strength" id="passwordStrength">
                                     <div class="strength-bar">
                                         <div class="strength-fill" id="strengthFill"></div>
                                     </div>
-                                    <small class="text-muted" id="strengthText">Password strength</small>
+                                    <small class="text-muted" id="strengthText">Độ mạnh mật khẩu</small>
                                 </div>
                             </div>
 
@@ -523,13 +523,13 @@
                                             th:if="${roleOption.name() != 'ADMIN'}"
                                             th:value="${roleOption}"
                                             th:text="${roleOption}">
-                                        CUSTOMER
+                                        Khách hàng
                                     </option>
                                 </select>
-                                <label for="role" class="required-field">User Role</label>
+                                <label for="role" class="required-field">Vai trò người dùng</label>
                                 <div class="form-help">
                                     <i class="fas fa-info-circle"></i>
-                                    Select the appropriate role to define user permissions
+                                    Chọn vai trò phù hợp để xác định quyền của người dùng
                                 </div>
                             </div>
                         </div>
@@ -540,7 +540,7 @@
                 <div class="col-lg-6">
                     <div class="section-card">
                         <div class="section-header">
-                            <h4><i class="fas fa-address-card"></i>Personal Information</h4>
+                            <h4><i class="fas fa-address-card"></i>Thông tin cá nhân</h4>
                         </div>
                         <div class="card-body p-4">
                             <!-- Full Name -->
@@ -553,7 +553,7 @@
                                        th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''">
                                 <label for="fullName" class="required-field">Full Name</label>
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">
-                                    Full name error message
+                                    Thông báo lỗi họ và tên
                                 </div>
                             </div>
 
@@ -564,9 +564,9 @@
                                        th:field="*{phone}"
                                        placeholder=""
                                        th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid' : ''">
-                                <label for="phone">Phone Number</label>
+                                <label for="phone">Số điện thoại</label>
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">
-                                    Phone error message
+                                    Thông báo lỗi số điện thoại
                                 </div>
                             </div>
 
@@ -576,12 +576,12 @@
                                           th:field="*{address}"
                                           rows="4"
                                           placeholder=""></textarea>
-                                <label for="address">Address</label>
+                                <label for="address">Địa chỉ</label>
                             </div>
 
                             <!-- Status Toggle -->
                             <div th:if="${user.id != null}">
-                                <label class="form-label fw-bold">Account Status</label>
+                                <label class="form-label fw-bold">Trạng thái tài khoản</label>
                                 <div class="status-toggle-card" id="statusCard">
                                     <div class="d-flex align-items-center">
                                         <input class="form-check-input status-switch"
@@ -589,10 +589,10 @@
                                                id="active"
                                                th:field="*{active}">
                                         <div>
-                                            <div class="status-text" id="statusText" th:text="*{active} ? 'Active' : 'Inactive'">Status</div>
+                                            <div class="status-text" id="statusText" th:text="*{active} ? 'Đang hoạt động' : 'Không hoạt động'">Trạng thái</div>
                                             <div class="status-description" id="statusDescription">
-                                                <span th:if="*{active}">User can log in and access the system</span>
-                                                <span th:unless="*{active}">User account is suspended and cannot log in</span>
+                                                <span th:if="*{active}">Người dùng có thể đăng nhập và truy cập hệ thống/span>
+                                                <span th:unless="*{active}">Tài khoản người dùng bị tạm ngưng và không thể đăng nhập</span>
                                             </div>
                                         </div>
                                     </div>
@@ -609,16 +609,16 @@
             <div class="d-flex gap-3">
                 <button type="submit" form="userForm" class="btn btn-save">
                     <i class="fas fa-save me-2"></i>
-                    <span th:text="${user.id == null ? 'Create User' : 'Update User'}">Save</span>
+                    <span th:text="${user.id == null ? 'Create User' : 'Update User'}">Lưu</span>
                 </button>
                 <a th:href="@{/admin/users}" class="btn btn-cancel">
-                    <i class="fas fa-arrow-left me-2"></i>Back to Users
+                    <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách người dùng
                 </a>
             </div>
             <div class="text-muted">
                 <small>
                     <i class="fas fa-shield-alt me-1"></i>
-                    All user data is encrypted and stored securely
+                    Tất cả dữ liệu người dùng đều được mã hóa và lưu trữ an toàn
                 </small>
             </div>
         </div>
@@ -724,7 +724,7 @@
                 }
 
                 if (previewEmail && emailInput) {
-                    previewEmail.textContent = emailInput.value || 'email@example.com';
+                    previewEmail.textContent = emailInput.value || 'nhom7dacn@gmail.com';
                 }
 
                 if (previewRole && roleSelect) {
@@ -748,7 +748,7 @@
                     if (isNewUser && passwordInput) {
                         if (passwordInput.value.length < 6) {
                             e.preventDefault();
-                            passwordInput.setCustomValidity('Password must be at least 6 characters long');
+                            passwordInput.setCustomValidity('Mật khẩu phải có ít nhất 6 ký tự');
                             passwordInput.reportValidity();
                             return;
                         } else {
@@ -761,7 +761,7 @@
                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                     if (!emailRegex.test(emailValue)) {
                         e.preventDefault();
-                        emailInput.setCustomValidity('Please enter a valid email address');
+                        emailInput.setCustomValidity('Vui lòng nhập địa chỉ email hợp lệ');
                         emailInput.reportValidity();
                         return;
                     } else {

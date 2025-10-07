@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{components/layouts/main}">
 <head>
-    <title>Manage Book Images - GreenBook Admin</title>
+    <title>Quản lý hình ảnh sách - Quản trị GreenBook</title>
 
     <th:block layout:fragment="stylesheets">
         <style>
@@ -175,9 +175,9 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a th:href="@{/admin/books}">Books</a></li>
-                            <li class="breadcrumb-item active">Manage Images</li>
+                            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Trang tổng quan</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/admin/books}">Sách</a></li>
+                            <li class="breadcrumb-item active">Quản lý hình ảnh</li>
                         </ol>
                     </div>
                     <div class="text-end">
@@ -212,9 +212,9 @@
                             </div>
 
                             <div>
-                                <h5 class="mb-1" th:text="${book.title}">Book Title</h5>
+                                <h5 class="mb-1" th:text="${book.title}">Tiêu đề sách</h5>
                                 <p class="mb-0 opacity-75">
-                                    <span th:text="${book.imageUrls != null ? book.imageUrls.size() : 0} + ' images uploaded'">0 images uploaded</span>
+                                    <span th:text="${book.imageUrls != null ? book.imageUrls.size() : 0} + ' images uploaded'">Chưa có hình ảnh nào được tải lên</span>
                                 </p>
                             </div>
                         </div>
@@ -223,13 +223,13 @@
                             <div class="col-6" th:if="${book.author != null}">
                                 <div class="bg-white bg-opacity-10 rounded p-2">
                                     <small class="opacity-75">Author</small>
-                                    <div class="fw-semibold" th:text="${book.author}">Author Name</div>
+                                    <div class="fw-semibold" th:text="${book.author}">Tên tách giả</div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="bg-white bg-opacity-10 rounded p-2">
                                     <small class="opacity-75">Category</small>
-                                    <div class="fw-semibold" th:text="${book.categoryName}">Category Name</div>
+                                    <div class="fw-semibold" th:text="${book.categoryName}">Tên danh mục</div>
                                 </div>
                             </div>
                             <div class="col-12">
@@ -242,10 +242,10 @@
 
                         <div class="d-grid gap-2">
                             <a th:href="@{/admin/books/edit/{id}(id=${book.id})}" class="btn btn-light">
-                                <i class="fas fa-edit me-2"></i>Edit Book Details
+                                <i class="fas fa-edit me-2"></i>Chỉnh sửa thông tin sách
                             </a>
                             <a th:href="@{/admin/books}" class="btn btn-outline-light">
-                                <i class="fas fa-arrow-left me-2"></i>Back to Books
+                                <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách sách
                             </a>
                         </div>
                     </div>
@@ -254,14 +254,14 @@
                 <!-- Upload Statistics -->
                 <div class="card">
                     <div class="card-header">
-                        <i class="fas fa-chart-bar me-1"></i>Image Statistics
+                        <i class="fas fa-chart-bar me-1"></i>Thống kê hình ảnh
                     </div>
                     <div class="card-body">
                         <div class="row g-3 text-center">
                             <div class="col-6">
                                 <div class="bg-primary bg-opacity-10 rounded p-3">
                                     <div class="fs-4 fw-bold text-primary" th:text="${book.imageUrls != null ? book.imageUrls.size() : 0}">0</div>
-                                    <small class="text-muted">Total Images</small>
+                                    <small class="text-muted">Tổng số hình ảnh</small>
                                 </div>
                             </div>
                             <div class="col-6">
@@ -279,29 +279,29 @@
             <div class="col-lg-8">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-cloud-upload-alt me-1"></i>Upload New Images
+                        <i class="fas fa-cloud-upload-alt me-1"></i>Tải lên hình ảnh mới
                     </div>
                     <div class="card-body">
                         <form th:action="@{/admin/books/images/{id}/upload(id=${book.id})}" method="post" enctype="multipart/form-data" id="uploadForm">
                             <div class="upload-area" id="uploadArea">
                                 <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                                <h4 class="mb-3">Drag & Drop Images Here</h4>
-                                <p class="text-muted mb-3">or click to browse files</p>
+                                <h4 class="mb-3">Kéo và thả hình ảnh vào đây</h4>
+                                <p class="text-muted mb-3">hoặc nhấp để chọn tệp</p>
                                 <input class="form-control d-none" type="file" id="imageFile" name="imageFile" accept="image/*" multiple>
                                 <div class="btn btn-primary">
-                                    <i class="fas fa-folder-open me-2"></i>Choose Files
+                                    <i class="fas fa-folder-open me-2"></i>Chọn tệp
                                 </div>
                                 <div class="mt-3">
                                     <small class="text-muted">
                                         <i class="fas fa-info-circle me-1"></i>
-                                        Supported formats: JPG, JPEG, PNG • Max size: 5MB per file
+                                        Định dạng hỗ trợ: JPG, JPEG, PNG • Kích thước tối đa: 5MB mỗi tệp
                                     </small>
                                 </div>
                             </div>
 
                             <div id="uploadProgress" class="mt-3" style="display: none;">
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span>Uploading...</span>
+                                    <span>Đang tải...</span>
                                     <span id="progressText">0%</span>
                                 </div>
                                 <div class="progress">
@@ -316,16 +316,16 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div>
-                            <i class="fas fa-images me-1"></i>Current Images
+                            <i class="fas fa-images me-1"></i>Hình ảnh hiện tại
                         </div>
-                        <span class="badge bg-primary" th:text="${book.imageUrls != null ? book.imageUrls.size() : 0} + ' images'">0 images</span>
+                        <span class="badge bg-primary" th:text="${book.imageUrls != null ? book.imageUrls.size() : 0} + ' images'">Chưa có hình ảnh nào</span>
                     </div>
                     <div class="card-body">
                         <!-- No images state -->
                         <div th:if="${book.imageUrls == null || book.imageUrls.isEmpty()}" class="no-images-state">
                             <i class="fas fa-images"></i>
-                            <h4 class="mb-3">No Images Yet</h4>
-                            <p class="mb-0">Upload your first image to get started. The first image will be set as the main book cover.</p>
+                            <h4 class="mb-3">Chưa có hình ảnh nào</h4>
+                            <p class="mb-0">Tải lên hình ảnh đầu tiên để bắt đầu. Hình ảnh đầu tiên sẽ được đặt làm ảnh bìa chính của sách.</p>
                         </div>
 
                         <!-- Images gallery -->
@@ -338,8 +338,8 @@
                                 <div class="image-card-body">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <div class="fw-semibold">Image <span th:text="${status.count}">1</span></div>
-                                            <small class="text-muted">Book cover image</small>
+                                            <div class="fw-semibold">Hình ảnh <span th:text="${status.count}">1</span></div>
+                                            <small class="text-muted">Ảnh bìa chính</small>
                                         </div>
                                         <div class="image-actions">
                                             <button type="button" class="btn btn-sm btn-outline-primary"
@@ -369,8 +369,8 @@
             <div class="spinner-border text-primary mb-3" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
-            <h5>Uploading Images...</h5>
-            <p class="mb-0 text-muted">Please wait while we process your images</p>
+            <h5>Đang tải lên hình ảnh...</h5>
+            <p class="mb-0 text-muted">Vui lòng chờ trong khi chúng tôi xử lý hình ảnh của bạn</p>
         </div>
     </div>
 
@@ -379,7 +379,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Image Preview</h5>
+                    <h5 class="modal-title">Xem trước hình ảnh</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body text-center">
@@ -479,7 +479,7 @@
 
             // Delete confirmation
             window.confirmDelete = function() {
-                return confirm('Are you sure you want to delete this image? This action cannot be undone.');
+                return confirm('Bạn có chắc chắn muốn xóa hình ảnh này không? Hành động này không thể hoàn tác.');
             };
         });
     </script>

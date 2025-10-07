@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{components/layouts/main}">
 <head>
-    <title>Order Details - GreenBook Admin</title>
+    <title>Chi tiết đơn hàng - Quản trị GreenBook</title>
 
     <th:block layout:fragment="stylesheets">
         <style>
@@ -346,8 +346,8 @@
         <div class="row justify-content-center">
             <div class="col-12">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a th:href="@{/admin/orders}">Orders</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Trang tổng quan</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/orders}">Đơn hàng</a></li>
                     <li class="breadcrumb-item active">Order #<span th:text="${order.id}">123</span></li>
                 </ol>
             </div>
@@ -360,14 +360,14 @@
                     <div class="order-id">Order #<span th:text="${order.id}">123</span></div>
                     <div class="order-date">
                         <i class="fas fa-calendar me-2"></i>
-                        <span th:text="${#temporals.format(order.orderDate, 'dd MMMM yyyy, HH:mm')}">01 January 2023, 10:00</span>
+                        <span th:text="${#temporals.format(order.orderDate, 'dd MMMM yyyy, HH:mm')}">01 Tháng 1 2023, 10:00</span>
                     </div>
                 </div>
                 <div class="text-end">
                     <div class="fs-4 fw-bold">
                         <span th:text="${#numbers.formatDecimal(order.finalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">90,000 VND</span>
                     </div>
-                    <div class="opacity-75">Final Amount</div>
+                    <div class="opacity-75">Tổng số tiền</div>
                 </div>
             </div>
         </div>
@@ -376,26 +376,26 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="mb-4">
-                    <i class="fas fa-route me-2"></i>Order Progress
+                    <i class="fas fa-route me-2"></i>Tiến trình đơn hàng
                 </h5>
                 <div class="status-timeline">
                     <!-- Timeline Progress Line -->
                     <div class="timeline-line">
                         <div class="timeline-progress"
-                             th:style="${order.status.name() == 'PENDING' ? 'width: 0%' :
-                                       order.status.name() == 'PROCESSING' ? 'width: 25%' :
-                                       order.status.name() == 'SHIPPED' ? 'width: 50%' :
-                                       order.status.name() == 'DELIVERED' ? 'width: 75%' :
-                                       order.status.name() == 'COMPLETED' ? 'width: 100%' : 'width: 0%'}">
+                             th:style="${order.status.name() == 'ĐANG CHỜ XỬ LÝ' ? 'width: 0%' :
+                                       order.status.name() == 'ĐANG XỬ LÝ' ? 'width: 25%' :
+                                       order.status.name() == 'ĐÃ GỬI HÀNG' ? 'width: 50%' :
+                                       order.status.name() == 'ĐÃ GIAO HÀNG' ? 'width: 75%' :
+                                       order.status.name() == 'HOÀN TẤT' ? 'width: 100%' : 'width: 0%'}">
                         </div>
                     </div>
 
                     <!-- Pending Step -->
                     <div class="timeline-step"
-                         th:classappend="${order.status.name() == 'PENDING' ? 'current' :
-                                         (order.status.name() == 'PROCESSING' or order.status.name() == 'SHIPPED' or
-                                          order.status.name() == 'DELIVERED' or order.status.name() == 'COMPLETED') ? 'completed' :
-                                         order.status.name() == 'CANCELLED' ? 'cancelled' : 'pending'}">
+                         th:classappend="${order.status.name() == 'ĐANG CHỜ XỬ LÝ' ? 'current' :
+                                         (order.status.name() == 'ĐANG XỬ LÝ' or order.status.name() == 'ĐÃ GỬI HÀNG' or
+                                          order.status.name() == 'ĐÃ GIAO HÀNG' or order.status.name() == 'HOÀN TẤT') ? 'completed' :
+                                         order.status.name() == 'ĐÃ HỦY' ? 'cancelled' : 'pending'}">
                         <div class="timeline-icon">
                             <i th:class="${order.status.name() == 'CANCELLED' ? 'fas fa-times' : 'fas fa-clock'}"></i>
                         </div>
@@ -404,32 +404,32 @@
 
                     <!-- Processing Step -->
                     <div class="timeline-step"
-                         th:classappend="${order.status.name() == 'PROCESSING' ? 'current' :
-                                         (order.status.name() == 'SHIPPED' or order.status.name() == 'DELIVERED' or
-                                          order.status.name() == 'COMPLETED') ? 'completed' :
-                                         order.status.name() == 'CANCELLED' ? 'cancelled' : 'pending'}">
+                         th:classappend="${order.status.name() == 'ĐANG XỬ LÝ' ? 'current' :
+                                         (order.status.name() == 'ĐÃ GIAO HÀNG' or order.status.name() == 'ĐÃ GIAO HÀNG' or
+                                          order.status.name() == 'HOÀN TẤT') ? 'completed' :
+                                         order.status.name() == 'ĐÃ HỦY' ? 'cancelled' : 'pending'}">
                         <div class="timeline-icon">
-                            <i th:class="${order.status.name() == 'CANCELLED' ? 'fas fa-times' : 'fas fa-cog'}"></i>
+                            <i th:class="${order.status.name() == 'ĐÃ HỦY' ? 'fas fa-times' : 'fas fa-cog'}"></i>
                         </div>
                         <div class="timeline-label">Processing</div>
                     </div>
 
                     <!-- Shipped Step -->
                     <div class="timeline-step"
-                         th:classappend="${order.status.name() == 'SHIPPED' ? 'current' :
-                                         (order.status.name() == 'DELIVERED' or order.status.name() == 'COMPLETED') ? 'completed' :
-                                         order.status.name() == 'CANCELLED' ? 'cancelled' : 'pending'}">
+                         th:classappend="${order.status.name() == 'ĐÃ GỬI HÀNG' ? 'current' :
+                                         (order.status.name() == 'ĐÃ GIAO HÀNG' or order.status.name() == 'HOÀN TẤT') ? 'completed' :
+                                         order.status.name() == 'ĐÃ HỦY' ? 'cancelled' : 'pending'}">
                         <div class="timeline-icon">
-                            <i th:class="${order.status.name() == 'CANCELLED' ? 'fas fa-times' : 'fas fa-truck'}"></i>
+                            <i th:class="${order.status.name() == 'ĐÃ HỦY' ? 'fas fa-times' : 'fas fa-truck'}"></i>
                         </div>
                         <div class="timeline-label">Shipped</div>
                     </div>
 
                     <!-- Delivered Step -->
                     <div class="timeline-step"
-                         th:classappend="${order.status.name() == 'DELIVERED' ? 'current' :
-                                         order.status.name() == 'COMPLETED' ? 'completed' :
-                                         order.status.name() == 'CANCELLED' ? 'cancelled' : 'pending'}">
+                         th:classappend="${order.status.name() == 'ĐÃ GIAO HÀNG' ? 'current' :
+                                         order.status.name() == 'HOÀN TẤT' ? 'completed' :
+                                         order.status.name() == 'ĐÃ HỦY' ? 'cancelled' : 'pending'}">
                         <div class="timeline-icon">
                             <i th:class="${order.status.name() == 'CANCELLED' ? 'fas fa-times' : 'fas fa-home'}"></i>
                         </div>
@@ -438,23 +438,23 @@
 
                     <!-- Completed Step -->
                     <div class="timeline-step"
-                         th:classappend="${order.status.name() == 'COMPLETED' ? 'current' :
-                                         order.status.name() == 'CANCELLED' ? 'cancelled' : 'pending'}">
+                         th:classappend="${order.status.name() == 'HOÀN TẤT' ? 'current' :
+                                         order.status.name() == 'ĐÃ HỦY' ? 'cancelled' : 'pending'}">
                         <div class="timeline-icon">
-                            <i th:class="${order.status.name() == 'CANCELLED' ? 'fas fa-times' : 'fas fa-star'}"></i>
+                            <i th:class="${order.status.name() == 'ĐÃ HỦY' ? 'fas fa-times' : 'fas fa-star'}"></i>
                         </div>
-                        <div class="timeline-label">Completed</div>
+                        <div class="timeline-label">HOÀN TẤT</div>
                     </div>
                 </div>
 
                 <!-- Status Information -->
                 <div class="mt-3 text-center">
-                    <div th:if="${order.status.name() == 'CANCELLED'}" class="alert alert-danger">
+                    <div th:if="${order.status.name() == 'ĐÃ HỦY'}" class="alert alert-danger">
                         <i class="fas fa-exclamation-triangle me-2"></i>
-                        This order has been cancelled.
+                        Đơn hàng này đã bị hủy.
                     </div>
-                    <div th:unless="${order.status.name() == 'CANCELLED'}" class="text-muted">
-                        Current Status: <strong th:text="${order.status}">PROCESSING</strong>
+                    <div th:unless="${order.status.name() == 'ĐÃ HỦY'}" class="text-muted">
+                        Current Status: <strong th:text="${order.status}">Đang xử lý</strong>
                     </div>
                 </div>
             </div>
@@ -465,13 +465,13 @@
         <div class="card status-update-card">
             <div class="card-header bg-transparent border-0">
                 <h5 class="mb-0 text-success">
-                    <i class="fas fa-sync-alt me-2"></i>Update Order Status
+                    <i class="fas fa-sync-alt me-2"></i>Cập nhật trạng thái đơn hàng
                 </h5>
             </div>
             <div class="card-body">
                 <form th:action="@{/admin/orders/{id}/update-status(id=${order.id})}" method="post" class="row g-3">
                     <div class="col-md-4">
-                        <label class="form-label fw-bold">Current Status</label>
+                        <label class="form-label fw-bold">Trạng thái hiện tại</label>
                         <div class="input-group">
                             <span class="input-group-text bg-success text-white">
                                 <i class="fas fa-tag"></i>
@@ -480,7 +480,7 @@
                         </div>
                     </div>
                     <div class="col-md-5">
-                        <label for="status" class="form-label fw-bold">New Status</label>
+                        <label for="status" class="form-label fw-bold">Trạng thái mới</label>
                         <select class="form-select" id="status" name="status" required>
                             <option value="">-- Select new status --</option>
                             <option th:each="status : ${orderStatuses}"
@@ -493,7 +493,7 @@
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
                         <button type="submit" class="btn btn-update btn-modern w-100">
-                            <i class="fas fa-save me-2"></i>Update Status
+                            <i class="fas fa-save me-2"></i>Cập nhật trạng thái
                         </button>
                     </div>
                 </form>
@@ -506,7 +506,7 @@
                 <div class="card info-card">
                     <div class="info-card-header">
                         <h5 class="mb-0">
-                            <i class="fas fa-receipt me-2"></i>Order Information
+                            <i class="fas fa-receipt me-2"></i>Thông tin đơn hàng
                         </h5>
                     </div>
                     <div class="card-body">
@@ -525,7 +525,7 @@
                                 <i class="fas fa-calendar-alt"></i>
                             </div>
                             <div class="info-content">
-                                <div class="info-label">Order Date</div>
+                                <div class="info-label">Ngày đặt hàng</div>
                                 <div class="info-value" th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">01/01/2023 10:00</div>
                             </div>
                         </div>
@@ -537,12 +537,12 @@
                             <div class="info-content">
                                 <div class="info-label">Status</div>
                                 <div class="info-value">
-                                    <span th:if="${order.status.name() == 'PENDING'}" class="badge bg-warning">Pending</span>
-                                    <span th:if="${order.status.name() == 'PROCESSING'}" class="badge bg-info">Processing</span>
-                                    <span th:if="${order.status.name() == 'SHIPPED'}" class="badge bg-primary">Shipped</span>
-                                    <span th:if="${order.status.name() == 'DELIVERED'}" class="badge bg-success">Delivered</span>
-                                    <span th:if="${order.status.name() == 'COMPLETED'}" class="badge bg-success">Completed</span>
-                                    <span th:if="${order.status.name() == 'CANCELLED'}" class="badge bg-danger">Cancelled</span>
+                                    <span th:if="${order.status.name() == 'PENDING'}" class="badge bg-warning">Đang chờ xử lý</span>
+                                    <span th:if="${order.status.name() == 'PROCESSING'}" class="badge bg-info">Đang xử lý</span>
+                                    <span th:if="${order.status.name() == 'SHIPPED'}" class="badge bg-primary">Đã gửi hàng</span>
+                                    <span th:if="${order.status.name() == 'DELIVERED'}" class="badge bg-success">Đã giao hàng</span>
+                                    <span th:if="${order.status.name() == 'COMPLETED'}" class="badge bg-success">Hoàn tất</span>
+                                    <span th:if="${order.status.name() == 'CANCELLED'}" class="badge bg-danger">Đã hủy</span>
                                 </div>
                             </div>
                         </div>
@@ -552,7 +552,7 @@
                                 <i class="fas fa-check-circle"></i>
                             </div>
                             <div class="info-content">
-                                <div class="info-label">Completed Date</div>
+                                <div class="info-label">Ngày hoàn tất</div>
                                 <div class="info-value" th:text="${#temporals.format(order.completedDate, 'dd/MM/yyyy HH:mm')}">01/01/2023 10:00</div>
                             </div>
                         </div>
@@ -562,8 +562,8 @@
                                 <i class="fas fa-credit-card"></i>
                             </div>
                             <div class="info-content">
-                                <div class="info-label">Payment Method</div>
-                                <div class="info-value" th:text="${order.paymentMethod}">CASH_ON_DELIVERY</div>
+                                <div class="info-label">Phương thức thanh toán</div>
+                                <div class="info-value" th:text="${order.paymentMethod}">Thanh toán khi nhận hàng (COD)</div>
                             </div>
                         </div>
 
@@ -573,7 +573,7 @@
                             </div>
                             <div class="info-content">
                                 <div class="info-label">Customer Note</div>
-                                <div class="info-value" th:text="${order.note}">Customer note</div>
+                                <div class="info-value" th:text="${order.note}">Ghi chú của khách hàng</div>
                             </div>
                         </div>
                     </div>
@@ -585,7 +585,7 @@
                 <div class="card info-card">
                     <div class="info-card-header">
                         <h5 class="mb-0">
-                            <i class="fas fa-user me-2"></i>Customer Information
+                            <i class="fas fa-user me-2"></i>Thông tin khách hàng
                         </h5>
                     </div>
                     <div class="card-body">
@@ -604,8 +604,8 @@
                                 <i class="fas fa-user-circle"></i>
                             </div>
                             <div class="info-content">
-                                <div class="info-label">Username</div>
-                                <div class="info-value" th:text="${order.username}">username</div>
+                                <div class="info-label">Tên người dùng</div>
+                                <div class="info-value" th:text="${order.username}">tên người dùng</div>
                             </div>
                         </div>
 
@@ -614,8 +614,8 @@
                                 <i class="fas fa-map-marker-alt"></i>
                             </div>
                             <div class="info-content">
-                                <div class="info-label">Shipping Address</div>
-                                <div class="info-value" th:text="${order.shippingAddress}">123 Street, City, Country</div>
+                                <div class="info-label">Địa chỉ giao hàng</div>
+                                <div class="info-value" th:text="${order.shippingAddress}">Số 123, Đường Cầu Diễn, Thành phố Hà Nội, Việt Nam</div>
                             </div>
                         </div>
                     </div>
@@ -627,7 +627,7 @@
         <div class="card items-table">
             <div class="card-header table-header">
                 <h5 class="mb-0 text-white">
-                    <i class="fas fa-shopping-cart me-2"></i>Order Items
+                    <i class="fas fa-shopping-cart me-2"></i>Sản phẩm trong đơn hàng
                 </h5>
             </div>
             <div class="card-body p-0">
@@ -636,12 +636,12 @@
                         <thead class="table-light">
                         <tr>
                             <th>#</th>
-                            <th>Book</th>
-                            <th>Quantity</th>
-                            <th>Original Price</th>
-                            <th>Discounted Price</th>
-                            <th>Promotion</th>
-                            <th>Subtotal</th>
+                            <th>Sách</th>
+                            <th>Số lượng</th>
+                            <th>Giá gốc</th>
+                            <th>Giá sau giảm</th>
+                            <th>Khuyến mãi</th>
+                            <th>Tạm tính</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -655,8 +655,8 @@
                                         <i class="fas fa-book"></i>
                                     </div>
                                     <div>
-                                        <div class="fw-semibold" th:text="${item.bookTitle}">Book Title</div>
-                                        <small class="text-muted">Product Item</small>
+                                        <div class="fw-semibold" th:text="${item.bookTitle}">Tiêu đề sách</div>
+                                        <small class="text-muted">Sản phẩm</small>
                                     </div>
                                 </div>
                             </td>
@@ -703,17 +703,17 @@
         <div class="action-buttons mb-4">
             <div class="d-flex gap-3">
                 <a th:href="@{/admin/orders}" class="btn btn-back btn-modern">
-                    <i class="fas fa-arrow-left me-2"></i>Back to Orders
+                    <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách đơn hàng
                 </a>
             </div>
             <div class="d-flex gap-3">
                 <button type="button" class="btn btn-outline-primary btn-modern" onclick="window.print()">
-                    <i class="fas fa-print me-2"></i>Print Order
+                    <i class="fas fa-print me-2"></i>In đơn hàng
                 </button>
                 <a th:href="@{/admin/orders/{id}/delete(id=${order.id})}"
                    class="btn btn-delete btn-modern"
                    onclick="return confirmDelete()">
-                    <i class="fas fa-trash me-2"></i>Delete Order
+                    <i class="fas fa-trash me-2"></i>Xóa đơn hàng
                 </a>
             </div>
         </div>
@@ -734,17 +734,17 @@
 
                     if (!newStatus) {
                         e.preventDefault();
-                        alert('Please select a new status');
+                        alert('Vui lòng chọn trạng thái mới');
                         return;
                     }
 
                     if (newStatus === currentStatus) {
                         e.preventDefault();
-                        alert('Please select a different status from the current one');
+                        alert('Vui lòng chọn trạng thái khác với trạng thái hiện tại');
                         return;
                     }
 
-                    if (!confirm(`Are you sure you want to change the order status to ${newStatus}?`)) {
+                    if (!confirm(`Bạn có chắc chắn muốn thay đổi trạng thái đơn hàng thành ${newStatus}?`)) {
                         e.preventDefault();
                     }
                 });
@@ -753,7 +753,7 @@
 
         // Delete confirmation
         function confirmDelete() {
-            return confirm('Are you sure you want to delete this order? This action cannot be undone and will permanently remove all order data.');
+            return confirm('Bạn có chắc chắn muốn xóa đơn hàng này không? Hành động này không thể hoàn tác và sẽ xóa vĩnh viễn toàn bộ dữ liệu của đơn hàng.');
         }
 
         // Print functionality enhancement
