@@ -1,955 +1,953 @@
-    <!DOCTYPE html>
-    <html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
-          xmlns:th="http://www.thymeleaf.org"
-          xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-          layout:decorate="~{components/layouts/main}">
-    <head>
-        <title th:text="${blog.id == null ? 'Add Blog' : 'Edit Blog'} + ' - GreenBook Admin'">Add/Edit Blog - GreenBook
-            Admin</title>
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{components/layouts/main}">
+<head>
+    <title th:text="${blog.id == null ? 'Add Blog' : 'Edit Blog'} + ' - GreenBook Admin'">Thêm/Chỉnh sửa blog - GreenBook
+        Admin</title>
 
-        <th:block layout:fragment="stylesheets">
-            <style>
-                .required-field::after {
-                    content: " *";
-                    color: #dc3545;
-                    font-weight: bold;
-                }
+    <th:block layout:fragment="stylesheets">
+        <style>
+            .required-field::after {
+                content: " *";
+                color: #dc3545;
+                font-weight: bold;
+            }
 
-                .blog-header {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    color: white;
-                    border-radius: 1rem;
-                    padding: 2rem;
-                    margin-bottom: 2rem;
-                    position: relative;
-                    overflow: hidden;
-                }
+            .blog-header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border-radius: 1rem;
+                padding: 2rem;
+                margin-bottom: 2rem;
+                position: relative;
+                overflow: hidden;
+            }
 
-                .blog-header::before {
-                    content: '';
-                    position: absolute;
-                    top: -50%;
-                    right: -50%;
-                    width: 200%;
-                    height: 200%;
-                    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
-                    animation: float 20s infinite linear;
-                }
+            .blog-header::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 200%;
+                height: 200%;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+                animation: float 20s infinite linear;
+            }
 
-                @keyframes float {
-                    0% { transform: translateX(-100px) translateY(-100px); }
-                    100% { transform: translateX(100px) translateY(100px); }
-                }
+            @keyframes float {
+                0% { transform: translateX(-100px) translateY(-100px); }
+                100% { transform: translateX(100px) translateY(100px); }
+            }
 
-                .blog-icon {
-                    background: rgba(255, 255, 255, 0.2);
-                    border-radius: 50%;
-                    width: 80px;
-                    height: 80px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin: 0 auto 1rem;
-                    backdrop-filter: blur(10px);
-                }
+            .blog-icon {
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 50%;
+                width: 80px;
+                height: 80px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 1rem;
+                backdrop-filter: blur(10px);
+            }
 
-                .blog-icon i {
-                    font-size: 2rem;
-                    color: white;
-                }
+            .blog-icon i {
+                font-size: 2rem;
+                color: white;
+            }
 
-                .preview-card {
-                    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
-                    border: 2px solid #667eea;
-                    border-radius: 1rem;
-                    padding: 2rem;
-                    margin-bottom: 2rem;
-                    position: relative;
-                    overflow: hidden;
-                }
+            .preview-card {
+                background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+                border: 2px solid #667eea;
+                border-radius: 1rem;
+                padding: 2rem;
+                margin-bottom: 2rem;
+                position: relative;
+                overflow: hidden;
+            }
 
-                .preview-card::before {
-                    content: '';
-                    position: absolute;
-                    top: -10px;
-                    right: -10px;
-                    width: 100px;
-                    height: 100px;
-                    background: rgba(102, 126, 234, 0.1);
-                    border-radius: 50%;
-                    animation: pulse 3s infinite;
-                }
+            .preview-card::before {
+                content: '';
+                position: absolute;
+                top: -10px;
+                right: -10px;
+                width: 100px;
+                height: 100px;
+                background: rgba(102, 126, 234, 0.1);
+                border-radius: 50%;
+                animation: pulse 3s infinite;
+            }
 
-                @keyframes pulse {
-                    0%, 100% { transform: scale(1); opacity: 0.5; }
-                    50% { transform: scale(1.1); opacity: 0.8; }
-                }
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); opacity: 0.5; }
+                50% { transform: scale(1.1); opacity: 0.8; }
+            }
 
-                .preview-title {
-                    color: #667eea;
-                    font-weight: 700;
-                    margin-bottom: 1.5rem;
-                    display: flex;
-                    align-items: center;
-                    font-size: 1.2rem;
-                }
+            .preview-title {
+                color: #667eea;
+                font-weight: 700;
+                margin-bottom: 1.5rem;
+                display: flex;
+                align-items: center;
+                font-size: 1.2rem;
+            }
 
-                .blog-preview {
-                    background: white;
-                    border-radius: 0.75rem;
-                    padding: 1.5rem;
-                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-                }
+            .blog-preview {
+                background: white;
+                border-radius: 0.75rem;
+                padding: 1.5rem;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            }
 
-                .preview-blog-title {
-                    font-size: 1.5rem;
-                    font-weight: 700;
-                    color: #2c3e50;
-                    margin-bottom: 1rem;
-                    line-height: 1.4;
-                }
+            .preview-blog-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #2c3e50;
+                margin-bottom: 1rem;
+                line-height: 1.4;
+            }
 
-                .preview-meta {
-                    display: flex;
-                    align-items: center;
-                    gap: 1rem;
-                    margin-bottom: 1rem;
-                    color: #6c757d;
-                    font-size: 0.875rem;
-                }
+            .preview-meta {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                margin-bottom: 1rem;
+                color: #6c757d;
+                font-size: 0.875rem;
+            }
 
-                .preview-author {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                }
+            .preview-author {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
 
-                .author-avatar {
-                    width: 24px;
-                    height: 24px;
-                    border-radius: 50%;
-                    background: #667eea;
-                    color: white;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 0.75rem;
-                    font-weight: 600;
-                }
+            .author-avatar {
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                background: #667eea;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.75rem;
+                font-weight: 600;
+            }
 
-                .preview-status {
-                    padding: 0.25rem 0.75rem;
-                    border-radius: 1rem;
-                    font-size: 0.75rem;
-                    font-weight: 600;
-                }
+            .preview-status {
+                padding: 0.25rem 0.75rem;
+                border-radius: 1rem;
+                font-size: 0.75rem;
+                font-weight: 600;
+            }
 
-                .status-draft {
-                    background: #fff3cd;
-                    color: #856404;
-                }
+            .status-draft {
+                background: #fff3cd;
+                color: #856404;
+            }
 
-                .status-published {
-                    background: #d1e7dd;
-                    color: #0f5132;
-                }
+            .status-published {
+                background: #d1e7dd;
+                color: #0f5132;
+            }
 
-                .preview-content {
-                    color: #495057;
-                    line-height: 1.6;
-                    font-size: 0.9rem;
-                    max-height: 150px;
-                    overflow: hidden;
-                    position: relative;
-                    white-space: pre-wrap;
-                }
+            .preview-content {
+                color: #495057;
+                line-height: 1.6;
+                font-size: 0.9rem;
+                max-height: 150px;
+                overflow: hidden;
+                position: relative;
+                white-space: pre-wrap;
+            }
 
-                .preview-content::after {
-                    content: '';
-                    position: absolute;
-                    bottom: 0;
-                    left: 0;
-                    right: 0;
-                    height: 30px;
-                    background: linear-gradient(transparent, white);
-                }
+            .preview-content::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 30px;
+                background: linear-gradient(transparent, white);
+            }
 
-                .section-card {
-                    background: white;
-                    border-radius: 1rem;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    border: none;
-                    margin-bottom: 2rem;
-                    overflow: hidden;
-                }
+            .section-card {
+                background: white;
+                border-radius: 1rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                border: none;
+                margin-bottom: 2rem;
+                overflow: hidden;
+            }
 
-                .section-header {
-                    background: linear-gradient(45deg, #667eea, #764ba2);
-                    color: white;
-                    padding: 1.5rem;
-                    border-bottom: none;
-                }
+            .section-header {
+                background: linear-gradient(45deg, #667eea, #764ba2);
+                color: white;
+                padding: 1.5rem;
+                border-bottom: none;
+            }
 
-                .section-header h4 {
-                    margin: 0;
-                    font-weight: 600;
-                    display: flex;
-                    align-items: center;
-                }
+            .section-header h4 {
+                margin: 0;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+            }
 
-                .section-header i {
-                    margin-right: 0.75rem;
-                    font-size: 1.2rem;
-                }
+            .section-header i {
+                margin-right: 0.75rem;
+                font-size: 1.2rem;
+            }
 
-                .form-floating-label {
-                    position: relative;
-                    margin-bottom: 2rem;
-                }
+            .form-floating-label {
+                position: relative;
+                margin-bottom: 2rem;
+            }
 
-                .form-floating-label input,
-                .form-floating-label textarea,
-                .form-floating-label select {
-                    width: 100%;
-                    padding: 1rem 1rem 0.5rem;
-                    border: 2px solid #e9ecef;
-                    border-radius: 0.75rem;
-                    background: #f8f9fa;
-                    font-size: 1rem;
-                    transition: all 0.3s ease;
-                }
+            .form-floating-label input,
+            .form-floating-label textarea,
+            .form-floating-label select {
+                width: 100%;
+                padding: 1rem 1rem 0.5rem;
+                border: 2px solid #e9ecef;
+                border-radius: 0.75rem;
+                background: #f8f9fa;
+                font-size: 1rem;
+                transition: all 0.3s ease;
+            }
 
-                .form-floating-label input:focus,
-                .form-floating-label textarea:focus,
-                .form-floating-label select:focus {
-                    border-color: #667eea;
-                    background: white;
-                    transform: translateY(-2px);
-                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
-                }
+            .form-floating-label input:focus,
+            .form-floating-label textarea:focus,
+            .form-floating-label select:focus {
+                border-color: #667eea;
+                background: white;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+            }
 
-                .form-floating-label label {
-                    position: absolute;
-                    top: 1rem;
-                    left: 1rem;
-                    font-size: 1rem;
-                    color: #6c757d;
-                    transition: all 0.3s ease;
-                    pointer-events: none;
-                    background: transparent;
-                    padding: 0 0.25rem;
-                }
+            .form-floating-label label {
+                position: absolute;
+                top: 1rem;
+                left: 1rem;
+                font-size: 1rem;
+                color: #6c757d;
+                transition: all 0.3s ease;
+                pointer-events: none;
+                background: transparent;
+                padding: 0 0.25rem;
+            }
 
-                .form-floating-label input:focus + label,
-                .form-floating-label input:not(:placeholder-shown) + label,
-                .form-floating-label textarea:focus + label,
-                .form-floating-label textarea:not(:placeholder-shown) + label,
-                .form-floating-label select:focus + label,
-                .form-floating-label select:not([value=""]) + label {
-                    top: -0.5rem;
-                    font-size: 0.875rem;
-                    color: #667eea;
-                    background: white;
-                    font-weight: 600;
-                }
+            .form-floating-label input:focus + label,
+            .form-floating-label input:not(:placeholder-shown) + label,
+            .form-floating-label textarea:focus + label,
+            .form-floating-label textarea:not(:placeholder-shown) + label,
+            .form-floating-label select:focus + label,
+            .form-floating-label select:not([value=""]) + label {
+                top: -0.5rem;
+                font-size: 0.875rem;
+                color: #667eea;
+                background: white;
+                font-weight: 600;
+            }
 
-                .content-editor-container {
-                    border: 2px solid #e9ecef;
-                    border-radius: 0.75rem;
-                    overflow: hidden;
-                    transition: all 0.3s ease;
-                    margin-bottom: 2rem;
-                }
+            .content-editor-container {
+                border: 2px solid #e9ecef;
+                border-radius: 0.75rem;
+                overflow: hidden;
+                transition: all 0.3s ease;
+                margin-bottom: 2rem;
+            }
 
-                .content-editor-container:focus-within {
-                    border-color: #667eea;
-                    transform: translateY(-2px);
-                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
-                }
+            .content-editor-container:focus-within {
+                border-color: #667eea;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+            }
 
-                .content-editor-label {
-                    background: #f8f9fa;
-                    padding: 0.75rem 1rem;
-                    border-bottom: 2px solid #e9ecef;
-                    font-weight: 600;
-                    color: #495057;
-                    transition: all 0.3s ease;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                }
+            .content-editor-label {
+                background: #f8f9fa;
+                padding: 0.75rem 1rem;
+                border-bottom: 2px solid #e9ecef;
+                font-weight: 600;
+                color: #495057;
+                transition: all 0.3s ease;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
 
-                .content-editor-container:focus-within .content-editor-label {
-                    background: #667eea;
-                    color: white;
-                    border-bottom-color: #667eea;
-                }
+            .content-editor-container:focus-within .content-editor-label {
+                background: #667eea;
+                color: white;
+                border-bottom-color: #667eea;
+            }
 
-                .content-textarea {
-                    width: 100%;
-                    border: none;
-                    padding: 1.5rem;
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-                    font-size: 1rem;
-                    line-height: 1.6;
-                    color: #333;
-                    background: white;
-                    resize: vertical;
-                    min-height: 400px;
-                    outline: none;
-                }
+            .content-textarea {
+                width: 100%;
+                border: none;
+                padding: 1.5rem;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                font-size: 1rem;
+                line-height: 1.6;
+                color: #333;
+                background: white;
+                resize: vertical;
+                min-height: 400px;
+                outline: none;
+            }
 
-                .content-textarea:focus {
-                    outline: none;
-                }
+            .content-textarea:focus {
+                outline: none;
+            }
 
-                .image-preview-card {
-                    background: #f8f9fa;
-                    border: 2px dashed #dee2e6;
-                    border-radius: 1rem;
-                    padding: 2rem;
-                    text-align: center;
-                    transition: all 0.3s ease;
-                    margin-bottom: 2rem;
-                }
+            .image-preview-card {
+                background: #f8f9fa;
+                border: 2px dashed #dee2e6;
+                border-radius: 1rem;
+                padding: 2rem;
+                text-align: center;
+                transition: all 0.3s ease;
+                margin-bottom: 2rem;
+            }
 
-                .image-preview-card:hover {
-                    border-color: #667eea;
-                    background: #f0f4ff;
-                }
+            .image-preview-card:hover {
+                border-color: #667eea;
+                background: #f0f4ff;
+            }
 
-                .image-preview-card img {
-                    max-width: 100%;
-                    max-height: 250px;
-                    border-radius: 0.75rem;
-                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-                    margin-bottom: 1rem;
-                }
+            .image-preview-card img {
+                max-width: 100%;
+                max-height: 250px;
+                border-radius: 0.75rem;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                margin-bottom: 1rem;
+            }
 
-                .image-placeholder {
-                    background: #e9ecef;
-                    border-radius: 0.75rem;
-                    padding: 3rem 2rem;
-                    margin-bottom: 1rem;
-                    color: #6c757d;
-                }
+            .image-placeholder {
+                background: #e9ecef;
+                border-radius: 0.75rem;
+                padding: 3rem 2rem;
+                margin-bottom: 1rem;
+                color: #6c757d;
+            }
 
-                .image-placeholder i {
-                    font-size: 3rem;
-                    margin-bottom: 1rem;
-                    opacity: 0.5;
-                }
+            .image-placeholder i {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+                opacity: 0.5;
+            }
 
-                .metadata-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                    gap: 1.5rem;
-                    margin-bottom: 2rem;
-                }
+            .metadata-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1.5rem;
+                margin-bottom: 2rem;
+            }
 
-                .metadata-item {
-                    background: #f8f9fa;
-                    border: 1px solid #e9ecef;
-                    border-radius: 0.75rem;
-                    padding: 1rem;
-                    text-align: center;
-                }
+            .metadata-item {
+                background: #f8f9fa;
+                border: 1px solid #e9ecef;
+                border-radius: 0.75rem;
+                padding: 1rem;
+                text-align: center;
+            }
 
-                .metadata-label {
-                    font-size: 0.875rem;
-                    color: #6c757d;
-                    margin-bottom: 0.5rem;
-                    font-weight: 600;
-                }
+            .metadata-label {
+                font-size: 0.875rem;
+                color: #6c757d;
+                margin-bottom: 0.5rem;
+                font-weight: 600;
+            }
 
-                .metadata-value {
-                    font-size: 1rem;
-                    color: #495057;
-                    font-weight: 600;
-                }
+            .metadata-value {
+                font-size: 1rem;
+                color: #495057;
+                font-weight: 600;
+            }
 
-                .status-selector {
-                    position: relative;
-                }
+            .status-selector {
+                position: relative;
+            }
 
-                .status-selector select {
-                    appearance: none;
-                    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-                    background-position: right 0.75rem center;
-                    background-repeat: no-repeat;
-                    background-size: 1.5em 1.5em;
-                    padding-right: 2.5rem;
-                }
+            .status-selector select {
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+                background-position: right 0.75rem center;
+                background-repeat: no-repeat;
+                background-size: 1.5em 1.5em;
+                padding-right: 2.5rem;
+            }
 
-                .status-help {
-                    background: #e7f3ff;
-                    border: 1px solid #b6d7ff;
-                    border-radius: 0.5rem;
-                    padding: 0.75rem 1rem;
-                    font-size: 0.875rem;
-                    color: #0c5460;
-                    margin-top: 0.5rem;
-                }
+            .status-help {
+                background: #e7f3ff;
+                border: 1px solid #b6d7ff;
+                border-radius: 0.5rem;
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+                color: #0c5460;
+                margin-top: 0.5rem;
+            }
 
-                .btn-save {
-                    background: linear-gradient(45deg, #28a745, #20c997);
-                    border: none;
-                    color: white;
-                    padding: 0.75rem 2.5rem;
-                    font-weight: 600;
-                    border-radius: 0.75rem;
-                    transition: all 0.3s ease;
-                    font-size: 1.1rem;
-                }
+            .btn-save {
+                background: linear-gradient(45deg, #28a745, #20c997);
+                border: none;
+                color: white;
+                padding: 0.75rem 2.5rem;
+                font-weight: 600;
+                border-radius: 0.75rem;
+                transition: all 0.3s ease;
+                font-size: 1.1rem;
+            }
 
-                .btn-save:hover {
-                    background: linear-gradient(45deg, #20c997, #28a745);
-                    transform: translateY(-2px);
-                    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
-                    color: white;
-                }
+            .btn-save:hover {
+                background: linear-gradient(45deg, #20c997, #28a745);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+                color: white;
+            }
 
-                .btn-cancel {
-                    background: #6c757d;
-                    border: none;
-                    color: white;
-                    padding: 0.75rem 2rem;
-                    font-weight: 600;
-                    border-radius: 0.75rem;
-                    transition: all 0.3s ease;
-                }
+            .btn-cancel {
+                background: #6c757d;
+                border: none;
+                color: white;
+                padding: 0.75rem 2rem;
+                font-weight: 600;
+                border-radius: 0.75rem;
+                transition: all 0.3s ease;
+            }
 
-                .btn-cancel:hover {
-                    background: #5a6268;
-                    transform: translateY(-2px);
-                    color: white;
-                }
+            .btn-cancel:hover {
+                background: #5a6268;
+                transform: translateY(-2px);
+                color: white;
+            }
 
-                .btn-publish {
-                    background: linear-gradient(45deg, #28a745, #20c997);
-                    border: none;
-                    color: white;
-                    padding: 0.75rem 2rem;
-                    font-weight: 600;
-                    border-radius: 0.75rem;
-                    transition: all 0.3s ease;
-                }
+            .btn-publish {
+                background: linear-gradient(45deg, #28a745, #20c997);
+                border: none;
+                color: white;
+                padding: 0.75rem 2rem;
+                font-weight: 600;
+                border-radius: 0.75rem;
+                transition: all 0.3s ease;
+            }
 
-                .btn-publish:hover {
-                    background: linear-gradient(45deg, #20c997, #28a745);
-                    transform: translateY(-2px);
-                    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
-                    color: white;
-                }
+            .btn-publish:hover {
+                background: linear-gradient(45deg, #20c997, #28a745);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+                color: white;
+            }
 
-                .btn-unpublish {
-                    background: linear-gradient(45deg, #ffc107, #fd7e14);
-                    border: none;
-                    color: white;
-                    padding: 0.75rem 2rem;
-                    font-weight: 600;
-                    border-radius: 0.75rem;
-                    transition: all 0.3s ease;
-                }
+            .btn-unpublish {
+                background: linear-gradient(45deg, #ffc107, #fd7e14);
+                border: none;
+                color: white;
+                padding: 0.75rem 2rem;
+                font-weight: 600;
+                border-radius: 0.75rem;
+                transition: all 0.3s ease;
+            }
 
-                .btn-unpublish:hover {
-                    background: linear-gradient(45deg, #fd7e14, #ffc107);
-                    transform: translateY(-2px);
-                    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
-                    color: white;
-                }
+            .btn-unpublish:hover {
+                background: linear-gradient(45deg, #fd7e14, #ffc107);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
+                color: white;
+            }
 
-                .btn-upload {
-                    background: linear-gradient(45deg, #667eea, #764ba2);
-                    border: none;
-                    color: white;
-                    padding: 0.75rem 1.5rem;
-                    font-weight: 600;
-                    border-radius: 0.75rem;
-                    transition: all 0.3s ease;
-                }
+            .btn-upload {
+                background: linear-gradient(45deg, #667eea, #764ba2);
+                border: none;
+                color: white;
+                padding: 0.75rem 1.5rem;
+                font-weight: 600;
+                border-radius: 0.75rem;
+                transition: all 0.3s ease;
+            }
 
-                .btn-upload:hover {
-                    background: linear-gradient(45deg, #764ba2, #667eea);
-                    transform: translateY(-2px);
-                    color: white;
-                }
+            .btn-upload:hover {
+                background: linear-gradient(45deg, #764ba2, #667eea);
+                transform: translateY(-2px);
+                color: white;
+            }
 
-                .action-buttons {
-                    background: white;
-                    padding: 2rem;
-                    border-radius: 1rem;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    flex-wrap: wrap;
-                    gap: 1rem;
-                }
+            .action-buttons {
+                background: white;
+                padding: 2rem;
+                border-radius: 1rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
 
-                .word-count {
-                    background: #f8f9fa;
-                    border: 1px solid #dee2e6;
-                    border-radius: 0.5rem;
-                    padding: 0.5rem 1rem;
-                    font-size: 0.875rem;
-                    color: #6c757d;
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                }
+            .word-count {
+                background: #f8f9fa;
+                border: 1px solid #dee2e6;
+                border-radius: 0.5rem;
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+                color: #6c757d;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
 
-                .character-counter {
-                    font-size: 0.875rem;
-                    color: #6c757d;
-                    text-align: right;
-                    margin-top: 0.5rem;
-                    padding: 0 1rem;
-                }
-            </style>
-        </th:block>
-    </head>
+            .character-counter {
+                font-size: 0.875rem;
+                color: #6c757d;
+                text-align: right;
+                margin-top: 0.5rem;
+                padding: 0 1rem;
+            }
+        </style>
+    </th:block>
+</head>
 
-    <body>
-    <th:block layout:fragment="content">
-        <div class="container-xxl">
-            <div class="row justify-content-center">
-                <div class="col-12">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
-                                <li class="breadcrumb-item"><a th:href="@{/admin/blogs}">Blogs</a></li>
-                                <li class="breadcrumb-item active" th:text="${blog.id == null ? 'Add New' : 'Edit'}">
-                                    Add/Edit
-                                </li>
-                            </ol>
-                        </div>
-                        <div class="text-end" th:if="${blog.id != null}">
+<body>
+<th:block layout:fragment="content">
+    <div class="container-xxl">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Trang tổng quan</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/admin/blogs}">Blogs</a></li>
+                            <li class="breadcrumb-item active" th:text="${blog.id == null ? 'Add New' : 'Edit'}">
+                                Thêm/Chỉnh sửa
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="text-end" th:if="${blog.id != null}">
                             <span class="badge bg-info fs-6">
                                 <i class="fas fa-hashtag me-1"></i>ID: <span th:text="${blog.id}">1</span>
                             </span>
-                        </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Blog Header -->
-            <div class="blog-header">
-                <div class="blog-icon">
-                    <i th:class="${blog.id == null ? 'fas fa-plus' : 'fas fa-edit'}"></i>
-                </div>
-                <h3 class="text-center mb-2" th:text="${blog.id == null ? 'Create New Blog Post' : 'Edit Blog Post'}">Blog
-                    Form</h3>
-                <p class="text-center mb-0 opacity-75">
-                    <span th:if="${blog.id == null}">Share your thoughts and insights with your readers</span>
-                    <span th:if="${blog.id != null}">Update your blog content and settings</span>
-                </p>
-            </div>
-
-            <!-- Preview Card -->
-            <div class="preview-card" th:if="${blog.id != null}">
-                <div class="preview-title">
-                    <i class="fas fa-eye me-2"></i>Blog Preview
-                </div>
-                <div class="blog-preview">
-                    <h3 class="preview-blog-title" id="previewTitle" th:text="${blog.title ?: 'Blog Title'}">Blog Title</h3>
-                    <div class="preview-meta">
-                        <div class="preview-author">
-                            <div class="author-avatar"
-                                 th:text="${#strings.substring(blog.authorName ?: 'A', 0, 1).toUpperCase()}">A
-                            </div>
-                            <span th:text="${blog.authorName ?: 'Author Name'}">Author Name</span>
-                        </div>
-                        <div class="preview-status" id="previewStatus"
-                             th:classappend="${blog.status?.name() == 'PUBLISHED' ? 'status-published' : 'status-draft'}"
-                             th:text="${blog.status ?: 'DRAFT'}">DRAFT
-                        </div>
-                    </div>
-                    <div class="preview-content" id="previewContent"
-                         th:text="${blog.content ?: 'Blog content will appear here...'}">Blog content will appear here...
-                    </div>
-                </div>
-            </div>
-
-            <form th:action="${blog.id == null ? '/admin/blogs/create' : '/admin/blogs/edit/' + blog.id}"
-                  method="post"
-                  th:object="${blog}"
-                  id="blogForm">
-
-                <!-- Hidden field for userId -->
-                <input type="hidden" th:field="*{userId}">
-
-                <div class="row">
-                    <!-- Main Content -->
-                    <div class="col-lg-8">
-                        <!-- Basic Information -->
-                        <div class="section-card">
-                            <div class="section-header">
-                                <h4><i class="fas fa-pen-fancy"></i>Blog Content</h4>
-                            </div>
-                            <div class="card-body p-4">
-                                <!-- Title & Status Row -->
-                                <div class="row mb-4">
-                                    <div class="col-md-8">
-                                        <div class="form-floating-label">
-                                            <input type="text"
-                                                   id="title"
-                                                   th:field="*{title}"
-                                                   required
-                                                   placeholder=""
-                                                   th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''">
-                                            <label for="title" class="required-field">Blog Title</label>
-                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}"
-                                                 th:errors="*{title}">
-                                                Title error message
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-floating-label status-selector">
-                                            <select id="status" th:field="*{status}" required>
-                                                <option th:each="blogStatus : ${blogStatuses}"
-                                                        th:value="${blogStatus}"
-                                                        th:text="${blogStatus}">
-                                                    DRAFT
-                                                </option>
-                                            </select>
-                                            <label for="status" class="required-field">Publication Status</label>
-                                        </div>
-                                        <div class="status-help" id="statusHelp">
-                                            <i class="fas fa-info-circle me-1"></i>
-                                            <span th:if="${blog.id == null}">Save as draft to edit later or publish immediately.</span>
-                                            <span th:if="${blog.id != null && blog.status?.name() == 'DRAFT'}">Publishing will make this blog visible to users.</span>
-                                            <span th:if="${blog.id != null && blog.status?.name() == 'PUBLISHED'}">Changing to draft will hide this blog from users.</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Content Editor -->
-                                <div class="content-editor-container">
-                                    <div class="content-editor-label">
-                                        <span>
-                                            <i class="fas fa-align-left me-2"></i>Blog Content *
-                                        </span>
-                                        <span class="word-count" id="wordCount">
-                                            <i class="fas fa-font"></i>
-                                            <span id="wordCountNumber">0</span> words
-                                        </span>
-                                    </div>
-                                    <textarea class="content-textarea"
-                                              id="content"
-                                              th:field="*{content}"
-                                              rows="15"
-                                              required
-                                              placeholder="Start writing your blog content here... Share your thoughts, insights, and ideas with your readers."
-                                              maxlength="50000"
-                                              th:classappend="${#fields.hasErrors('content')} ? 'is-invalid' : ''"></textarea>
-                                    <div class="mt-3 text-end">
-                                        <button type="button" class="btn btn-outline-primary" id="generateAiContent">
-                                            <i class="fas fa-magic me-1"></i> Gợi ý nội dung với AI
-                                        </button>
-                                        <div class="form-text text-muted mt-2">Nội dung sẽ được gợi ý dựa trên tiêu đề đã nhập.</div>
-                                    </div>
-                                    <div class="character-counter">
-                                        <span id="charCount">0</span> / 50,000 characters
-                                    </div>
-                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('content')}"
-                                         th:errors="*{content}">
-                                        Content error message
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Sidebar -->
-                    <div class="col-lg-4">
-                        <!-- Image Preview -->
-                        <div class="section-card">
-                            <div class="section-header">
-                                <h4><i class="fas fa-image"></i>Featured Image</h4>
-                            </div>
-                            <div class="card-body p-4">
-                                <div class="image-preview-card">
-                                    <div th:if="${blog.imageUrl != null && !blog.imageUrl.isEmpty()}">
-                                        <img th:src="${blog.imageUrl}" alt="Blog featured image">
-                                        <div class="text-success">
-                                            <i class="fas fa-check-circle me-1"></i>Image uploaded successfully
-                                        </div>
-                                    </div>
-                                    <div th:if="${blog.imageUrl == null || blog.imageUrl.isEmpty()}"
-                                         class="image-placeholder">
-                                        <i class="fas fa-image"></i>
-                                        <h5>No Featured Image</h5>
-                                        <p class="mb-0">Upload an image to make your blog more engaging</p>
-                                    </div>
-
-                                    <div class="mt-3">
-                                        <a th:if="${blog.id != null}"
-                                           th:href="@{/admin/blogs/upload-image/{id}(id=${blog.id})}"
-                                           class="btn btn-upload">
-                                            <i class="fas fa-upload me-2"></i>Upload Image
-                                        </a>
-                                        <p class="form-text mt-2" th:if="${blog.id == null}">
-                                            <i class="fas fa-info-circle me-1"></i>
-                                            Save the blog first to upload an image
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Blog Metadata -->
-                        <div class="section-card">
-                            <div class="section-header">
-                                <h4><i class="fas fa-info-circle"></i>Blog Information</h4>
-                            </div>
-                            <div class="card-body p-4">
-                                <div class="metadata-grid">
-                                    <div class="metadata-item">
-                                        <div class="metadata-label">Author</div>
-                                        <div class="metadata-value" th:text="${blog.authorName ?: 'Current User'}">Current
-                                            User
-                                        </div>
-                                    </div>
-
-                                    <div class="metadata-item" th:if="${blog.id != null}">
-                                        <div class="metadata-label">Blog ID</div>
-                                        <div class="metadata-value" th:text="${blog.id}">123</div>
-                                    </div>
-
-                                    <div class="metadata-item" th:if="${blog.id != null && blog.publishedDate != null}">
-                                        <div class="metadata-label">Published</div>
-                                        <div class="metadata-value" th:text="${blog.publishedDateFormatted}">01/01/2023
-                                        </div>
-                                    </div>
-
-                                    <div class="metadata-item" th:if="${blog.id != null}">
-                                        <div class="metadata-label">Status</div>
-                                        <div class="metadata-value">
-                                            <span th:if="${blog.status?.name() == 'DRAFT'}" class="text-warning">
-                                                <i class="fas fa-edit me-1"></i>Draft
-                                            </span>
-                                            <span th:if="${blog.status?.name() == 'PUBLISHED'}" class="text-success">
-                                                <i class="fas fa-check-circle me-1"></i>Published
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-
-            <!-- Action Buttons -->
-            <div class="action-buttons mb-2">
-                <div class="d-flex gap-3 flex-wrap">
-                    <button type="submit" form="blogForm" class="btn btn-save">
-                        <i class="fas fa-save me-2"></i>
-                        <span th:text="${blog.id == null ? 'Create Blog' : 'Update Blog'}">Save</span>
-                    </button>
-                    <a th:href="@{/admin/blogs}" class="btn btn-cancel">
-                        <i class="fas fa-arrow-left me-2"></i>Back to Blogs
-                    </a>
-                </div>
-                <div class="d-flex gap-2 flex-wrap" th:if="${blog.id != null}">
-                    <a th:if="${blog.status?.name() == 'DRAFT'}"
-                       th:href="@{/admin/blogs/change-status/{id}/{status}(id=${blog.id}, status='PUBLISHED')}"
-                       class="btn btn-publish"
-                       onclick="return confirm('Are you sure you want to publish this blog? It will be visible to all users.')">
-                        <i class="fas fa-rocket me-2"></i>Publish Blog
-                    </a>
-                    <a th:if="${blog.status?.name() == 'PUBLISHED'}"
-                       th:href="@{/admin/blogs/change-status/{id}/{status}(id=${blog.id}, status='DRAFT')}"
-                       class="btn btn-unpublish"
-                       onclick="return confirm('Are you sure you want to unpublish this blog? It will no longer be visible to users.')">
-                        <i class="fas fa-pause me-2"></i>Unpublish Blog
-                    </a>
                 </div>
             </div>
         </div>
-    </th:block>
 
-    <th:block layout:fragment="javascripts">
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const titleInput = document.getElementById('title');
-                const statusSelect = document.getElementById('status');
-                const contentTextarea = document.getElementById('content');
-                const statusHelp = document.getElementById('statusHelp');
-                const form = document.getElementById('blogForm');
-                const originalStatus = statusSelect.value;
-                const wordCountElement = document.getElementById('wordCountNumber');
-                const charCount = document.getElementById('charCount');
+        <!-- Blog Header -->
+        <div class="blog-header">
+            <div class="blog-icon">
+                <i th:class="${blog.id == null ? 'fas fa-plus' : 'fas fa-edit'}"></i>
+            </div>
+            <h3 class="text-center mb-2" th:text="${blog.id == null ? 'Create New Blog Post' : 'Edit Blog Post'}">BLog Form </h3>
+            <p class="text-center mb-0 opacity-75">
+                <span th:if="${blog.id == null}">Chia sẻ suy nghĩ và góc nhìn của bạn với độc giả.</span>
+                <span th:if="${blog.id != null}">Cập nhật nội dung và cài đặt blog của bạn.</span>
+            </p>
+        </div>
 
-                // Real-time preview update
-                function updatePreview() {
-                    const previewTitle = document.getElementById('previewTitle');
-                    const previewContent = document.getElementById('previewContent');
-                    const previewStatus = document.getElementById('previewStatus');
+        <!-- Preview Card -->
+        <div class="preview-card" th:if="${blog.id != null}">
+            <div class="preview-title">
+                <i class="fas fa-eye me-2"></i>Xem trước blog
+            </div>
+            <div class="blog-preview">
+                <h3 class="preview-blog-title" id="previewTitle" th:text="${blog.title ?: 'Blog Title'}">Tiêu đề blog</h3>
+                <div class="preview-meta">
+                    <div class="preview-author">
+                        <div class="author-avatar"
+                             th:text="${#strings.substring(blog.authorName ?: 'A', 0, 1).toUpperCase()}">A
+                        </div>
+                        <span th:text="${blog.authorName ?: 'Author Name'}">Tên tác giả</span>
+                    </div>
+                    <div class="preview-status" id="previewStatus"
+                         th:classappend="${blog.status?.name() == 'PUBLISHED' ? 'status-published' : 'status-draft'}"
+                         th:text="${blog.status ?: 'DRAFT'}">Bản nháp
+                    </div>
+                </div>
+                <div class="preview-content" id="previewContent"
+                     th:text="${blog.content ?: 'Blog content will appear here...'}">Nội dung blog sẽ xuất hiện ở đây...
+                </div>
+            </div>
+        </div>
 
-                    if (previewTitle && titleInput) {
-                        previewTitle.textContent = titleInput.value || 'Blog Title';
-                    }
+        <form th:action="${blog.id == null ? '/admin/blogs/create' : '/admin/blogs/edit/' + blog.id}"
+              method="post"
+              th:object="${blog}"
+              id="blogForm">
 
-                    if (previewStatus && statusSelect) {
-                        const statusText = statusSelect.options[statusSelect.selectedIndex]?.text || 'DRAFT';
-                        previewStatus.textContent = statusText;
+            <!-- Hidden field for userId -->
+            <input type="hidden" th:field="*{userId}">
 
-                        // Update status class
-                        previewStatus.className = 'preview-status ' +
-                            (statusSelect.value === 'PUBLISHED' ? 'status-published' : 'status-draft');
-                    }
+            <div class="row">
+                <!-- Main Content -->
+                <div class="col-lg-8">
+                    <!-- Basic Information -->
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h4><i class="fas fa-pen-fancy"></i>Nội dung blog</h4>
+                        </div>
+                        <div class="card-body p-4">
+                            <!-- Title & Status Row -->
+                            <div class="row mb-4">
+                                <div class="col-md-8">
+                                    <div class="form-floating-label">
+                                        <input type="text"
+                                               id="title"
+                                               th:field="*{title}"
+                                               required
+                                               placeholder=""
+                                               th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''">
+                                        <label for="title" class="required-field">Tiêu đề blog</label>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}"
+                                             th:errors="*{title}">
+                                            Thông báo lỗi tiêu đề
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-floating-label status-selector">
+                                        <select id="status" th:field="*{status}" required>
+                                            <option th:each="blogStatus : ${blogStatuses}"
+                                                    th:value="${blogStatus}"
+                                                    th:text="${blogStatus}">
+                                                Bản nháp
+                                            </option>
+                                        </select>
+                                        <label for="status" class="required-field">Trạng thái bài viết</label>
+                                    </div>
+                                    <div class="status-help" id="statusHelp">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        <span th:if="${blog.id == null}">Lưu dưới dạng bản nháp để chỉnh sửa sau hoặc xuất bản ngay.</span>
+                                        <span th:if="${blog.id != null && blog.status?.name() == 'DRAFT'}">Sau khi xuất bản, blog này sẽ được công khai.</span>
+                                        <span th:if="${blog.id != null && blog.status?.name() == 'PUBLISHED'}">Chuyển sang bản nháp sẽ ẩn bài viết này khỏi người dùng.</span>
+                                    </div>
+                                </div>
+                            </div>
 
-                    if (previewContent && contentTextarea) {
-                        const content = contentTextarea.value || 'Blog content will appear here...';
-                        previewContent.textContent = content;
-                    }
+                            <!-- Content Editor -->
+                            <div class="content-editor-container">
+                                <div class="content-editor-label">
+                                        <span>
+                                            <i class="fas fa-align-left me-2"></i>Nội dung blog *
+                                        </span>
+                                    <span class="word-count" id="wordCount">
+                                            <i class="fas fa-font"></i>
+                                            <span id="wordCountNumber">0</span> Số từ
+                                        </span>
+                                </div>
+                                <textarea class="content-textarea"
+                                          id="content"
+                                          th:field="*{content}"
+                                          rows="15"
+                                          required
+                                          placeholder="Bắt đầu viết nội dung bài viết của bạn tại đây... Hãy chia sẻ suy nghĩ, góc nhìn và ý tưởng của bạn với độc giả."
+                                          maxlength="50000"
+                                          th:classappend="${#fields.hasErrors('content')} ? 'is-invalid' : ''"></textarea>
+                                <div class="mt-3 text-end">
+                                    <button type="button" class="btn btn-outline-primary" id="generateAiContent">
+                                        <i class="fas fa-magic me-1"></i> Gợi ý nội dung với AI
+                                    </button>
+                                    <div class="form-text text-muted mt-2">Nội dung sẽ được gợi ý dựa trên tiêu đề đã nhập.</div>
+                                </div>
+                                <div class="character-counter">
+                                    <span id="charCount">0</span> / 50,000 ký tự
+                                </div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('content')}"
+                                     th:errors="*{content}">
+                                    Thông báo lỗi nội dung
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <!-- Image Preview -->
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h4><i class="fas fa-image"></i>Ảnh đại diện</h4>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="image-preview-card">
+                                <div th:if="${blog.imageUrl != null && !blog.imageUrl.isEmpty()}">
+                                    <img th:src="${blog.imageUrl}" alt="Blog featured image">
+                                    <div class="text-success">
+                                        <i class="fas fa-check-circle me-1"></i>Tải ảnh lên thành công
+                                    </div>
+                                </div>
+                                <div th:if="${blog.imageUrl == null || blog.imageUrl.isEmpty()}"
+                                     class="image-placeholder">
+                                    <i class="fas fa-image"></i>
+                                    <h5>Chưa chọn ảnh đại diện</h5>
+                                    <p class="mb-0">Tải lên một hình ảnh để bài viết của bạn thêm hấp dẫn hơn</p>
+                                </div>
+
+                                <div class="mt-3">
+                                    <a th:if="${blog.id != null}"
+                                       th:href="@{/admin/blogs/upload-image/{id}(id=${blog.id})}"
+                                       class="btn btn-upload">
+                                        <i class="fas fa-upload me-2"></i>Tải lên hình ảnh
+                                    </a>
+                                    <p class="form-text mt-2" th:if="${blog.id == null}">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Vui lòng lưu bài viết trước khi tải lên hình ảnh
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Blog Metadata -->
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h4><i class="fas fa-info-circle"></i>Thông tin blog</h4>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="metadata-grid">
+                                <div class="metadata-item">
+                                    <div class="metadata-label">Tác giả</div>
+                                    <div class="metadata-value" th:text="${blog.authorName ?: 'Current User'}">Người dùng hiện tại
+                                    </div>
+                                </div>
+
+                                <div class="metadata-item" th:if="${blog.id != null}">
+                                    <div class="metadata-label">Blog ID</div>
+                                    <div class="metadata-value" th:text="${blog.id}">123</div>
+                                </div>
+
+                                <div class="metadata-item" th:if="${blog.id != null && blog.publishedDate != null}">
+                                    <div class="metadata-label">Published</div>
+                                    <div class="metadata-value" th:text="${blog.publishedDateFormatted}">01/01/2023
+                                    </div>
+                                </div>
+
+                                <div class="metadata-item" th:if="${blog.id != null}">
+                                    <div class="metadata-label">Trạng thái</div>
+                                    <div class="metadata-value">
+                                            <span th:if="${blog.status?.name() == 'DRAFT'}" class="text-warning">
+                                                <i class="fas fa-edit me-1"></i>Bản nháp
+                                            </span>
+                                        <span th:if="${blog.status?.name() == 'PUBLISHED'}" class="text-success">
+                                                <i class="fas fa-check-circle me-1"></i>Đã xuất bản
+                                            </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons mb-2">
+            <div class="d-flex gap-3 flex-wrap">
+                <button type="submit" form="blogForm" class="btn btn-save">
+                    <i class="fas fa-save me-2"></i>
+                    <span th:text="${blog.id == null ? 'Create Blog' : 'Update Blog'}">Lưu</span>
+                </button>
+                <a th:href="@{/admin/blogs}" class="btn btn-cancel">
+                    <i class="fas fa-arrow-left me-2"></i>Quay lại Blogs
+                </a>
+            </div>
+            <div class="d-flex gap-2 flex-wrap" th:if="${blog.id != null}">
+                <a th:if="${blog.status?.name() == 'DRAFT'}"
+                   th:href="@{/admin/blogs/change-status/{id}/{status}(id=${blog.id}, status='PUBLISHED')}"
+                   class="btn btn-publish"
+                   onclick="return confirm('Bạn có chắc chắn muốn xuất bản bài viết này không? Nó sẽ hiển thị cho tất cả người dùng.')">
+                    <i class="fas fa-rocket me-2"></i>Xuất bản bài viết
+                </a>
+                <a th:if="${blog.status?.name() == 'PUBLISHED'}"
+                   th:href="@{/admin/blogs/change-status/{id}/{status}(id=${blog.id}, status='DRAFT')}"
+                   class="btn btn-unpublish"
+                   onclick="return confirm('Bạn có chắc chắn muốn huỷ xuất bản bài viết này không? Nó sẽ không còn hiển thị với người dùng.')">
+                    <i class="fas fa-pause me-2"></i>Huỷ xuất bản bài viết
+                </a>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="javascripts">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const titleInput = document.getElementById('title');
+            const statusSelect = document.getElementById('status');
+            const contentTextarea = document.getElementById('content');
+            const statusHelp = document.getElementById('statusHelp');
+            const form = document.getElementById('blogForm');
+            const originalStatus = statusSelect.value;
+            const wordCountElement = document.getElementById('wordCountNumber');
+            const charCount = document.getElementById('charCount');
+
+            // Real-time preview update
+            function updatePreview() {
+                const previewTitle = document.getElementById('previewTitle');
+                const previewContent = document.getElementById('previewContent');
+                const previewStatus = document.getElementById('previewStatus');
+
+                if (previewTitle && titleInput) {
+                    previewTitle.textContent = titleInput.value || 'Blog Title';
                 }
 
-                // Word count functionality
-                function updateWordCount() {
-                    if (wordCountElement && contentTextarea) {
-                        const content = contentTextarea.value.trim();
-                        const wordCount = content === '' ? 0 : content.split(/\s+/).length;
-                        wordCountElement.textContent = wordCount;
-                    }
+                if (previewStatus && statusSelect) {
+                    const statusText = statusSelect.options[statusSelect.selectedIndex]?.text || 'DRAFT';
+                    previewStatus.textContent = statusText;
+
+                    // Update status class
+                    previewStatus.className = 'preview-status ' +
+                        (statusSelect.value === 'PUBLISHED' ? 'status-published' : 'status-draft');
                 }
 
-                // Character count functionality
-                function updateCharCount() {
-                    if (charCount && contentTextarea) {
-                        const currentLength = contentTextarea.value.length;
-                        charCount.textContent = currentLength;
-
-                        // Change color based on usage
-                        if (currentLength > 45000) {
-                            charCount.className = 'text-danger fw-bold';
-                        } else if (currentLength > 40000) {
-                            charCount.className = 'text-warning fw-bold';
-                        } else {
-                            charCount.className = '';
-                        }
-                    }
+                if (previewContent && contentTextarea) {
+                    const content = contentTextarea.value || 'Blog content will appear here...';
+                    previewContent.textContent = content;
                 }
+            }
 
-                // Status change help text
-                function updateStatusHelp() {
-                    const isNewBlog = [[${blog.id == null}]];
-                    const currentStatus = '[[${blog.status?.name()}]]';
+            // Word count functionality
+            function updateWordCount() {
+                if (wordCountElement && contentTextarea) {
+                    const content = contentTextarea.value.trim();
+                    const wordCount = content === '' ? 0 : content.split(/\s+/).length;
+                    wordCountElement.textContent = wordCount;
+                }
+            }
 
-                    if (isNewBlog) {
-                        statusHelp.innerHTML = '<i class="fas fa-info-circle me-1"></i>Save as draft to edit later or publish immediately.';
+            // Character count functionality
+            function updateCharCount() {
+                if (charCount && contentTextarea) {
+                    const currentLength = contentTextarea.value.length;
+                    charCount.textContent = currentLength;
+
+                    // Change color based on usage
+                    if (currentLength > 45000) {
+                        charCount.className = 'text-danger fw-bold';
+                    } else if (currentLength > 40000) {
+                        charCount.className = 'text-warning fw-bold';
                     } else {
-                        if (statusSelect.value === 'PUBLISHED' && currentStatus === 'DRAFT') {
-                            statusHelp.innerHTML = '<i class="fas fa-eye me-1"></i>Publishing will make this blog visible to all users.';
-                        } else if (statusSelect.value === 'DRAFT' && currentStatus === 'PUBLISHED') {
-                            statusHelp.innerHTML = '<i class="fas fa-eye-slash me-1"></i>Changing to draft will hide this blog from users.';
-                        } else {
-                            statusHelp.innerHTML = '<i class="fas fa-info-circle me-1"></i>Select the publication status for this blog.';
-                        }
+                        charCount.className = '';
                     }
                 }
+            }
 
-                // Event listeners
-                if (titleInput) {
-                    titleInput.addEventListener('input', updatePreview);
+            // Status change help text
+            function updateStatusHelp() {
+                const isNewBlog = [[${blog.id == null}]];
+                const currentStatus = '[[${blog.status?.name()}]]';
+
+                if (isNewBlog) {
+                    statusHelp.innerHTML = '<i class="fas fa-info-circle me-1"></i>Lưu dưới dạng bản nháp hoặc xuất bản ngay';
+                } else {
+                    if (statusSelect.value === 'PUBLISHED' && currentStatus === 'DRAFT') {
+                        statusHelp.innerHTML = '<i class="fas fa-eye me-1"></i>Sau khi xuất bản, bài viết này sẽ hiển thị cho tất cả người dùng.';
+                    } else if (statusSelect.value === 'DRAFT' && currentStatus === 'PUBLISHED') {
+                        statusHelp.innerHTML = '<i class="fas fa-eye-slash me-1"></i>Chuyển sang bản nháp sẽ ẩn bài viết này khỏi người dùng.';
+                    } else {
+                        statusHelp.innerHTML = '<i class="fas fa-info-circle me-1"></i>Chọn trạng thái xuất bản cho bài viết này.';
+                    }
                 }
+            }
 
-                if (statusSelect) {
-                    statusSelect.addEventListener('change', function() {
-                        updatePreview();
-                        updateStatusHelp();
-                    });
-                }
+            // Event listeners
+            if (titleInput) {
+                titleInput.addEventListener('input', updatePreview);
+            }
 
-                if (contentTextarea) {
-                    contentTextarea.addEventListener('input', function() {
-                        updatePreview();
-                        updateWordCount();
-                        updateCharCount();
-                    });
-                }
+            if (statusSelect) {
+                statusSelect.addEventListener('change', function() {
+                    updatePreview();
+                    updateStatusHelp();
+                });
+            }
 
-                // Form validation
-                if (form) {
-                    form.addEventListener('submit', function(e) {
-                        // Status change confirmation
-                        if (statusSelect.value !== originalStatus) {
-                            if (statusSelect.value === 'PUBLISHED' && !confirm('Are you sure you want to publish this blog? It will be visible to all users.')) {
-                                e.preventDefault();
-                                statusSelect.value = originalStatus;
-                                return;
-                            } else if (statusSelect.value === 'DRAFT' && !confirm('Are you sure you want to set this blog as draft? It will not be visible to users.')) {
-                                e.preventDefault();
-                                statusSelect.value = originalStatus;
-                                return;
-                            }
-                        }
+            if (contentTextarea) {
+                contentTextarea.addEventListener('input', function() {
+                    updatePreview();
+                    updateWordCount();
+                    updateCharCount();
+                });
+            }
 
-                        // Validate required fields
-                        const requiredFields = form.querySelectorAll('[required]');
-                        let isValid = true;
-
-                        requiredFields.forEach(field => {
-                            if (!field.value.trim()) {
-                                field.classList.add('is-invalid');
-                                isValid = false;
-                            } else {
-                                field.classList.remove('is-invalid');
-                            }
-                        });
-
-                        if (!isValid) {
+            // Form validation
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    // Status change confirmation
+                    if (statusSelect.value !== originalStatus) {
+                        if (statusSelect.value === 'PUBLISHED' && !confirm('Are you sure you want to publish this blog? It will be visible to all users.')) {
                             e.preventDefault();
-                            // Scroll to first invalid field
-                            const firstInvalid = form.querySelector('.is-invalid');
-                            if (firstInvalid) {
-                                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                firstInvalid.focus();
-                            }
+                            statusSelect.value = originalStatus;
+                            return;
+                        } else if (statusSelect.value === 'DRAFT' && !confirm('Are you sure you want to set this blog as draft? It will not be visible to users.')) {
+                            e.preventDefault();
+                            statusSelect.value = originalStatus;
+                            return;
+                        }
+                    }
+
+                    // Validate required fields
+                    const requiredFields = form.querySelectorAll('[required]');
+                    let isValid = true;
+
+                    requiredFields.forEach(field => {
+                        if (!field.value.trim()) {
+                            field.classList.add('is-invalid');
+                            isValid = false;
+                        } else {
+                            field.classList.remove('is-invalid');
                         }
                     });
-                }
 
-                // Initialize all functions
-                updateStatusHelp();
-                updatePreview();
-                updateWordCount();
-                updateCharCount();
-            });
-        </script>
+                    if (!isValid) {
+                        e.preventDefault();
+                        // Scroll to first invalid field
+                        const firstInvalid = form.querySelector('.is-invalid');
+                        if (firstInvalid) {
+                            firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            firstInvalid.focus();
+                        }
+                    }
+                });
+            }
 
-        <script>
-            document.getElementById('generateAiContent').addEventListener('click', async function () {
-                const title = document.getElementById('title').value.trim();
-                if (!title) {
-                    alert('Vui lòng nhập tiêu đề trước khi sử dụng AI gợi ý.');
-                    return;
-                }
+            // Initialize all functions
+            updateStatusHelp();
+            updatePreview();
+            updateWordCount();
+            updateCharCount();
+        });
+    </script>
 
-                const btn = this;
-                const contentTextarea = document.getElementById('content');
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang gợi ý...';
+    <script>
+        document.getElementById('generateAiContent').addEventListener('click', async function () {
+            const title = document.getElementById('title').value.trim();
+            if (!title) {
+                alert('Vui lòng nhập tiêu đề trước khi sử dụng AI gợi ý.');
+                return;
+            }
 
-                try {
-                    const response = await fetch(`/admin/blogs/suggest-content?title=${encodeURIComponent(title)}`);
-                    const data = await response.json();
+            const btn = this;
+            const contentTextarea = document.getElementById('content');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang gợi ý...';
 
-                    contentTextarea.value = data.content;
-                    contentTextarea.dispatchEvent(new Event('input')); // Cập nhật preview + counter
-                } catch (error) {
-                    alert('Không thể lấy nội dung từ AI: ' + error.message);
-                } finally {
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-magic me-1"></i> Gợi ý nội dung với AI';
-                }
-            });
-        </script>
+            try {
+                const response = await fetch(`/admin/blogs/suggest-content?title=${encodeURIComponent(title)}`);
+                const data = await response.json();
 
-    </th:block>
-    </body>
-    </html>
+                contentTextarea.value = data.content;
+                contentTextarea.dispatchEvent(new Event('input')); // Cập nhật preview + counter
+            } catch (error) {
+                alert('Không thể lấy nội dung từ AI: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic me-1"></i> Gợi ý nội dung với AI';
+            }
+        });
+    </script>
+
+</th:block>
+</body>
+</html>

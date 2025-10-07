@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{components/layouts/main}">
 <head>
-    <title>Dashboard - GreenBook Admin</title>
+    <title>Bảng điều khiển - Quản trị GreenBook</title>
 
     <th:block layout:fragment="stylesheets">
         <style>
@@ -347,7 +347,7 @@
                 animation: pulse-badge 2s infinite;
             }
             .export-report-wrapper {
-               margin-top: 1rem;
+                margin-top: 1rem;
             }
 
             @keyframes pulse-badge {
@@ -367,14 +367,14 @@
                 <div class="dashboard-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h1 class="dashboard-title">Dashboard</h1>
+                            <h1 class="dashboard-title">Trang tổng quan</h1>
                             <p class="dashboard-subtitle mb-0">
-                                Welcome back! Here's what's happening with your bookstore today.
+                                Chào mừng trở lại! Đây là những gì đang diễn ra với cửa hàng sách của bạn hôm nay.
                             </p>
                         </div>
                         <div class="text-end">
                             <div class="fs-4 fw-bold" id="currentTime">12:34 PM</div>
-                            <div class="opacity-75" id="currentDate">Today</div>
+                            <div class="opacity-75" id="currentDate">Hôm nay</div>
                         </div>
                     </div>
                 </div>
@@ -387,11 +387,11 @@
                 <div class="stat-card revenue">
                     <div class="stat-card-body">
                         <div class="stat-content">
-                            <div class="stat-title">Total Revenue</div>
+                            <div class="stat-title">Tổng doanh thu</div>
                             <div class="stat-value" th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</div>
                             <div class="stat-change positive">
                                 <i class="fas fa-arrow-up"></i>
-                                <span>+12.5% from last month</span>
+                                <span>Tăng 12.5% so với tháng trước</span>
                             </div>
                         </div>
                         <div class="stat-icon revenue">
@@ -400,7 +400,7 @@
                     </div>
                     <div class="stat-footer">
                         <a href="#">
-                            <span>View Revenue Details</span>
+                            <span>Xem chi tiết doanh thu</span>
                             <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
@@ -411,11 +411,11 @@
                 <div class="stat-card monthly">
                     <div class="stat-card-body">
                         <div class="stat-content">
-                            <div class="stat-title">Monthly Revenue</div>
+                            <div class="stat-title">Doanh thu hàng tháng</div>
                             <div class="stat-value" th:text="${#numbers.formatDecimal(monthlyRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</div>
                             <div class="stat-change positive">
                                 <i class="fas fa-arrow-up"></i>
-                                <span>+8.2% from last month</span>
+                                <span>Tăng 8.2% so với tháng trước</span>
                             </div>
                         </div>
                         <div class="stat-icon monthly">
@@ -424,7 +424,7 @@
                     </div>
                     <div class="stat-footer">
                         <a href="#">
-                            <span>View Monthly Report</span>
+                            <span>Xem báo cáo hàng tháng</span>
                             <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
@@ -435,11 +435,11 @@
                 <div class="stat-card orders">
                     <div class="stat-card-body">
                         <div class="stat-content">
-                            <div class="stat-title">Total Orders</div>
+                            <div class="stat-title">Tổng số đơn hàng</div>
                             <div class="stat-value" th:text="${totalOrders}">0</div>
                             <div class="stat-change positive">
                                 <i class="fas fa-arrow-up"></i>
-                                <span>+15.3% from last month</span>
+                                <span>Tăng 15.3% so với tháng trước</span>
                             </div>
                         </div>
                         <div class="stat-icon orders">
@@ -448,7 +448,7 @@
                     </div>
                     <div class="stat-footer">
                         <a th:href="@{/admin/orders}">
-                            <span>View All Orders</span>
+                            <span>Xem tất cả đơn hàng</span>
                             <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
@@ -459,11 +459,11 @@
                 <div class="stat-card pending">
                     <div class="stat-card-body">
                         <div class="stat-content">
-                            <div class="stat-title">Pending Orders</div>
+                            <div class="stat-title">Đơn hàng đang chờ xử lý</div>
                             <div class="stat-value" th:text="${pendingOrders}">0</div>
                             <div class="stat-change" th:classappend="${pendingOrders > 0 ? 'negative' : 'positive'}">
                                 <i th:class="${pendingOrders > 0 ? 'fas fa-exclamation-triangle' : 'fas fa-check'}"></i>
-                                <span th:text="${pendingOrders > 0 ? 'Requires attention' : 'All up to date'}">Status</span>
+                                <span th:text="${pendingOrders > 0 ? 'Requires attention' : 'All up to date'}">Trạng thái</span>
                             </div>
                         </div>
                         <div class="stat-icon pending">
@@ -473,7 +473,7 @@
                     </div>
                     <div class="stat-footer">
                         <a th:href="@{/admin/orders/by-status/PENDING}">
-                            <span>View Pending Orders</span>
+                            <span>Xem các đơn hàng đang chờ xử lý</span>
                             <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
@@ -488,7 +488,7 @@
                     <div class="chart-header">
                         <h5 class="chart-title">
                             <i class="fas fa-chart-area"></i>
-                            Monthly Sales Trend
+                            Xu hướng doanh số hàng tháng
                         </h5>
                     </div>
                     <div class="chart-body">
@@ -504,7 +504,7 @@
                     <div class="chart-header">
                         <h5 class="chart-title">
                             <i class="fas fa-chart-pie"></i>
-                            Sales Distribution
+                            Phân bổ doanh số
                         </h5>
                     </div>
                     <div class="chart-body">
@@ -523,7 +523,7 @@
                     <div class="table-header">
                         <h5 class="table-title">
                             <i class="fas fa-exclamation-triangle"></i>
-                            Low Stock Alert
+                            Cảnh báo hàng tồn kho thấp
                             <span th:if="${lowStockAlerts > 0}" class="badge bg-danger ms-2" th:text="${lowStockAlerts}">0</span>
                         </h5>
                     </div>
@@ -531,10 +531,10 @@
                         <table class="table modern-table">
                             <thead>
                             <tr>
-                                <th>Book</th>
-                                <th>Current Stock</th>
-                                <th>Status</th>
-                                <th>Action</th>
+                                <th>Sách</th>
+                                <th>Tồn kho hiện tại</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -543,7 +543,7 @@
                                     <div class="no-data-state">
                                         <i class="fas fa-check-circle"></i>
                                         <h5>All Stock Levels Good</h5>
-                                        <p class="mb-0">No low stock alerts at this time</p>
+                                        <p class="mb-0">Hiện tại không có cảnh báo hàng tồn kho thấp</p>
                                     </div>
                                 </td>
                             </tr>
@@ -556,28 +556,28 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <div class="fw-semibold" th:text="${book.title}">Book Title</div>
+                                            <div class="fw-semibold" th:text="${book.title}">Tiêu đề sách</div>
                                             <small class="text-muted">ID: <span th:text="${book.id}">1</span></small>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
                                     <span class="fw-bold" th:text="${book.stockQuantity}">5</span>
-                                    <small class="text-muted"> units</small>
+                                    <small class="text-muted"> đơn vị</small>
                                 </td>
                                 <td>
                                     <span th:if="${book.stockQuantity <= 2}" class="stock-alert stock-critical">
                                         <i class="fas fa-exclamation-triangle"></i>
-                                        Critical
+                                        Nguy cấp
                                     </span>
                                     <span th:if="${book.stockQuantity > 2 && book.stockQuantity < 5}" class="stock-alert stock-low">
                                         <i class="fas fa-exclamation-circle"></i>
-                                        Low
+                                        Thấp
                                     </span>
                                 </td>
                                 <td>
                                     <a th:href="@{/admin/books/update-stock/{id}(id=${book.id})}" class="btn btn-update-stock">
-                                        <i class="fas fa-plus me-1"></i>Update
+                                        <i class="fas fa-plus me-1"></i>Cập nhật
                                     </a>
                                 </td>
                             </tr>
@@ -591,17 +591,17 @@
                     <div class="table-header">
                         <h5 class="table-title">
                             <i class="fas fa-trophy"></i>
-                            Top Selling Books
+                            Sách bán chạy nhất
                         </h5>
                     </div>
                     <div class="table-responsive">
                         <table class="table modern-table">
                             <thead>
                             <tr>
-                                <th>Rank</th>
-                                <th>Book</th>
-                                <th>Sold</th>
-                                <th>Revenue</th>
+                                <th>Xếp hạng</th>
+                                <th>Sách</th>
+                                <th>Đã bán</th>
+                                <th>Doanh thu</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -610,7 +610,7 @@
                                     <div class="no-data-state">
                                         <i class="fas fa-chart-bar"></i>
                                         <h5>No Sales Data</h5>
-                                        <p class="mb-0">Sales data will appear here once orders are placed</p>
+                                        <p class="mb-0">Dữ liệu bán hàng sẽ hiển thị tại đây khi có đơn hàng được đặt</p>
                                     </div>
                                 </td>
                             </tr>
@@ -627,7 +627,7 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <div class="fw-semibold" th:text="${book.title}">Book Title</div>
+                                            <div class="fw-semibold" th:text="${book.title}">Tiêu đề sách</div>
                                             <small class="text-muted">ID: <span th:text="${book.id}">1</span></small>
                                         </div>
                                     </div>
@@ -648,7 +648,7 @@
             <div class="export-report-wrapper mt-3 d-flex justify-content-center" style="z-index: 999;">
                 <div class="btn-group">
                     <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-file-export"></i> Export
+                        <i class="fas fa-file-export"></i> Xuất báo cáo
                     </button>
                     <ul class="dropdown-menu text-center">
                         <li>

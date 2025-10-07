@@ -10,7 +10,7 @@
     <meta content="NTDzVEKNY and team" name="author"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 
-    <title layout:title-pattern="$LAYOUT_TITLE | $CONTENT_TITLE">GreenBook Admin</title>
+    <title layout:title-pattern="$LAYOUT_TITLE | $CONTENT_TITLE">Quản trị viên GreenBook</title>
 
     <link rel="shortcut icon" th:href="@{/images/favicon.ico}">
 
@@ -28,11 +28,11 @@
 <div id="x-wrapper" data-controller="init">
     <div class="container-fluid px-4 mt-3">
         <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}">
-            <span th:text="${successMessage}">Success message</span>
+            <span th:text="${successMessage}">Thông báo thành công</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
-            <span th:text="${errorMessage}">Error message</span>
+            <span th:text="${errorMessage}">Thông báo lỗi</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
@@ -42,7 +42,7 @@
 
 </div>
 
-    <th:block layout:fragment="scripts"></th:block>
+<th:block layout:fragment="scripts"></th:block>
 
 </body>
 

@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{components/layouts/main}">
 <head>
-    <title>Orders - GreenBook Admin</title>
+    <title>Đơn hàng - Quản trị GreenBook</title>
 
     <th:block layout:fragment="stylesheets">
         <link th:href="@{/libs/simple-datatables/style.css}" rel="stylesheet" type="text/css"/>
@@ -17,8 +17,8 @@
         <div class="row justify-content-center">
             <div class="col-12">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Orders</li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Trang tổng quan</a></li>
+                    <li class="breadcrumb-item active">Đơn hàng</li>
                 </ol>
             </div>
         </div>
@@ -28,14 +28,14 @@
             <div class="col-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-filter me-1"></i> Search & Filter Orders
+                        <i class="fas fa-filter me-1"></i> Tìm kiếm & lọc đơn hàng
                     </div>
                     <div class="card-body">
                         <form th:action="@{/admin/orders}" method="get" class="row g-3">
                             <div class="col-md-3">
-                                <label for="status" class="form-label">Order Status</label>
+                                <label for="status" class="form-label">Trạng thái đơn hàng</label>
                                 <select class="form-select" id="status" name="status">
-                                    <option value="">All Statuses</option>
+                                    <option value="">Tất cả trạng thái</option>
                                     <option th:each="orderStatus : ${orderStatuses}"
                                             th:value="${orderStatus}"
                                             th:text="${orderStatus}"
@@ -45,21 +45,21 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <label for="startDate" class="form-label">Start Date</label>
+                                <label for="startDate" class="form-label">Ngày bắt đầu</label>
                                 <input type="datetime-local" class="form-control" id="startDate" name="startDate" th:value="${startDate}">
                             </div>
                             <div class="col-md-3">
-                                <label for="endDate" class="form-label">End Date</label>
+                                <label for="endDate" class="form-label">Ngày kết thúc</label>
                                 <input type="datetime-local" class="form-control" id="endDate" name="endDate" th:value="${endDate}">
                             </div>
                             <div class="col-md-2 d-flex align-items-end">
                                 <button type="submit" class="btn btn-primary w-100">
-                                    <i class="fas fa-search me-1"></i> Filter
+                                    <i class="fas fa-search me-1"></i> Lọc
                                 </button>
                             </div>
                             <div class="col-md-1 d-flex align-items-end">
                                 <a th:href="@{/admin/orders}" class="btn btn-secondary w-100">
-                                    <i class="fas fa-redo me-1"></i> Reset
+                                    <i class="fas fa-redo me-1"></i> Đặt lại
                                 </a>
                             </div>
                         </form>
@@ -73,18 +73,18 @@
             <div class="col-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-chart-bar me-1"></i> Order Status Filter
+                        <i class="fas fa-chart-bar me-1"></i> Bộ lọc trạng thái đơn hàng
                     </div>
                     <div class="card-body">
                         <ul class="nav nav-pills">
                             <li class="nav-item">
-                                <a class="nav-link" th:classappend="${status == null ? 'active' : ''}" th:href="@{/admin/orders}">All</a>
+                                <a class="nav-link" th:classappend="${status == null ? 'active' : ''}" th:href="@{/admin/orders}">Tất cả</a>
                             </li>
                             <li class="nav-item" th:each="orderStatus : ${orderStatuses}">
                                 <a class="nav-link"
                                    th:classappend="${status != null && status == orderStatus ? 'active' : ''}"
                                    th:href="@{/admin/orders/by-status/{status}(status=${orderStatus})}"
-                                   th:text="${orderStatus}">Status</a>
+                                   th:text="${orderStatus}">Trạng thái</a>
                             </li>
                         </ul>
                     </div>
@@ -97,7 +97,7 @@
             <div class="col-12">
                 <div class="card mb-4">
                     <div class="card-header">
-                        <i class="fas fa-table me-1"></i> Order List
+                        <i class="fas fa-table me-1"></i> Danh sách đơn hàng
                     </div>
                     <div class="card-body pt-0">
                         <div class="table-responsive">
@@ -105,46 +105,46 @@
                                 <thead class="table-light">
                                 <tr>
                                     <th>ID</th>
-                                    <th>Date</th>
-                                    <th>Customer</th>
-                                    <th>Items</th>
-                                    <th>Total</th>
-                                    <th>Payment</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th>Ngày</th>
+                                    <th>Khách hàng</th>
+                                    <th>Sản phẩm</th>
+                                    <th>Tổng cộng</th>
+                                    <th>Thanh toán</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr th:if="${orders.isEmpty()}">
-                                    <td colspan="8" class="text-center">No orders found</td>
+                                    <td colspan="8" class="text-center">Không tìm thấy đơn hàng</td>
                                 </tr>
                                 <tr th:each="order : ${orders}">
                                     <td th:text="${order.id}">1</td>
                                     <td th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">01/01/2023 10:00</td>
-                                    <td th:text="${order.username}">username</td>
+                                    <td th:text="${order.username}">Tên đăng nhập</td>
                                     <td th:text="${order.orderDetails.size()}">3</td>
                                     <td th:text="${#numbers.formatDecimal(order.finalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">100,000 đ</td>
-                                    <td th:text="${order.paymentMethod}">CASH_ON_DELIVERY</td>
+                                    <td th:text="${order.paymentMethod}">Thanh toán khi nhận hàng</td>
                                     <td>
-                                        <span th:if="${order.status.name() == 'PENDING'}" class="badge bg-warning">Pending</span>
-                                        <span th:if="${order.status.name() == 'PROCESSING'}" class="badge bg-info">Processing</span>
-                                        <span th:if="${order.status.name() == 'SHIPPED'}" class="badge bg-primary">Shipped</span>
-                                        <span th:if="${order.status.name() == 'DELIVERED'}" class="badge bg-success">Delivered</span>
-                                        <span th:if="${order.status.name() == 'COMPLETED'}" class="badge bg-success">Completed</span>
-                                        <span th:if="${order.status.name() == 'CANCELLED'}" class="badge bg-danger">Cancelled</span>
+                                        <span th:if="${order.status.name() == 'PENDING'}" class="badge bg-warning">Đang chờ xử lý</span>
+                                        <span th:if="${order.status.name() == 'PROCESSING'}" class="badge bg-info">Đang xử lý</span>
+                                        <span th:if="${order.status.name() == 'SHIPPED'}" class="badge bg-primary">Đã gửi hàng</span>
+                                        <span th:if="${order.status.name() == 'DELIVERED'}" class="badge bg-success">Đã giao hàng</span>
+                                        <span th:if="${order.status.name() == 'COMPLETED'}" class="badge bg-success">Hoàn tất</span>
+                                        <span th:if="${order.status.name() == 'CANCELLED'}" class="badge bg-danger">Đã hủy</span>
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <a th:href="@{/admin/orders/{id}(id=${order.id})}" class="btn btn-sm btn-primary" title="View Details">
+                                            <a th:href="@{/admin/orders/{id}(id=${order.id})}" class="btn btn-sm btn-primary" title="Xem chi tiết">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a th:href="@{/admin/orders/{id}/edit(id=${order.id})}" class="btn btn-sm btn-info" title="Edit">
+                                            <a th:href="@{/admin/orders/{id}/edit(id=${order.id})}" class="btn btn-sm btn-info" title="Chỉnh sửa">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <a th:href="@{/admin/orders/{id}/delete(id=${order.id})}"
                                                class="btn btn-sm btn-danger btn-delete"
-                                               title="Delete"
-                                               onclick="return confirm('Are you sure you want to delete this order?');">
+                                               title="Xóa"
+                                               onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này không?');">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                         </div>
@@ -172,10 +172,10 @@
                     perPage: 10,
                     perPageSelect: [5, 10, 15, 20, 25],
                     labels: {
-                        placeholder: "Search orders...",
-                        perPage: "{select} entries per page",
-                        noRows: "No orders found",
-                        info: "Showing {start} to {end} of {rows} entries"
+                        placeholder: "Tìm kiếm đơn hàng...",
+                        perPage: "{select} số mục mỗi trang",
+                        noRows: "Không tìm thấy đơn hàng nào",
+                        info: "Hiển thị từ {start} đến {end} trong tổng số {rows} mục"
                     },
                     columns: [
                         { select: 0, sort: "desc" }, // Sort by ID descending (newest first)
@@ -198,7 +198,7 @@
             if (e.target.closest('.btn-delete')) {
                 e.preventDefault();
                 const link = e.target.closest('.btn-delete');
-                if (confirm('Are you sure you want to delete this order?')) {
+                if (confirm('Bạn có chắc chắn muốn xóa đơn hàng này không?')) {
                     window.location.href = link.href;
                 }
             }

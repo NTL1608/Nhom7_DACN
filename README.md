@@ -49,7 +49,7 @@ FLUSH PRIVILEGES;
 1. Clone repository:
 
 ```bash
-git clone https://github.com/NTDzVEKNY/BTL_SpringBoot_Greenbook.git
+git clone https://github.com/NTL1608/Nhom7_DACN
 cd BTL_SpringBoot_Greenbook
 ```
 

@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{components/layouts/main}">
 <head>
-    <title>Stock Management - GreenBook Admin</title>
+    <title>Quản lý tồn kho - Quản trị GreenBook</title>
 
     <th:block layout:fragment="stylesheets">
         <style>
@@ -215,9 +215,9 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a th:href="@{/admin/books}">Books</a></li>
-                            <li class="breadcrumb-item active">Update Stock</li>
+                            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Trang tổng quan</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/admin/books}">Sách</a></li>
+                            <li class="breadcrumb-item active">Cập nhật tồn kho</li>
                         </ol>
                     </div>
                     <div class="text-end">
@@ -245,19 +245,19 @@
                                 </div>
                             </div>
                             <div class="flex-grow-1">
-                                <h4 class="mb-3" th:text="${book.title}">Book Title</h4>
+                                <h4 class="mb-3" th:text="${book.title}">Tiêu đề sách</h4>
 
                                 <div class="row g-2 mb-3">
                                     <div class="col-12" th:if="${book.author != null}">
                                         <div class="d-flex align-items-center">
                                             <i class="fas fa-user me-2 opacity-75"></i>
-                                            <span th:text="${book.author}">Author Name</span>
+                                            <span th:text="${book.author}">Tên tác giả</span>
                                         </div>
                                     </div>
                                     <div class="col-12">
                                         <div class="d-flex align-items-center">
                                             <i class="fas fa-tag me-2 opacity-75"></i>
-                                            <span th:text="${book.categoryName}">Category Name</span>
+                                            <span th:text="${book.categoryName}">Tên danh mục</span>
                                         </div>
                                     </div>
                                     <div class="col-12">
@@ -276,7 +276,7 @@
                                     <i class="fas fa-boxes"></i>
                                 </div>
                                 <div class="stat-value" th:text="${book.stockQuantity}">10</div>
-                                <div class="stat-label">Current Stock</div>
+                                <div class="stat-label">Tồn kho hiện tại</div>
                             </div>
 
                             <div class="stat-card">
@@ -284,7 +284,7 @@
                                     <i class="fas fa-chart-line"></i>
                                 </div>
                                 <div class="stat-value" th:text="${book.soldQuantity}">5</div>
-                                <div class="stat-label">Total Sold</div>
+                                <div class="stat-label">Tổng số đã bán</div>
                             </div>
 
                             <div class="stat-card">
@@ -292,7 +292,7 @@
                                     <i class="fas fa-percentage"></i>
                                 </div>
                                 <div class="stat-value" th:text="${book.soldQuantity > 0 ? #numbers.formatDecimal((book.soldQuantity * 100.0) / (book.stockQuantity + book.soldQuantity), 1, 'POINT', 0, 'POINT') : 0} + '%'">50%</div>
-                                <div class="stat-label">Sold Rate</div>
+                                <div class="stat-label">Tỷ lệ bán</div>
                             </div>
                         </div>
                     </div>
@@ -301,18 +301,18 @@
                 <!-- Quick Actions -->
                 <div class="card">
                     <div class="card-header">
-                        <i class="fas fa-bolt me-1"></i>Quick Actions
+                        <i class="fas fa-bolt me-1"></i>Thao tác nhanh
                     </div>
                     <div class="card-body">
                         <div class="d-grid gap-2">
                             <a th:href="@{/admin/books/edit/{id}(id=${book.id})}" class="btn btn-outline-primary">
-                                <i class="fas fa-edit me-2"></i>Edit Book Details
+                                <i class="fas fa-edit me-2"></i>Chỉnh sửa thông tin sách
                             </a>
                             <a th:href="@{/admin/books/images/{id}(id=${book.id})}" class="btn btn-outline-info">
-                                <i class="fas fa-images me-2"></i>Manage Images
+                                <i class="fas fa-images me-2"></i>Quản lý hình ảnh
                             </a>
                             <a th:href="@{/admin/books}" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>Back to Books
+                                <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách sách
                             </a>
                         </div>
                     </div>
@@ -326,8 +326,8 @@
                     <div class="d-flex align-items-center">
                         <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
                         <div>
-                            <h5 class="mb-1">Out of Stock!</h5>
-                            <p class="mb-0">This book is currently out of stock. Update inventory immediately.</p>
+                            <h5 class="mb-1">Hết hàng!</h5>
+                            <p class="mb-0">Sách này hiện đã hết hàng. Vui lòng cập nhật tồn kho ngay lập tức.</p>
                         </div>
                     </div>
                 </div>
@@ -336,22 +336,22 @@
                     <div class="d-flex align-items-center">
                         <i class="fas fa-exclamation-circle fa-2x me-3"></i>
                         <div>
-                            <h5 class="mb-1">Low Stock Warning</h5>
-                            <p class="mb-0">Stock is running low. Consider restocking soon.</p>
+                            <h5 class="mb-1">Cảnh báo tồn kho thấp</h5>
+                            <p class="mb-0">Tồn kho đang thấp. Hãy cân nhắc nhập thêm hàng sớm.</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="card update-form-card">
                     <div class="card-header bg-primary text-white">
-                        <i class="fas fa-warehouse me-2"></i>Update Stock Quantity
+                        <i class="fas fa-warehouse me-2"></i>Cập nhật số lượng tồn kho
                     </div>
                     <div class="card-body">
                         <form th:action="@{/admin/books/update-stock/{id}(id=${book.id})}" method="post" id="stockForm">
 
                             <!-- Update Type Selection -->
                             <div class="mb-4">
-                                <label class="form-label fw-bold">Update Method</label>
+                                <label class="form-label fw-bold">Phương thức cập nhật</label>
 
                                 <div class="update-type-card active" data-type="absolute">
                                     <input class="form-check-input" type="radio" name="updateType" id="updateTypeAbsolute" value="absolute" checked>
@@ -359,8 +359,8 @@
                                         <div class="d-flex align-items-center">
                                             <i class="fas fa-edit me-2"></i>
                                             <div>
-                                                <div class="fw-semibold">Set Absolute Value</div>
-                                                <small class="text-muted">Replace current stock with new value</small>
+                                                <div class="fw-semibold">Đặt giá trị tuyệt đối</div>
+                                                <small class="text-muted">Thay thế tồn kho hiện tại bằng giá trị mới</small>
                                             </div>
                                         </div>
                                     </label>
@@ -372,8 +372,8 @@
                                         <div class="d-flex align-items-center">
                                             <i class="fas fa-plus me-2"></i>
                                             <div>
-                                                <div class="fw-semibold">Add to Current Stock</div>
-                                                <small class="text-muted">Add quantity to existing stock</small>
+                                                <div class="fw-semibold">Cộng thêm vào tồn kho hiện tại</div>
+                                                <small class="text-muted">Thêm số lượng vào tồn kho hiện có</small>
                                             </div>
                                         </div>
                                     </label>
@@ -382,7 +382,7 @@
 
                             <!-- Quantity Input -->
                             <div class="mb-4">
-                                <label for="stockQuantity" class="form-label fw-bold">Quantity</label>
+                                <label for="stockQuantity" class="form-label fw-bold">Số lượng</label>
 
                                 <!-- Quick increment buttons -->
                                 <div class="quick-actions">
@@ -398,7 +398,7 @@
 
                                 <div class="form-text" id="quantityHelp">
                                     <i class="fas fa-info-circle me-1"></i>
-                                    <span id="helpText">Enter the new total stock quantity</span>
+                                    <span id="helpText">Nhập tổng số lượng tồn kho mới</span>
                                 </div>
                             </div>
 
@@ -406,8 +406,8 @@
                             <div class="preview-section" id="previewSection">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <h6 class="mb-1">Preview Changes</h6>
-                                        <div id="previewText">Current: 10 → New: 15 (+5)</div>
+                                        <h6 class="mb-1">Xem trước các thay đổi</h6>
+                                        <div id="previewText">Hiện tại: 10 → Mới: 15 (+5)</div>
                                     </div>
                                     <i class="fas fa-check-circle fa-2x text-success"></i>
                                 </div>
@@ -416,10 +416,10 @@
                             <!-- Action Buttons -->
                             <div class="d-flex justify-content-between align-items-center">
                                 <button type="submit" class="btn btn-update">
-                                    <i class="fas fa-save me-2"></i>Update Stock
+                                    <i class="fas fa-save me-2"></i>Cập nhật tồn kho
                                 </button>
                                 <a th:href="@{/admin/books}" class="btn btn-outline-secondary">
-                                    <i class="fas fa-times me-2"></i>Cancel
+                                    <i class="fas fa-times me-2"></i>Hủy
                                 </a>
                             </div>
                         </form>
@@ -463,12 +463,12 @@
                 });
 
                 if (absoluteRadio.checked) {
-                    helpText.textContent = 'Enter the new total stock quantity';
-                    stockInput.placeholder = 'Enter new total stock';
+                    helpText.textContent = 'Nhập tổng số lượng tồn kho mới';
+                    stockInput.placeholder = 'Nhập tổng số tồn kho mới';
                     stockInput.value = currentStock;
                 } else {
-                    helpText.textContent = 'Enter quantity to add to current stock';
-                    stockInput.placeholder = 'Enter quantity to add';
+                    helpText.textContent = 'Nhập số lượng cần cộng vào tồn kho hiện tại';
+                    stockInput.placeholder = 'Nhập số lượng cần thêm';
                     stockInput.value = '';
                 }
                 updatePreview();
@@ -481,15 +481,15 @@
 
                 if (absoluteRadio.checked) {
                     newStock = inputValue;
-                    changeText = inputValue === currentStock ? 'No change' :
-                                inputValue > currentStock ? `+${inputValue - currentStock}` :
-                                `${inputValue - currentStock}`;
+                    changeText = inputValue === currentStock ? 'Không thay đổi' :
+                        inputValue > currentStock ? `+${inputValue - currentStock}` :
+                            `${inputValue - currentStock}`;
                 } else {
                     newStock = currentStock + inputValue;
                     changeText = inputValue > 0 ? `+${inputValue}` : '0';
                 }
 
-                previewText.textContent = `Current: ${currentStock} → New: ${newStock} (${changeText})`;
+                previewText.textContent = `Hiện tại: ${currentStock} → Mới: ${newStock} (${changeText})`;
 
                 if (inputValue > 0 && inputValue !== currentStock) {
                     previewSection.style.display = 'block';
@@ -519,20 +519,20 @@
                 const value = parseInt(stockInput.value);
                 if (isNaN(value) || value < 0) {
                     e.preventDefault();
-                    alert('Please enter a valid quantity (0 or greater)');
+                    alert('Vui lòng nhập số lượng hợp lệ (0 hoặc lớn hơn)');
                     stockInput.focus();
                     return;
                 }
 
                 if (addRadio.checked && value === 0) {
                     e.preventDefault();
-                    if (!confirm('You are adding 0 items. The stock will remain unchanged. Continue?')) {
+                    if (!confirm('Bạn đang thêm 0 sản phẩm. Tồn kho sẽ không thay đổi. Tiếp tục?')) {
                         return;
                     }
                 }
 
                 if (absoluteRadio.checked && value === 0) {
-                    if (!confirm('You are setting stock to 0. This will mark the book as out of stock. Continue?')) {
+                    if (!confirm('Bạn đang đặt tồn kho về 0. Điều này sẽ đánh dấu sách là đã hết hàng. Tiếp tục?')) {
                         e.preventDefault();
                         return;
                     }

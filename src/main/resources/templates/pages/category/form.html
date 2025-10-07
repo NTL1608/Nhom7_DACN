@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{components/layouts/main}">
 <head>
-    <title th:text="${category.id == null ? 'Add Category' : 'Edit Category'} + ' - GreenBook Admin'">Add/Edit Category - GreenBook Admin</title>
+    <title th:text="${category.id == null ? 'Add Category' : 'Edit Category'} + ' - GreenBook Admin'">Thêm/Chỉnh sửa danh mục - Quản trị GreenBook</title>
 
     <th:block layout:fragment="stylesheets">
         <style>
@@ -263,8 +263,8 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a th:href="@{/admin/categories}">Categories</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Trang tổng quan</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/admin/categories}">Danh mục</a></li>
                             <li class="breadcrumb-item active" th:text="${category.id == null ? 'Add New' : 'Edit'}">Add/Edit</li>
                         </ol>
                     </div>
@@ -282,15 +282,15 @@
                 <!-- Preview Card -->
                 <div class="preview-card" th:if="${category.id != null}">
                     <div class="preview-title">
-                        <i class="fas fa-eye me-2"></i>Category Preview
+                        <i class="fas fa-eye me-2"></i>Xem trước danh mục
                     </div>
                     <div class="d-flex align-items-center">
                         <div class="category-icon">
                             <i class="fas fa-tag"></i>
                         </div>
                         <div>
-                            <h5 class="mb-1" th:text="${category.name ?: 'Category Name'}">Category Name</h5>
-                            <p class="mb-0 text-muted" th:text="${category.description ?: 'No description provided'}">Category description</p>
+                            <h5 class="mb-1" th:text="${category.name ?: 'Category Name'}">Tên danh mục</h5>
+                            <p class="mb-0 text-muted" th:text="${category.description ?: 'No description provided'}">Mô tả danh mục</p>
                         </div>
                     </div>
                 </div>
@@ -301,10 +301,10 @@
                         <div class="form-icon">
                             <i th:class="${category.id == null ? 'fas fa-plus' : 'fas fa-edit'}"></i>
                         </div>
-                        <h3 class="text-center mb-2" th:text="${category.id == null ? 'Create New Category' : 'Edit Category Details'}">Category Form</h3>
+                        <h3 class="text-center mb-2" th:text="${category.id == null ? 'Create New Category' : 'Edit Category Details'}">Biểu mẫu danh mục</h3>
                         <p class="text-center mb-0 opacity-75">
-                            <span th:if="${category.id == null}">Add a new category to organize your books</span>
-                            <span th:if="${category.id != null}">Update category information and settings</span>
+                            <span th:if="${category.id == null}">Thêm danh mục mới để sắp xếp sách của bạn</span>
+                            <span th:if="${category.id != null}">Cập nhật thông tin và cài đặt danh mục</span>
                         </p>
                     </div>
 
@@ -335,10 +335,10 @@
                                           rows="4"
                                           placeholder=""></textarea>
 
-                                <label for="description">Description</label>
+                                <label for="description">Mô tả</label>
                                 <div class="form-text">
                                     <i class="fas fa-info-circle me-1"></i>
-                                    Provide a brief description to help users understand this category
+                                    Cung cấp mô tả ngắn gọn để giúp người dùng hiểu về danh mục này
                                 </div>
                                 <div class="mt-2 text-end">
                                     <button type="button" class="btn btn-outline-primary" id="generateCategoryDescription">
@@ -350,7 +350,7 @@
 
                             <!-- Status Toggle -->
                             <div th:if="${category.id != null}">
-                                <label class="form-label fw-bold">Category Status</label>
+                                <label class="form-label fw-bold">Trạng thái danh mục</label>
                                 <div class="status-toggle-card" id="statusCard">
                                     <div class="d-flex align-items-center">
                                         <input class="form-check-input status-switch"
@@ -358,10 +358,10 @@
                                                id="active"
                                                th:field="*{active}">
                                         <div>
-                                            <div class="status-text" id="statusText" th:text="*{active} ? 'Active' : 'Inactive'">Status</div>
+                                            <div class="status-text" id="statusText" th:text="*{active} ? 'Active' : 'Inactive'">Trạng thái</div>
                                             <div class="status-description" id="statusDescription">
-                                                <span th:if="*{active}">Category is visible and available for book assignment</span>
-                                                <span th:unless="*{active}">Category is hidden and cannot be assigned to new books</span>
+                                                <span th:if="*{active}">Danh mục đang hiển thị và sẵn sàng để gán sách</span>
+                                                <span th:unless="*{active}">Danh mục đang ẩn và không thể gán cho sách mới</span>
                                             </div>
                                         </div>
                                     </div>
@@ -375,16 +375,16 @@
                         <div class="d-flex gap-3">
                             <button type="submit" form="categoryForm" class="btn btn-save">
                                 <i class="fas fa-save me-2"></i>
-                                <span th:text="${category.id == null ? 'Create Category' : 'Update Category'}">Save</span>
+                                <span th:text="${category.id == null ? 'Create Category' : 'Update Category'}">Lưu</span>
                             </button>
                             <a th:href="@{/admin/categories}" class="btn btn-cancel">
-                                <i class="fas fa-arrow-left me-2"></i>Back to Categories
+                                <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách danh mục
                             </a>
                         </div>
                         <div class="text-muted">
                             <small>
                                 <i class="fas fa-shield-alt me-1"></i>
-                                All changes are saved automatically upon submission
+                                Tất cả thay đổi sẽ được lưu tự động khi gửi
                             </small>
                         </div>
                     </div>
@@ -411,12 +411,12 @@
                     if (activeCheckbox.checked) {
                         statusText.textContent = 'Active';
                         statusText.className = 'status-text text-success';
-                        statusDescription.innerHTML = '<i class="fas fa-check-circle me-1"></i>Category is visible and available for book assignment';
+                        statusDescription.innerHTML = '<i class="fas fa-check-circle me-1"></i>Danh mục đang hiển thị và có thể gán sách';
                         statusCard.className = 'status-toggle-card active';
                     } else {
                         statusText.textContent = 'Inactive';
                         statusText.className = 'status-text text-warning';
-                        statusDescription.innerHTML = '<i class="fas fa-pause-circle me-1"></i>Category is hidden and cannot be assigned to new books';
+                        statusDescription.innerHTML = '<i class="fas fa-pause-circle me-1"></i>Danh mục đang ẩn và không thể gán cho sách mới';
                         statusCard.className = 'status-toggle-card inactive';
                     }
                 }
@@ -432,11 +432,11 @@
                 const previewDesc = document.querySelector('.preview-card .text-muted');
 
                 if (previewName && nameInput) {
-                    previewName.textContent = nameInput.value || 'Category Name';
+                    previewName.textContent = nameInput.value || 'Tên danh mục';
                 }
 
                 if (previewDesc && descriptionInput) {
-                    previewDesc.textContent = descriptionInput.value || 'No description provided';
+                    previewDesc.textContent = descriptionInput.value || 'Chưa có mô tả';
                 }
             }
 
@@ -462,7 +462,7 @@
 
                     if (nameValue.length < 2) {
                         e.preventDefault();
-                        alert('Category name must be at least 2 characters long');
+                        alert('Tên danh mục phải có ít nhất 2 ký tự');
                         nameInput.focus();
                         return;
                     }
@@ -494,34 +494,34 @@
     </script>
     <script>
         const generateCategoryDescriptionBtn = document.getElementById('generateCategoryDescription');
-if (generateCategoryDescriptionBtn) {
-    generateCategoryDescriptionBtn.addEventListener('click', async function () {
-        const nameInput = document.getElementById('name');
-        const descriptionInput = document.getElementById('description');
+        if (generateCategoryDescriptionBtn) {
+            generateCategoryDescriptionBtn.addEventListener('click', async function () {
+                const nameInput = document.getElementById('name');
+                const descriptionInput = document.getElementById('description');
 
-        const name = nameInput?.value.trim();
-        if (!name) {
-            alert('Vui lòng nhập tên thể loại trước khi dùng AI.');
-            return;
+                const name = nameInput?.value.trim();
+                if (!name) {
+                    alert('Vui lòng nhập tên thể loại trước khi dùng AI.');
+                    return;
+                }
+
+                generateCategoryDescriptionBtn.disabled = true;
+                generateCategoryDescriptionBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang gợi ý...';
+
+                try {
+                    const response = await fetch(`/admin/categories/suggest-description?name=${encodeURIComponent(name)}`);
+                    const data = await response.json();
+
+                    descriptionInput.value = data.description;
+                    descriptionInput.dispatchEvent(new Event('input')); // cập nhật preview + autosize
+                } catch (error) {
+                    alert('Không thể lấy mô tả từ AI: ' + error.message);
+                } finally {
+                    generateCategoryDescriptionBtn.disabled = false;
+                    generateCategoryDescriptionBtn.innerHTML = '<i class="fas fa-magic me-1"></i> Gợi ý mô tả với AI';
+                }
+            });
         }
-
-        generateCategoryDescriptionBtn.disabled = true;
-        generateCategoryDescriptionBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang gợi ý...';
-
-        try {
-            const response = await fetch(`/admin/categories/suggest-description?name=${encodeURIComponent(name)}`);
-            const data = await response.json();
-
-            descriptionInput.value = data.description;
-            descriptionInput.dispatchEvent(new Event('input')); // cập nhật preview + autosize
-        } catch (error) {
-            alert('Không thể lấy mô tả từ AI: ' + error.message);
-        } finally {
-            generateCategoryDescriptionBtn.disabled = false;
-            generateCategoryDescriptionBtn.innerHTML = '<i class="fas fa-magic me-1"></i> Gợi ý mô tả với AI';
-        }
-    });
-}
 
     </script>
 </th:block>

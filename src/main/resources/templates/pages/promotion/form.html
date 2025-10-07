@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{components/layouts/main}">
 <head>
-    <title th:text="${promotion.id == null ? 'Add Promotion' : 'Edit Promotion'} + ' - GreenBook Admin'">Add/Edit Promotion - GreenBook Admin</title>
+    <title th:text="${promotion.id == null ? 'Add Promotion' : 'Edit Promotion'} + ' - GreenBook Admin'">Thêm/Chỉnh sửa khuyến mãi - Quản trị GreenBook</title>
 
     <th:block layout:fragment="stylesheets">
         <style>
@@ -386,9 +386,9 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a th:href="@{/admin/promotions}">Promotions</a></li>
-                            <li class="breadcrumb-item active" th:text="${promotion.id == null ? 'Add New' : 'Edit'}">Add/Edit</li>
+                            <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}">Trang tổng quan</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/admin/promotions}">Các khuyến mãi</a></li>
+                            <li class="breadcrumb-item active" th:text="${promotion.id == null ? 'Add New' : 'Edit'}">Thêm/Chỉnh sửa</li>
                         </ol>
                     </div>
                     <div class="text-end" th:if="${promotion.id != null}">
@@ -407,23 +407,23 @@
             </div>
             <h3 class="text-center mb-2" th:text="${promotion.id == null ? 'Create New Promotion' : 'Edit Promotion Details'}">Promotion Form</h3>
             <p class="text-center mb-0 opacity-75">
-                <span th:if="${promotion.id == null}">Set up a new promotion to boost your sales</span>
-                <span th:if="${promotion.id != null}">Update promotion settings and discount details</span>
+                <span th:if="${promotion.id == null}">Thiết lập khuyến mãi mới để thúc đẩy doanh số bán hàng</span>
+                <span th:if="${promotion.id != null}">Cập nhật cài đặt khuyến mãi và chi tiết giảm giá</span>
             </p>
         </div>
 
         <!-- Preview Card -->
         <div class="preview-card" th:if="${promotion.id != null}">
             <div class="preview-title">
-                <i class="fas fa-eye me-2"></i>Promotion Preview
+                <i class="fas fa-eye me-2"></i>Xem trước khuyến mãi
             </div>
-            <div class="promotion-code-display" id="previewCode" th:text="${promotion.code ?: 'PROMO-CODE'}">PROMO-CODE</div>
-            <h4 class="mb-2" id="previewName" th:text="${promotion.name ?: 'Promotion Name'}">Promotion Name</h4>
+            <div class="promotion-code-display" id="previewCode" th:text="${promotion.code ?: 'PROMO-CODE'}">MÃ KHUYẾN MÃI</div>
+            <h4 class="mb-2" id="previewName" th:text="${promotion.name ?: 'Promotion Name'}">Tên khuyến mãi</h4>
             <div class="discount-preview" id="previewDiscount">
-                <span th:if="${promotion.type?.name() == 'PERCENTAGE'}" th:text="${promotion.value ?: 0} + '% OFF'">20% OFF</span>
-                <span th:if="${promotion.type?.name() == 'FIXED_AMOUNT'}" th:text="${#numbers.formatDecimal(promotion.value ?: 0, 0, 'COMMA', 0, 'POINT')} + ' VND OFF'">50,000 VND OFF</span>
+                <span th:if="${promotion.type?.name() == 'PERCENTAGE'}" th:text="${promotion.value ?: 0} + '% OFF'">Giảm 20%</span>
+                <span th:if="${promotion.type?.name() == 'FIXED_AMOUNT'}" th:text="${#numbers.formatDecimal(promotion.value ?: 0, 0, 'COMMA', 0, 'POINT')} + ' VND OFF'">Giảm 50.000 VNĐ</span>
             </div>
-            <p class="mb-0 text-muted" id="previewDescription" th:text="${promotion.description ?: 'Promotion description will appear here'}">Promotion description</p>
+            <p class="mb-0 text-muted" id="previewDescription" th:text="${promotion.description ?: 'Promotion description will appear here'}">Mô tả khuyến mãi</p>
         </div>
 
         <form th:action="${promotion.id == null ? '/admin/promotions/create' : '/admin/promotions/edit/' + promotion.id}"
@@ -436,7 +436,7 @@
                 <div class="col-lg-6">
                     <div class="section-card">
                         <div class="section-header">
-                            <h4><i class="fas fa-info-circle"></i>Basic Information</h4>
+                            <h4><i class="fas fa-info-circle"></i>Thông tin cơ bản</h4>
                         </div>
                         <div class="card-body p-4">
                             <!-- Promotion Name -->
@@ -447,9 +447,9 @@
                                        required
                                        placeholder=""
                                        th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''">
-                                <label for="name" class="required-field">Promotion Name</label>
+                                <label for="name" class="required-field">Tên khuyến mãi</label>
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">
-                                    Name error message
+                                    Thông báo lỗi tên
                                 </div>
                             </div>
 
@@ -462,17 +462,17 @@
                                        placeholder=""
                                        style="text-transform: uppercase;"
                                        th:classappend="${#fields.hasErrors('code')} ? 'is-invalid' : ''">
-                                <label for="code" class="required-field">Promotion Code</label>
+                                <label for="code" class="required-field">Mã khuyến mãi</label>
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('code')}" th:errors="*{code}">
-                                    Code error message
+                                    Thông báo lỗi mã
                                 </div>
                                 <div class="code-generator">
                                     <small class="text-muted">
                                         <i class="fas fa-lightbulb me-1"></i>
-                                        The code customers will use to apply this promotion
+                                        Mã mà khách hàng sẽ sử dụng để áp dụng khuyến mãi này
                                     </small>
                                     <button type="button" class="btn btn-generate" onclick="generatePromoCode()">
-                                        <i class="fas fa-magic me-1"></i>Generate
+                                        <i class="fas fa-magic me-1"></i>Tạo tự động
                                     </button>
                                 </div>
                             </div>
@@ -483,10 +483,10 @@
                                           th:field="*{description}"
                                           rows="4"
                                           placeholder=""></textarea>
-                                <label for="description">Description</label>
+                                <label for="description">Mô tả</label>
                                 <div class="form-help">
                                     <i class="fas fa-info-circle"></i>
-                                    Provide a brief description of this promotion for customer reference
+                                    Cung cấp mô tả ngắn gọn về khuyến mãi này để khách hàng tham khảo
                                 </div>
                             </div>
                         </div>
@@ -497,20 +497,20 @@
                 <div class="col-lg-6">
                     <div class="section-card">
                         <div class="section-header">
-                            <h4><i class="fas fa-percent"></i>Discount Details</h4>
+                            <h4><i class="fas fa-percent"></i>Chi tiết giảm giá</h4>
                         </div>
                         <div class="card-body p-4">
                             <!-- Discount Type -->
                             <div class="form-floating-label">
                                 <select id="type" th:field="*{type}" required>
-                                    <option value="">Select discount type</option>
+                                    <option value="">Chọn loại giảm giá</option>
                                     <option th:each="promotionType : ${promotionTypes}"
                                             th:value="${promotionType}"
-                                            th:text="${promotionType == 'PERCENTAGE' ? 'Percentage Discount' : 'Fixed Amount Discount'}">
+                                            th:text="${promotionType == 'PERCENTAGE' ? 'Giảm theo phần trăm' : 'Giảm giá cố định'}">
                                         PERCENTAGE
                                     </option>
                                 </select>
-                                <label for="type" class="required-field">Discount Type</label>
+                                <label for="type" class="required-field">Loại giảm giá</label>
                             </div>
 
                             <!-- Discount Value -->
@@ -525,12 +525,12 @@
                                        th:classappend="${#fields.hasErrors('value')} ? 'is-invalid' : ''">
                                 <span class="input-group-text" id="valueSymbol">%</span>
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('value')}" th:errors="*{value}">
-                                    Value error message
+                                    Thông báo lỗi giá trị
                                 </div>
                             </div>
                             <div class="form-help mb-3" id="valueHelp">
                                 <i class="fas fa-calculator"></i>
-                                For percentage, enter a value between 1-100. For fixed amount, enter the discount amount in VND.
+                                Với giảm theo phần trăm, nhập giá trị từ 1–100. Với giảm cố định, nhập số tiền giảm bằng VNĐ.
                             </div>
 
                             <!-- Date Range -->
@@ -541,9 +541,9 @@
                                            th:field="*{startDate}"
                                            required
                                            th:classappend="${#fields.hasErrors('startDate')} ? 'is-invalid' : ''">
-                                    <label for="startDate" class="required-field">Start Date</label>
+                                    <label for="startDate" class="required-field">Ngày bắt đầu</label>
                                     <div class="invalid-feedback" th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}">
-                                        Start date error message
+                                        Thông báo lỗi ngày bắt đầu
                                     </div>
                                 </div>
 
@@ -553,16 +553,16 @@
                                            th:field="*{endDate}"
                                            required
                                            th:classappend="${#fields.hasErrors('endDate')} ? 'is-invalid' : ''">
-                                    <label for="endDate" class="required-field">End Date</label>
+                                    <label for="endDate" class="required-field">Ngày kết thúc</label>
                                     <div class="invalid-feedback" th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}">
-                                        End date error message
+                                        Thông báo lỗi ngày kết thúc
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Status Toggle -->
                             <div th:if="${promotion.id != null}">
-                                <label class="form-label fw-bold">Promotion Status</label>
+                                <label class="form-label fw-bold">Trạng thái khuyến mãi</label>
                                 <div class="status-toggle-card" id="statusCard">
                                     <div class="d-flex align-items-center">
                                         <input class="form-check-input status-switch"
@@ -570,10 +570,10 @@
                                                id="active"
                                                th:field="*{active}">
                                         <div>
-                                            <div class="status-text" id="statusText" th:text="*{active} ? 'Active' : 'Inactive'">Status</div>
+                                            <div class="status-text" id="statusText" th:text="*{active} ? 'Active' : 'Inactive'">Trạng thái</div>
                                             <div class="status-description" id="statusDescription">
-                                                <span th:if="*{active}">Promotion is active and can be used by customers</span>
-                                                <span th:unless="*{active}">Promotion is inactive and cannot be used</span>
+                                                <span th:if="*{active}">Khuyến mãi đang hoạt động và có thể được khách hàng sử dụng</span>
+                                                <span th:unless="*{active}">Khuyến mãi không hoạt động và không thể sử dụng</span>
                                             </div>
                                         </div>
                                     </div>
@@ -590,16 +590,16 @@
             <div class="d-flex gap-3">
                 <button type="submit" form="promotionForm" class="btn btn-save">
                     <i class="fas fa-save me-2"></i>
-                    <span th:text="${promotion.id == null ? 'Create Promotion' : 'Update Promotion'}">Save</span>
+                    <span th:text="${promotion.id == null ? 'Create Promotion' : 'Update Promotion'}">Lưu</span>
                 </button>
                 <a th:href="@{/admin/promotions}" class="btn btn-cancel">
-                    <i class="fas fa-arrow-left me-2"></i>Back to Promotions
+                    <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách khuyến mãi
                 </a>
             </div>
             <div class="text-muted">
                 <small>
                     <i class="fas fa-shield-alt me-1"></i>
-                    All promotion settings are validated before saving
+                    Tất cả cài đặt khuyến mãi đã được kiểm tra hợp lệ trước khi lưu
                 </small>
             </div>
         </div>
@@ -715,13 +715,13 @@
                 today.setHours(0, 0, 0, 0);
 
                 if (startDate < today) {
-                    startDateInput.setCustomValidity('Start date cannot be in the past');
+                    startDateInput.setCustomValidity('Ngày bắt đầu không được trước ngày hiện tại');
                 } else {
                     startDateInput.setCustomValidity('');
                 }
 
                 if (startDate > endDate) {
-                    endDateInput.setCustomValidity('End date must be after start date');
+                    endDateInput.setCustomValidity('Ngày kết thúc phải sau ngày bắt đầu');
                 } else {
                     endDateInput.setCustomValidity('');
                 }
@@ -740,14 +740,14 @@
                     const value = parseFloat(valueInput.value);
                     if (typeSelect.value === 'PERCENTAGE' && (value <= 0 || value > 100)) {
                         e.preventDefault();
-                        alert('Percentage discount must be between 1 and 100');
+                        alert('Giảm giá theo phần trăm phải nằm trong khoảng từ 1 đến 100');
                         valueInput.focus();
                         return;
                     }
 
                     if (typeSelect.value === 'FIXED_AMOUNT' && value <= 0) {
                         e.preventDefault();
-                        alert('Fixed amount discount must be greater than 0');
+                        alert('Giảm giá cố định phải lớn hơn 0');
                         valueInput.focus();
                         return;
                     }
