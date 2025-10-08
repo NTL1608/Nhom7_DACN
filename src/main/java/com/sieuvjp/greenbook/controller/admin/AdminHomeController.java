@@ -1,4 +1,4 @@
-package com.sieuvjp.greenbook.controller;
+package com.sieuvjp.greenbook.controller.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -12,7 +12,7 @@ import java.util.Set;
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
-public class HomeController {
+public class AdminHomeController {
     @GetMapping({"/", ""})
     public String home(Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()) {

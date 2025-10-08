@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/header :: header}"></head>
+<!-- Toast CSS -->
+<link th:href="@{/css/toast.css}" rel="stylesheet">
+<body>
+
+<!-- Header -->
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<!-- Hero Banner -->
+<section id="billboard" class="position-relative overflow-hidden">
+    <div class="container">
+        <div class="row align-items-center py-5">
+            <div class="col-md-6 py-5">
+                <div class="banner-content">
+                    <h1 class="display-3 fw-bold mb-4">
+                        Khám phá <span class="text-primary">thế giới sách</span>
+                    </h1>
+                    <p class="lead mb-4">
+                        Hàng ngàn đầu sách chất lượng từ các thể loại văn học, khoa học, thiếu nhi và nhiều hơn nữa.
+                        Mua sắm dễ dàng, giao hàng nhanh chóng.
+                    </p>
+                    <div class="btn-wrap d-flex gap-3">
+                        <a th:href="@{/books}" class="btn btn-primary btn-lg px-4">
+                            Mua sắm ngay <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                        <a th:href="@{/about}" class="btn btn-outline-primary btn-lg px-4">
+                            Tìm hiểu thêm
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 text-center">
+                <div class="banner-image">
+                    <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&h=600&fit=crop"
+                         alt="Books Collection"
+                         class="img-fluid rounded shadow-lg">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pattern-overlay"></div>
+</section>
+
+<!-- Categories Section -->
+<section id="categories" class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-6 fw-bold" style="color: var(--primary-green);">Danh mục nổi bật</h2>
+            <p class="text-muted">Khám phá sách theo từng thể loại</p>
+        </div>
+        <div class="row g-4">
+            <!-- Nếu có categories từ controller -->
+            <div class="col-lg-3 col-md-6" th:each="category : ${categories}">
+                <a th:href="@{/books(categoryId=${category.id})}" class="category-card">
+                    <div class="card border-0 shadow-sm h-100 text-center">
+                        <div class="card-body py-4">
+                            <div class="category-icon-wrapper">
+                                <i class="bi bi-book category-icon"></i>
+                            </div>
+                            <h5 class="mt-3 mb-2 fw-bold" th:text="${category.name}">Danh mục</h5>
+                            <p class="text-muted small mb-0" th:text="${category.description}">Mô tả</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+
+        </div>
+    </div>
+</section>
+
+<!-- Featured Books -->
+<section id="featured-books" class="py-5 my-4">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <h2 class="display-6 fw-bold">Sách bán chạy</h2>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <a th:href="@{/books}" class="btn btn-outline-primary">
+                    Xem tất cả <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-4 col-sm-6" th:each="book : ${latestBooks}">
+                <div class="product-card">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="product-image position-relative">
+                            <img th:src="${book.imageUrls != null && !book.imageUrls.isEmpty() ? book.imageUrls[0] : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=600&fit=crop'}"
+                                 th:alt="${book.title}"
+                                 class="card-img-top">
+
+                            <!-- Badge -->
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span th:if="${book.stockQuantity > 0}" class="badge bg-success">Còn hàng</span>
+                                <span th:if="${book.stockQuantity == 0}" class="badge bg-danger">Hết hàng</span>
+                            </div>
+                            <!-- Quick Actions -->
+                            <div class="product-actions">
+                                <a th:href="@{/books/{id}(id=${book.id})}"
+                                   class="btn btn-sm btn-light"
+                                   title="Xem chi tiết">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+
+                                <!-- Form thêm vào giỏ -->
+                                <form class="cart-form" style="display: inline;">
+                                <input type="hidden" name="bookId" th:value="${book.id}">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit"
+                                            class="btn btn-sm btn-light"
+                                            th:if="${book.stockQuantity > 0}"
+                                            title="Thêm vào giỏ">
+                                        <i class="bi bi-cart-plus"></i>
+                                    </button>
+                                </form>
+
+                                <button class="btn btn-sm btn-light"
+                                        title="Yêu thích">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <h6 class="card-title text-truncate mb-2" th:text="${book.title}">Tên sách</h6>
+                            <p class="text-muted small mb-2" th:text="${book.author}">Tác giả</p>
+
+                            <!-- Hiển thị giá có khuyến mãi nếu có -->
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="price-wrapper">
+                                    <!-- Giá gốc bị gạch nếu có promotion -->
+                                    <span class="h6 mb-0 text-primary"
+                                          th:text="${book.originalPrice != null ? #numbers.formatDecimal(book.originalPrice, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">
+                                        120,000đ
+                                    </span>
+                                </div>
+                                <div class="rating">
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    <i class="bi bi-star text-warning"></i>
+                                </div>
+                            </div>
+
+                            <!-- Hiển thị category nếu có -->
+                            <div class="mt-2" th:if="${book.category != null}">
+                                <span class="badge bg-light text-dark" th:text="${book.category.name}">Danh mục</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-box text-center p-4">
+                    <i class="bi bi-truck feature-icon"></i>
+                    <h5 class="mt-3 mb-2">Miễn phí vận chuyển</h5>
+                    <p class="text-muted small mb-0">Đơn hàng từ 200,000đ</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-box text-center p-4">
+                    <i class="bi bi-arrow-repeat feature-icon"></i>
+                    <h5 class="mt-3 mb-2">Đổi trả dễ dàng</h5>
+                    <p class="text-muted small mb-0">Trong vòng 7 ngày</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-box text-center p-4">
+                    <i class="bi bi-shield-check feature-icon"></i>
+                    <h5 class="mt-3 mb-2">Thanh toán an toàn</h5>
+                    <p class="text-muted small mb-0">Bảo mật 100%</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-box text-center p-4">
+                    <i class="bi bi-headset feature-icon"></i>
+                    <h5 class="mt-3 mb-2">Hỗ trợ 24/7</h5>
+                    <p class="text-muted small mb-0">Luôn sẵn sàng phục vụ</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quote Section -->
+<section id="quotation" class="py-5 my-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <blockquote class="quote-box">
+                    <i class="bi bi-quote quote-icon"></i>
+                    <p class="quote-text">
+                        "Một căn phòng không có sách giống như một cơ thể không có linh hồn."
+                    </p>
+                    <footer class="quote-author">— Marcus Tullius Cicero</footer>
+                </blockquote>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter -->
+<section id="subscribe" class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row justify-content-center align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h3 class="fw-bold mb-2">Đăng ký nhận tin</h3>
+                <p class="mb-0">Nhận thông tin về sách mới, khuyến mãi và ưu đãi đặc biệt</p>
+            </div>
+            <div class="col-lg-6">
+                <form th:action="@{/subscribe}" method="post" class="newsletter-form">
+                    <div class="input-group input-group-lg">
+                        <input type="email" name="email" class="form-control"
+                               placeholder="Nhập email của bạn"
+                               aria-label="Email đăng ký nhận tin"
+                               required>
+                        <button class="btn btn-light text-primary fw-bold" type="submit">
+                            Đăng ký <i class="bi bi-send-fill ms-2"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: footer-bottom}"></div>
+
+<!-- Scripts -->
+<th:block th:replace="~{fragments/footer :: scripts}"></th:block>
+<!-- Cart JavaScript -->
+<script th:src="@{/js/cart.js}"></script>
+
+<style>
+    /* CSS Variables */
+    :root {
+        --primary-green: #40916c;
+        --light-green: #74c69d;
+        --pale-green: #b7e4c7;
+        --extra-light: #d8f3dc;
+        --dark-text: #2d6a4f;
+        --cream: #f1faee;
+    }
+
+    /* Override Bootstrap primary color */
+    .btn-primary {
+        background-color: var(--primary-green);
+        border-color: var(--primary-green);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--light-green);
+        border-color: var(--light-green);
+    }
+
+    .btn-outline-primary {
+        color: var(--primary-green);
+        border-color: var(--primary-green);
+    }
+
+    .btn-outline-primary:hover {
+        background-color: var(--primary-green);
+        border-color: var(--primary-green);
+        color: white;
+    }
+
+    .text-primary {
+        color: var(--primary-green) !important;
+    }
+
+    .bg-primary {
+        background-color: var(--primary-green) !important;
+    }
+
+    /* Hero Section */
+    #billboard {
+        background: linear-gradient(135deg, var(--extra-light) 0%, white 100%);
+        min-height: 600px;
+        display: flex;
+        align-items: center;
+    }
+
+    .banner-image img {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    /* Categories */
+    .category-card {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        transition: transform 0.3s ease;
+    }
+
+    .category-card:hover {
+        transform: translateY(-10px);
+    }
+
+    .category-card:hover .card {
+        box-shadow: 0 15px 40px rgba(64, 145, 108, 0.2) !important;
+    }
+
+    .category-icon-wrapper {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto;
+        background: var(--extra-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .category-card:hover .category-icon-wrapper {
+        background: var(--primary-green);
+    }
+
+    .category-icon {
+        font-size: 2.5rem;
+        color: var(--primary-green);
+        transition: all 0.3s ease;
+    }
+
+    .category-card:hover .category-icon {
+        color: white;
+        transform: scale(1.1);
+    }
+
+    /* Product Card */
+    .product-card {
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-10px);
+    }
+
+    .product-image {
+        height: 350px;
+        overflow: hidden;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .product-image img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-image img {
+        transform: scale(1.1);
+    }
+
+    .product-actions {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .product-card:hover .product-actions {
+        opacity: 1;
+    }
+
+    .product-actions .btn {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .product-actions .btn:hover {
+        background: var(--primary-green) !important;
+        color: white !important;
+        transform: scale(1.1);
+    }
+
+    .rating i {
+        font-size: 0.8rem;
+    }
+
+    /* Features */
+    .feature-box {
+        background: white;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .feature-box:hover {
+        box-shadow: 0 10px 30px rgba(64, 145, 108, 0.15);
+        transform: translateY(-5px);
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        color: var(--primary-green);
+    }
+
+    /* Quote Section */
+    .quote-box {
+        padding: 3rem 2rem;
+        background: var(--extra-light);
+        border-radius: 15px;
+        position: relative;
+    }
+
+    .quote-icon {
+        font-size: 3rem;
+        color: var(--pale-green);
+        opacity: 0.3;
+    }
+
+    .quote-text {
+        font-size: 1.5rem;
+        font-style: italic;
+        color: var(--dark-text);
+        margin: 1.5rem 0;
+        line-height: 1.8;
+    }
+
+    .quote-author {
+        font-size: 1.1rem;
+        color: var(--primary-green);
+        font-weight: 600;
+        margin-top: 1rem;
+    }
+
+    /* Newsletter */
+    .newsletter-form .form-control {
+        border: none;
+        border-radius: 50px 0 0 50px;
+    }
+
+    .newsletter-form .btn {
+        border-radius: 0 50px 50px 0;
+        padding: 0 2rem;
+    }
+
+    .newsletter-form .form-control:focus {
+        box-shadow: none;
+        border-color: transparent;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        #billboard {
+            min-height: auto;
+            padding: 40px 0;
+        }
+
+        .display-3 {
+            font-size: 2.5rem;
+        }
+
+        .banner-image {
+            margin-top: 2rem;
+        }
+
+        .product-image {
+            height: 280px;
+        }
+
+        .quote-text {
+            font-size: 1.2rem;
+        }
+
+        .newsletter-form .form-control,
+        .newsletter-form .btn {
+            border-radius: 25px;
+        }
+
+        .newsletter-form .input-group {
+            flex-direction: column;
+        }
+
+        .newsletter-form .btn {
+            margin-top: 10px;
+            width: 100%;
+        }
+    }
+
+    /* Loading Animation */
+    @keyframes shimmer {
+        0% { background-position: -1000px 0; }
+        100% { background-position: 1000px 0; }
+    }
+
+    .loading {
+        animation: shimmer 2s infinite;
+        background: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+        background-size: 1000px 100%;
+    }
+
+    /* Card Hover Effects */
+    .card {
+        transition: all 0.3s ease;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .card:hover {
+        box-shadow: 0 15px 40px rgba(64, 145, 108, 0.15) !important;
+    }
+
+    /* Button Animations */
+    .btn {
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    /* Scroll Reveal Animation */
+    .scroll-reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease;
+    }
+
+    .scroll-reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+
+<script>
+    // Scroll Reveal Animation
+    const scrollReveal = () => {
+        const reveals = document.querySelectorAll('.scroll-reveal');
+        reveals.forEach(element => {
+            const windowHeight = window.innerHeight;
+            const elementTop = element.getBoundingClientRect().top;
+            const elementVisible = 150;
+            if (elementTop < windowHeight - elementVisible) {
+                element.classList.add('active');
+            }
+        });
+    };
+    window.addEventListener('scroll', scrollReveal);
+    window.addEventListener('load', scrollReveal);
+
+    // Wishlist - CHỈ cho nút heart (không phải button submit)
+    document.querySelectorAll('.product-actions button:not([type="submit"])').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const icon = this.querySelector('i');
+            if (icon && icon.classList.contains('bi-heart')) {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+                this.classList.add('text-danger');
+            } else if (icon && icon.classList.contains('bi-heart-fill')) {
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+                this.classList.remove('text-danger');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
+

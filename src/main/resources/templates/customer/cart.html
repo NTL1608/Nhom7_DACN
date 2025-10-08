@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/header :: header}"></head>
+<body>
+
+<!-- Header -->
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<!-- Breadcrumb -->
+<section class="py-3 bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
+                <li class="breadcrumb-item active">Giỏ hàng</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Cart Content -->
+<section class="py-5 bg-gradient-light">
+    <div class="container">
+        <!-- Flash Messages -->
+        <div th:if="${success}" class="alert alert-success-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Page Title -->
+        <div class="page-title-section mb-4">
+            <div class="d-flex align-items-center">
+                <div class="title-icon">
+                    <i class="bi bi-cart3"></i>
+                </div>
+                <div>
+                    <h2 class="page-title mb-0">Giỏ hàng của bạn</h2>
+                    <p class="text-muted mb-0" th:if="${totalItems > 0}">
+                        Bạn có <strong th:text="${totalItems}">0</strong> sản phẩm trong giỏ hàng
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty Cart -->
+        <div th:if="${cartItems == null || #lists.isEmpty(cartItems)}" class="empty-cart-section">
+            <div class="empty-cart-card">
+                <div class="empty-icon">
+                    <i class="bi bi-cart-x"></i>
+                </div>
+                <h3 class="mt-4 mb-2">Giỏ hàng trống</h3>
+                <p class="text-muted mb-4">Bạn chưa có sản phẩm nào trong giỏ hàng. Hãy khám phá và chọn những cuốn sách yêu thích!</p>
+                <a th:href="@{/books}" class="btn-primary-custom">
+                    <i class="bi bi-book me-2"></i>Khám phá sách ngay
+                </a>
+            </div>
+        </div>
+
+        <!-- Cart Items -->
+        <div th:if="${cartItems != null && !#lists.isEmpty(cartItems)}" class="row g-4">
+            <!-- Left: Cart Items List -->
+            <div class="col-lg-8">
+                <div class="cart-items-wrapper">
+                    <!-- Clear All Button -->
+                    <div class="cart-header">
+                        <h5 class="mb-0">Sản phẩm đã chọn</h5>
+                        <form th:action="@{/cart/clear}" method="post" style="margin: 0;"
+                              onsubmit="return confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?');">
+                            <button type="submit" class="btn-clear-all">
+                                <i class="bi bi-trash me-1"></i>Xóa tất cả
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Cart Items -->
+                    <div class="cart-items-list">
+                        <div class="cart-item" th:each="item : ${cartItems}">
+                            <div class="item-image">
+                                <a th:href="@{/books/{id}(id=${item.bookId})}">
+                                    <img th:src="${item.imageUrl != null ? item.imageUrl : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=600&fit=crop'}"
+                                         th:alt="${item.title}"
+                                         class="img-fluid">
+                                </a>
+                            </div>
+
+                            <div class="item-details">
+                                <a th:href="@{/books/{id}(id=${item.bookId})}" class="item-title">
+                                    <span th:text="${item.title}">Tên sách</span>
+                                </a>
+                                <p class="item-author mb-2">
+                                    <i class="bi bi-person me-1"></i>
+                                    <span th:text="${item.author}">Tác giả</span>
+                                </p>
+                                <div class="item-price">
+                                    <span class="price-value"
+                                          th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                                        120,000đ
+                                    </span>
+                                </div>
+                                <p class="stock-info" th:if="${item.stockQuantity < 10}">
+                                    <i class="bi bi-exclamation-circle me-1"></i>
+                                    Chỉ còn <strong th:text="${item.stockQuantity}">5</strong> sản phẩm
+                                </p>
+                            </div>
+
+                            <div class="item-actions">
+                                <!-- Quantity Controls -->
+                                <div class="quantity-controls">
+                                    <form th:action="@{/cart/update}" method="post" class="quantity-form">
+                                        <input type="hidden" name="bookId" th:value="${item.bookId}">
+                                        <div class="quantity-wrapper">
+                                            <button type="button"
+                                                    class="qty-btn minus"
+                                                    onclick="decreaseQty(this)"
+                                                    th:disabled="${item.quantity <= 1}">
+                                                <i class="bi bi-dash"></i>
+                                            </button>
+                                            <input type="number"
+                                                   name="quantity"
+                                                   class="qty-input"
+                                                   th:value="${item.quantity}"
+                                                   th:max="${item.stockQuantity}"
+                                                   min="1"
+                                                   readonly>
+                                            <button type="button"
+                                                    class="qty-btn plus"
+                                                    onclick="increaseQty(this)"
+                                                    th:disabled="${item.quantity >= item.stockQuantity}">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                        </div>
+                                        <button type="submit" class="btn-update-qty" style="display: none;">
+                                            Update
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <!-- Subtotal -->
+                                <div class="item-subtotal">
+                                    <span class="subtotal-label">Tạm tính:</span>
+                                    <span class="subtotal-value"
+                                          th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                                        240,000đ
+                                    </span>
+                                </div>
+
+                                <!-- Remove Button -->
+                                <form th:action="@{/cart/remove}" method="post" style="margin: 0;">
+                                    <input type="hidden" name="bookId" th:value="${item.bookId}">
+                                    <button type="submit"
+                                            class="btn-remove"
+                                            onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Continue Shopping Button -->
+                <div class="mt-4">
+                    <a th:href="@{/books}" class="btn-secondary-custom">
+                        <i class="bi bi-arrow-left me-2"></i>Tiếp tục mua sắm
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right: Order Summary -->
+            <div class="col-lg-4">
+                <div class="order-summary sticky-top" style="top: 20px;">
+                    <div class="summary-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-receipt me-2"></i>Thông tin đơn hàng
+                        </h5>
+                    </div>
+
+                    <div class="summary-body">
+                        <!-- Items Count -->
+                        <div class="summary-row">
+                            <span class="summary-label">Số lượng sản phẩm:</span>
+                            <span class="summary-value" th:text="${totalItems}">0</span>
+                        </div>
+
+                        <!-- Subtotal -->
+                        <div class="summary-row">
+                            <span class="summary-label">Tạm tính:</span>
+                            <span class="summary-value"
+                                  th:text="${#numbers.formatDecimal(totalAmount, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                                0đ
+                            </span>
+                        </div>
+
+                        <!-- Shipping -->
+                        <div class="summary-row">
+                            <span class="summary-label">Phí vận chuyển:</span>
+                            <span class="summary-value text-success">
+                                <span th:if="${totalAmount >= 200000}">Miễn phí</span>
+                                <span th:if="${totalAmount < 200000}">30,000đ</span>
+                            </span>
+                        </div>
+
+                        <!-- Free Shipping Progress -->
+                        <div class="shipping-progress" th:if="${totalAmount < 200000}">
+                            <div class="progress-info">
+                                <i class="bi bi-truck me-2"></i>
+                                <span>Mua thêm
+                                    <strong th:text="${#numbers.formatDecimal(200000 - totalAmount, 0, 'COMMA', 0, 'POINT')} + 'đ'">50,000đ</strong>
+                                    để được miễn phí vận chuyển
+                                </span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar"
+                                     th:style="'width: ' + ${(totalAmount / 200000) * 100} + '%'"></div>
+                            </div>
+                        </div>
+
+                        <div class="free-shipping-badge" th:if="${totalAmount >= 200000}">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            Bạn được miễn phí vận chuyển!
+                        </div>
+
+                        <div class="summary-divider"></div>
+
+                        <!-- Total -->
+                        <div class="summary-row total-row">
+                            <span class="summary-label">Tổng cộng:</span>
+                            <span class="summary-value total-value"
+                                  th:text="${#numbers.formatDecimal(totalAmount + (totalAmount < 200000 ? 30000 : 0), 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                                0đ
+                            </span>
+                        </div>
+
+                        <!-- Checkout Button -->
+                        <a th:href="@{/checkout}" class="btn-checkout">
+                            <i class="bi bi-credit-card me-2"></i>Tiến hành thanh toán
+                        </a>
+
+                        <!-- Payment Methods -->
+                        <div class="payment-methods">
+                            <p class="small text-muted mb-2">Phương thức thanh toán:</p>
+                            <div class="payment-icons">
+                                <i class="bi bi-credit-card-2-front"></i>
+                                <i class="bi bi-wallet2"></i>
+                                <i class="bi bi-cash-coin"></i>
+                            </div>
+                        </div>
+
+                        <!-- Security Badge -->
+                        <div class="security-badge">
+                            <i class="bi bi-shield-check me-2"></i>
+                            Thanh toán an toàn & bảo mật
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: footer-bottom}"></div>
+
+<!-- Scripts -->
+<th:block th:replace="~{fragments/footer :: scripts}"></th:block>
+
+<style>
+    :root {
+        --primary-green: #40916c;
+        --light-green: #74c69d;
+        --pale-green: #b7e4c7;
+        --extra-light: #d8f3dc;
+        --dark-text: #2d6a4f;
+        --cream: #f1faee;
+    }
+
+    .bg-gradient-light {
+        background: linear-gradient(135deg, #f8f9fa 0%, var(--cream) 100%);
+    }
+
+    .breadcrumb-item a {
+        color: var(--primary-green);
+        text-decoration: none;
+    }
+
+    /* Alerts */
+    .alert-success-custom {
+        background: linear-gradient(135deg, var(--extra-light), #e8f5e9);
+        border-left: 4px solid var(--primary-green);
+        border-radius: 12px;
+        color: var(--dark-text);
+        animation: slideIn 0.3s ease;
+    }
+
+    .alert-danger-custom {
+        background: linear-gradient(135deg, #ffe5e5, #ffebee);
+        border-left: 4px solid #dc3545;
+        border-radius: 12px;
+        color: #c62828;
+        animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Page Title */
+    .page-title-section {
+        animation: fadeInUp 0.4s ease;
+    }
+
+    .title-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        margin-right: 1.5rem;
+        box-shadow: 0 8px 25px rgba(64, 145, 108, 0.3);
+    }
+
+    .page-title {
+        color: var(--dark-text);
+        font-weight: 700;
+        font-size: 2rem;
+    }
+
+    /* Empty Cart */
+    .empty-cart-card {
+        background: white;
+        border-radius: 24px;
+        padding: 4rem 2rem;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(64, 145, 108, 0.1);
+    }
+
+    .empty-icon {
+        width: 150px;
+        height: 150px;
+        margin: 0 auto;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 5rem;
+        color: var(--primary-green);
+    }
+
+    /* Cart Items Wrapper */
+    .cart-items-wrapper {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 30px rgba(64, 145, 108, 0.12);
+    }
+
+    .cart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--pale-green);
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-clear-all {
+        background: none;
+        border: 2px solid #dc3545;
+        color: #dc3545;
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-clear-all:hover {
+        background: #dc3545;
+        color: white;
+    }
+
+    /* Cart Item */
+    .cart-item {
+        display: flex;
+        gap: 1.5rem;
+        padding: 1.5rem;
+        background: var(--extra-light);
+        border-radius: 16px;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .cart-item:hover {
+        box-shadow: 0 8px 25px rgba(64, 145, 108, 0.15);
+        transform: translateY(-3px);
+    }
+
+    .item-image {
+        flex-shrink: 0;
+        width: 120px;
+        height: 160px;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .item-image:hover img {
+        transform: scale(1.1);
+    }
+
+    .item-details {
+        flex: 1;
+    }
+
+    .item-title {
+        color: var(--dark-text);
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-decoration: none;
+        display: block;
+        margin-bottom: 0.5rem;
+        transition: color 0.3s ease;
+    }
+
+    .item-title:hover {
+        color: var(--primary-green);
+    }
+
+    .item-author {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .item-price {
+        margin: 0.5rem 0;
+    }
+
+    .price-value {
+        color: var(--primary-green);
+        font-weight: 700;
+        font-size: 1.3rem;
+    }
+
+    .stock-info {
+        color: #ff9800;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+
+    /* Item Actions */
+    .item-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 1rem;
+    }
+
+    /* Quantity Controls */
+    .quantity-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .qty-btn {
+        width: 40px;
+        height: 40px;
+        border: none;
+        background: none;
+        color: var(--primary-green);
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .qty-btn:hover:not(:disabled) {
+        background: var(--extra-light);
+    }
+
+    .qty-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+
+    .qty-input {
+        width: 60px;
+        height: 40px;
+        text-align: center;
+        border: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: var(--dark-text);
+        background: none;
+    }
+
+    .item-subtotal {
+        text-align: right;
+    }
+
+    .subtotal-label {
+        display: block;
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 0.3rem;
+    }
+
+    .subtotal-value {
+        display: block;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--primary-green);
+    }
+
+    .btn-remove {
+        background: #ffe5e5;
+        border: none;
+        color: #dc3545;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-remove:hover {
+        background: #dc3545;
+        color: white;
+        transform: scale(1.1);
+    }
+
+    /* Order Summary */
+    .order-summary {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(64, 145, 108, 0.12);
+        overflow: hidden;
+    }
+
+    .summary-header {
+        background: linear-gradient(135deg, var(--extra-light), white);
+        padding: 1.5rem;
+        border-bottom: 2px solid var(--pale-green);
+    }
+
+    .summary-body {
+        padding: 1.5rem;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+    }
+
+    .summary-label {
+        color: #6c757d;
+    }
+
+    .summary-value {
+        font-weight: 600;
+        color: var(--dark-text);
+    }
+
+    .summary-divider {
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--pale-green), transparent);
+        margin: 1.5rem 0;
+    }
+
+    .total-row {
+        font-size: 1.2rem;
+        padding: 1rem;
+        background: var(--extra-light);
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+    }
+
+    .total-value {
+        color: var(--primary-green);
+        font-size: 1.5rem;
+    }
+
+    /* Shipping Progress */
+    .shipping-progress {
+        background: #fff3cd;
+        padding: 1rem;
+        border-radius: 12px;
+        margin: 1rem 0;
+    }
+
+    .progress-info {
+        font-size: 0.9rem;
+        color: #856404;
+        margin-bottom: 0.7rem;
+    }
+
+    .progress {
+        height: 8px;
+        background: #ffeaa7;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary-green), var(--light-green));
+        transition: width 0.3s ease;
+    }
+
+    .free-shipping-badge {
+        background: linear-gradient(135deg, #d4edda, #c3e6cb);
+        color: #155724;
+        padding: 1rem;
+        border-radius: 12px;
+        margin: 1rem 0;
+        font-weight: 600;
+    }
+
+    /* Buttons */
+    .btn-primary-custom,
+    .btn-checkout {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1.05rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        box-shadow: 0 4px 15px rgba(64, 145, 108, 0.3);
+        width: 100%;
+        text-align: center;
+    }
+
+    .btn-primary-custom:hover,
+    .btn-checkout:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(64, 145, 108, 0.4);
+        color: white;
+    }
+
+    .btn-secondary-custom {
+        background: white;
+        color: var(--dark-text);
+        border: 2px solid var(--pale-green);
+        padding: 0.9rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-secondary-custom:hover {
+        border-color: var(--primary-green);
+        background: var(--extra-light);
+        color: var(--primary-green);
+    }
+
+    /* Payment Methods */
+    .payment-methods {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--pale-green);
+    }
+
+    .payment-icons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: var(--primary-green);
+    }
+
+    .security-badge {
+        background: var(--extra-light);
+        padding: 0.8rem;
+        border-radius: 10px;
+        text-align: center;
+        margin-top: 1rem;
+        color: var(--primary-green);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .cart-item {
+            flex-direction: column;
+        }
+
+        .item-image {
+            width: 100%;
+            height: 250px;
+        }
+
+        .item-actions {
+            flex-direction: row;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+        }
+
+        .title-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<script>
+    // Quantity controls
+    function decreaseQty(button) {
+        const form = button.closest('.quantity-form');
+        const input = form.querySelector('.qty-input');
+        const currentValue = parseInt(input.value);
+
+        if (currentValue > 1) {
+            input.value = currentValue - 1;
+            form.submit();
+        }
+    }
+
+    function increaseQty(button) {
+        const form = button.closest('.quantity-form');
+        const input = form.querySelector('.qty-input');
+        const max = parseInt(input.max);
+        const currentValue = parseInt(input.value);
+
+        if (currentValue < max) {
+            input.value = currentValue + 1;
+            form.submit();
+        }
+    }
+
+    // Auto dismiss alerts
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+</script>
+
+</body>
+</html>

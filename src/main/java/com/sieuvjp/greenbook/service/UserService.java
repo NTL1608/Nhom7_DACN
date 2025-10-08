@@ -19,4 +19,6 @@ public interface UserService {
     List<User> findByIsActive(boolean isActive);
     void updatePassword(Long userId, String newPassword);
     void toggleActiveStatus(Long userId);
+    User updateProfile(Long userId, String fullName, String email, String phone, String address);
+    void changePassword(Long userId, String oldPassword, String newPassword);
 }
