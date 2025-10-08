@@ -32,7 +32,7 @@ public class UserDTO {
     @NotBlank(message = "Full name is required")
     private String fullName;
 
-    @Pattern(regexp = "^[0-9]{10,15}$", message = "Phone number should be valid")
+    @Pattern(regexp = "^[0-9\\s\\-]{10,15}$", message = "Phone number should be valid")
     private String phone;
 
     private String address;

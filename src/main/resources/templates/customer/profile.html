@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/header :: header}"></head>
+<body>
+
+<!-- Header -->
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<!-- Breadcrumb -->
+<section class="py-3 bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
+                <li class="breadcrumb-item active">Thông tin cá nhân</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Profile Content -->
+<section class="py-5 bg-gradient-light">
+    <div class="container">
+        <!-- Flash Messages -->
+        <div th:if="${success}" class="alert alert-success-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row g-4">
+            <!-- Sidebar -->
+            <div class="col-lg-3">
+                <div class="profile-sidebar sticky-top" style="top: 20px;">
+                    <!-- User Card -->
+                    <div class="user-card">
+                        <div class="avatar-wrapper">
+                            <div class="avatar-circle-large">
+                                <span th:text="${#strings.substring(user.fullName != null ? user.fullName : user.username, 0, 1).toUpperCase()}">U</span>
+                            </div>
+                            <div class="avatar-status"></div>
+                        </div>
+                        <h5 class="user-name mt-3 mb-1" th:text="${user.fullName != null ? user.fullName : user.username}">User Name</h5>
+                        <p class="user-email mb-2" th:text="${user.email}">email@example.com</p>
+                        <span class="badge-role">
+                            <i class="bi bi-person-badge-fill me-1"></i>
+                            <span th:text="${user.role}">CUSTOMER</span>
+                        </span>
+                    </div>
+
+                    <!-- Menu -->
+                    <div class="menu-list mt-4">
+                        <a th:href="@{/profile(tab='info')}"
+                           class="menu-item"
+                           th:classappend="${activeTab == 'info' ? 'active' : ''}">
+                            <div class="menu-icon">
+                                <i class="bi bi-person-circle"></i>
+                            </div>
+                            <span>Thông tin cá nhân</span>
+                            <i class="bi bi-chevron-right ms-auto"></i>
+                        </a>
+                        <a th:href="@{/profile(tab='orders')}"
+                           class="menu-item"
+                           th:classappend="${activeTab == 'orders' ? 'active' : ''}">
+                            <div class="menu-icon">
+                                <i class="bi bi-box-seam"></i>
+                            </div>
+                            <span>Đơn hàng của tôi</span>
+                            <i class="bi bi-chevron-right ms-auto"></i>
+                        </a>
+                        <a th:href="@{/profile(tab='password')}"
+                           class="menu-item"
+                           th:classappend="${activeTab == 'password' ? 'active' : ''}">
+                            <div class="menu-icon">
+                                <i class="bi bi-shield-lock"></i>
+                            </div>
+                            <span>Đổi mật khẩu</span>
+                            <i class="bi bi-chevron-right ms-auto"></i>
+                        </a>
+                        <div class="menu-divider"></div>
+                        <a th:href="@{/logout}" class="menu-item text-danger">
+                            <div class="menu-icon">
+                                <i class="bi bi-box-arrow-right"></i>
+                            </div>
+                            <span>Đăng xuất</span>
+                            <i class="bi bi-chevron-right ms-auto"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <!-- Thông tin cá nhân -->
+                <div th:if="${activeTab == 'info'}" class="content-section">
+                    <div class="content-card">
+                        <div class="card-header-custom">
+                            <div class="d-flex align-items-center">
+                                <div class="header-icon">
+                                    <i class="bi bi-person-circle"></i>
+                                </div>
+                                <div>
+                                    <h4 class="mb-0">Thông tin cá nhân</h4>
+                                    <p class="text-muted small mb-0">Cập nhật thông tin của bạn</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body-custom">
+                            <form th:action="@{/profile/update}" method="post" id="profileForm">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="form-group-custom">
+                                            <label class="form-label-custom">
+                                                <i class="bi bi-person-fill label-icon"></i>
+                                                Họ và tên
+                                                <span class="required">*</span>
+                                            </label>
+                                            <input type="text"
+                                                   class="form-control-custom"
+                                                   name="fullName"
+                                                   th:value="${user.fullName}"
+                                                   placeholder="Nhập họ và tên"
+                                                   required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group-custom">
+                                            <label class="form-label-custom">
+                                                <i class="bi bi-envelope-fill label-icon"></i>
+                                                Email
+                                                <span class="required">*</span>
+                                            </label>
+                                            <input type="email"
+                                                   class="form-control-custom"
+                                                   name="email"
+                                                   th:value="${user.email}"
+                                                   placeholder="email@example.com"
+                                                   required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group-custom">
+                                            <label class="form-label-custom">
+                                                <i class="bi bi-telephone-fill label-icon"></i>
+                                                Số điện thoại
+                                            </label>
+                                            <input type="tel"
+                                                   class="form-control-custom"
+                                                   name="phone"
+                                                   th:value="${user.phone}"
+                                                   placeholder="0123456789">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group-custom">
+                                            <label class="form-label-custom">
+                                                <i class="bi bi-person-badge-fill label-icon"></i>
+                                                Tên đăng nhập
+                                            </label>
+                                            <input type="text"
+                                                   class="form-control-custom disabled-input"
+                                                   th:value="${user.username}"
+                                                   disabled>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="form-group-custom">
+                                            <label class="form-label-custom">
+                                                <i class="bi bi-geo-alt-fill label-icon"></i>
+                                                Địa chỉ
+                                            </label>
+                                            <textarea class="form-control-custom"
+                                                      name="address"
+                                                      rows="3"
+                                                      th:text="${user.address}"
+                                                      placeholder="Nhập địa chỉ của bạn"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="button-group">
+                                            <button type="submit" class="btn-primary-custom">
+                                                <i class="bi bi-check-circle me-2"></i>Cập nhật thông tin
+                                            </button>
+                                            <button type="reset" class="btn-secondary-custom">
+                                                <i class="bi bi-arrow-counterclockwise me-2"></i>Làm mới
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Đơn hàng -->
+                <div th:if="${activeTab == 'orders'}" class="content-section">
+                    <div class="content-card">
+                        <div class="card-header-custom">
+                            <div class="d-flex align-items-center">
+                                <div class="header-icon">
+                                    <i class="bi bi-box-seam"></i>
+                                </div>
+                                <div>
+                                    <h4 class="mb-0">Đơn hàng của tôi</h4>
+                                    <p class="text-muted small mb-0">Quản lý và theo dõi đơn hàng</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body-custom">
+                            <!-- Empty State -->
+                            <div th:if="${orders == null || #lists.isEmpty(orders)}" class="empty-state">
+                                <div class="empty-icon">
+                                    <i class="bi bi-inbox"></i>
+                                </div>
+                                <h5 class="mt-4 mb-2">Chưa có đơn hàng nào</h5>
+                                <p class="text-muted mb-4">Bạn chưa có đơn hàng nào. Hãy bắt đầu mua sắm ngay!</p>
+                                <a th:href="@{/books}" class="btn-primary-custom">
+                                    <i class="bi bi-cart me-2"></i>Mua sắm ngay
+                                </a>
+                            </div>
+
+                            <!-- Orders List -->
+                            <div th:if="${orders != null && !#lists.isEmpty(orders)}" class="orders-list">
+                                <div class="order-card" th:each="order : ${orders}">
+                                    <div class="order-header">
+                                        <div class="order-id">
+                                            <i class="bi bi-receipt me-2"></i>
+                                            Đơn hàng <strong th:text="'#' + ${order.id}">#001</strong>
+                                        </div>
+                                        <span class="order-status badge-warning" th:if="${order.status == 'PENDING'}">
+                                            <i class="bi bi-clock-history me-1"></i>Chờ xử lý
+                                        </span>
+                                        <span class="order-status badge-info" th:if="${order.status == 'PROCESSING'}">
+                                            <i class="bi bi-arrow-repeat me-1"></i>Đang xử lý
+                                        </span>
+                                        <span class="order-status badge-primary" th:if="${order.status == 'SHIPPING'}">
+                                            <i class="bi bi-truck me-1"></i>Đang giao
+                                        </span>
+                                        <span class="order-status badge-success" th:if="${order.status == 'DELIVERED'}">
+                                            <i class="bi bi-check-circle me-1"></i>Đã giao
+                                        </span>
+                                        <span class="order-status badge-danger" th:if="${order.status == 'CANCELLED'}">
+                                            <i class="bi bi-x-circle me-1"></i>Đã hủy
+                                        </span>
+                                    </div>
+                                    <div class="order-body">
+                                        <div class="order-info">
+                                            <div class="info-item">
+                                                <i class="bi bi-calendar3 me-2"></i>
+                                                <span th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:30</span>
+                                            </div>
+                                            <div class="info-item price">
+                                                <i class="bi bi-cash me-2"></i>
+                                                <strong th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + 'đ'">200,000đ</strong>
+                                            </div>
+                                        </div>
+                                        <a th:href="@{/orders/{id}(id=${order.id})}" class="btn-view-detail">
+                                            Xem chi tiết <i class="bi bi-arrow-right ms-1"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Đổi mật khẩu -->
+                <div th:if="${activeTab == 'password'}" class="content-section">
+                    <div class="content-card">
+                        <div class="card-header-custom">
+                            <div class="d-flex align-items-center">
+                                <div class="header-icon">
+                                    <i class="bi bi-shield-lock"></i>
+                                </div>
+                                <div>
+                                    <h4 class="mb-0">Đổi mật khẩu</h4>
+                                    <p class="text-muted small mb-0">Cập nhật mật khẩu để bảo mật tài khoản</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body-custom">
+                            <div class="alert-info-custom mb-4">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Mật khẩu phải có ít nhất 6 ký tự, bao gồm chữ và số
+                            </div>
+
+                            <form th:action="@{/profile/change-password}" method="post" id="passwordForm">
+                                <div class="row g-4">
+                                    <div class="col-12">
+                                        <div class="form-group-custom">
+                                            <label class="form-label-custom">
+                                                <i class="bi bi-key-fill label-icon"></i>
+                                                Mật khẩu hiện tại
+                                                <span class="required">*</span>
+                                            </label>
+                                            <div class="password-input-wrapper">
+                                                <input type="password"
+                                                       class="form-control-custom"
+                                                       name="oldPassword"
+                                                       id="oldPassword"
+                                                       placeholder="Nhập mật khẩu hiện tại"
+                                                       required>
+                                                <button class="password-toggle"
+                                                        type="button"
+                                                        onclick="togglePassword('oldPassword')">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group-custom">
+                                            <label class="form-label-custom">
+                                                <i class="bi bi-shield-fill-check label-icon"></i>
+                                                Mật khẩu mới
+                                                <span class="required">*</span>
+                                            </label>
+                                            <div class="password-input-wrapper">
+                                                <input type="password"
+                                                       class="form-control-custom"
+                                                       name="newPassword"
+                                                       id="newPassword"
+                                                       placeholder="Nhập mật khẩu mới"
+                                                       minlength="6"
+                                                       required>
+                                                <button class="password-toggle"
+                                                        type="button"
+                                                        onclick="togglePassword('newPassword')">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group-custom">
+                                            <label class="form-label-custom">
+                                                <i class="bi bi-check2-circle label-icon"></i>
+                                                Xác nhận mật khẩu mới
+                                                <span class="required">*</span>
+                                            </label>
+                                            <div class="password-input-wrapper">
+                                                <input type="password"
+                                                       class="form-control-custom"
+                                                       name="confirmPassword"
+                                                       id="confirmPassword"
+                                                       placeholder="Nhập lại mật khẩu mới"
+                                                       minlength="6"
+                                                       required>
+                                                <button class="password-toggle"
+                                                        type="button"
+                                                        onclick="togglePassword('confirmPassword')">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <button type="submit" class="btn-primary-custom">
+                                            <i class="bi bi-shield-check me-2"></i>Đổi mật khẩu
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: footer-bottom}"></div>
+
+<!-- Scripts -->
+<th:block th:replace="~{fragments/footer :: scripts}"></th:block>
+
+<style>
+    :root {
+        --primary-green: #40916c;
+        --light-green: #74c69d;
+        --pale-green: #b7e4c7;
+        --extra-light: #d8f3dc;
+        --dark-text: #2d6a4f;
+        --cream: #f1faee;
+    }
+
+    .bg-gradient-light {
+        background: linear-gradient(135deg, #f8f9fa 0%, var(--cream) 100%);
+    }
+
+    .breadcrumb-item a {
+        color: var(--primary-green);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .breadcrumb-item a:hover {
+        color: var(--light-green);
+    }
+
+    /* Alert Custom */
+    .alert-success-custom {
+        background: linear-gradient(135deg, var(--extra-light), #e8f5e9);
+        border-left: 4px solid var(--primary-green);
+        border-radius: 12px;
+        color: var(--dark-text);
+        animation: slideIn 0.3s ease;
+    }
+
+    .alert-danger-custom {
+        background: linear-gradient(135deg, #ffe5e5, #ffebee);
+        border-left: 4px solid #dc3545;
+        border-radius: 12px;
+        color: #c62828;
+        animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* User Card */
+    .user-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 8px 30px rgba(64, 145, 108, 0.12);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .user-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-green), var(--light-green));
+    }
+
+    .avatar-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+    .avatar-circle-large {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto;
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        font-weight: 700;
+        color: white;
+        text-transform: uppercase;
+        box-shadow: 0 10px 30px rgba(64, 145, 108, 0.3);
+        position: relative;
+        border: 4px solid white;
+    }
+
+    .avatar-status {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 24px;
+        height: 24px;
+        background: #4caf50;
+        border: 3px solid white;
+        border-radius: 50%;
+    }
+
+    .user-name {
+        color: var(--dark-text);
+        font-weight: 600;
+        font-size: 1.3rem;
+    }
+
+    .user-email {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .badge-role {
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+        color: var(--primary-green);
+        padding: 0.5rem 1.2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-block;
+    }
+
+    /* Menu List */
+    .menu-list {
+        background: white;
+        border-radius: 16px;
+        padding: 0.5rem;
+        box-shadow: 0 4px 20px rgba(64, 145, 108, 0.08);
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.2rem;
+        color: var(--dark-text);
+        text-decoration: none;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        margin-bottom: 0.3rem;
+        font-weight: 500;
+    }
+
+    .menu-item:hover {
+        background: var(--extra-light);
+        transform: translateX(5px);
+        color: var(--primary-green);
+    }
+
+    .menu-item.active {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+        box-shadow: 0 4px 15px rgba(64, 145, 108, 0.3);
+    }
+
+    .menu-item.active .menu-icon {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    .menu-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--extra-light);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.2rem;
+        color: var(--primary-green);
+        transition: all 0.3s ease;
+    }
+
+    .menu-divider {
+        height: 1px;
+        background: var(--pale-green);
+        margin: 0.5rem 0;
+    }
+
+    /* Content Card */
+    .content-section {
+        animation: fadeInUp 0.4s ease;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .content-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(64, 145, 108, 0.12);
+        overflow: hidden;
+    }
+
+    .card-header-custom {
+        background: linear-gradient(135deg, var(--extra-light), white);
+        padding: 2rem;
+        border-bottom: 2px solid var(--pale-green);
+    }
+
+    .header-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: white;
+        margin-right: 1.5rem;
+        box-shadow: 0 6px 20px rgba(64, 145, 108, 0.25);
+    }
+
+    .card-body-custom {
+        padding: 2.5rem;
+    }
+
+    /* Form Custom */
+    .form-group-custom {
+        margin-bottom: 0;
+    }
+
+    .form-label-custom {
+        color: var(--dark-text);
+        font-weight: 600;
+        margin-bottom: 0.7rem;
+        display: flex;
+        align-items: center;
+        font-size: 0.95rem;
+    }
+
+    .label-icon {
+        color: var(--primary-green);
+        margin-right: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .required {
+        color: #dc3545;
+        margin-left: 0.3rem;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        padding: 0.9rem 1.2rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+
+    .form-control-custom:focus {
+        outline: none;
+        border-color: var(--primary-green);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(64, 145, 108, 0.1);
+    }
+
+    .form-control-custom:hover {
+        border-color: var(--light-green);
+    }
+
+    .disabled-input {
+        background: #f0f0f0 !important;
+        cursor: not-allowed;
+        color: #999;
+    }
+
+    textarea.form-control-custom {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    /* Password Input */
+    .password-input-wrapper {
+        position: relative;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #6c757d;
+        cursor: pointer;
+        padding: 0.5rem;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+    }
+
+    .password-toggle:hover {
+        color: var(--primary-green);
+    }
+
+    /* Buttons */
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-primary-custom {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+        border: none;
+        padding: 0.9rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(64, 145, 108, 0.3);
+    }
+
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(64, 145, 108, 0.4);
+    }
+
+    .btn-secondary-custom {
+        background: white;
+        color: var(--dark-text);
+        border: 2px solid #e0e0e0;
+        padding: 0.9rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary-custom:hover {
+        border-color: var(--primary-green);
+        color: var(--primary-green);
+        background: var(--extra-light);
+    }
+
+    /* Alert Info */
+    .alert-info-custom {
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        border-left: 4px solid #2196f3;
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        color: #1565c0;
+        font-size: 0.95rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-icon {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        color: var(--primary-green);
+    }
+
+    /* Order Card */
+    .order-card {
+        background: white;
+        border: 2px solid #f0f0f0;
+        border-radius: 16px;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .order-card:hover {
+        border-color: var(--pale-green);
+        box-shadow: 0 8px 25px rgba(64, 145, 108, 0.15);
+        transform: translateY(-3px);
+    }
+
+    .order-header {
+        background: linear-gradient(135deg, var(--extra-light), white);
+        padding: 1.2rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid var(--pale-green);
+    }
+
+    .order-id {
+        font-size: 1.05rem;
+        color: var(--dark-text);
+        font-weight: 500;
+    }
+
+    .order-status {
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .badge-warning {
+        background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+        color: #856404;
+    }
+
+    .badge-info {
+        background: linear-gradient(135deg, #cfe2ff, #b6d4fe);
+        color: #084298;
+    }
+
+    .badge-primary {
+        background: linear-gradient(135deg, var(--pale-green), var(--extra-light));
+        color: var(--primary-green);
+    }
+
+    .badge-success {
+        background: linear-gradient(135deg, #d4edda, #c3e6cb);
+        color: #155724;
+    }
+
+    .badge-danger {
+        background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+        color: #721c24;
+    }
+
+    .order-body {
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .order-info {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .info-item {
+        color: #6c757d;
+        font-size: 0.95rem;
+    }
+
+    .info-item.price {
+        color: var(--primary-green);
+        font-size: 1.1rem;
+    }
+
+    .btn-view-detail {
+        background: var(--extra-light);
+        color: var(--primary-green);
+        padding: 0.6rem 1.5rem;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-view-detail:hover {
+        background: var(--primary-green);
+        color: white;
+        transform: translateX(5px);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .avatar-circle-large {
+            width: 100px;
+            height: 100px;
+            font-size: 2.5rem;
+        }
+
+        .card-header-custom {
+            padding: 1.5rem;
+        }
+
+        .card-body-custom {
+            padding: 1.5rem;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .button-group {
+            flex-direction: column;
+        }
+
+        .btn-primary-custom,
+        .btn-secondary-custom {
+            width: 100%;
+        }
+
+        .order-body {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .order-info {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .btn-view-detail {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+
+<script>
+    // Toggle password visibility
+    function togglePassword(fieldId) {
+        const field = document.getElementById(fieldId);
+        const button = event.currentTarget;
+        const icon = button.querySelector('i');
+
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        } else {
+            field.type = 'password';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        }
+    }
+
+    // Validate password form
+    document.getElementById('passwordForm')?.addEventListener('submit', function(e) {
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (newPassword !== confirmPassword) {
+            e.preventDefault();
+            alert('Mật khẩu xác nhận không khớp!');
+            return false;
+        }
+
+        if (newPassword.length < 6) {
+            e.preventDefault();
+            alert('Mật khẩu phải có ít nhất 6 ký tự!');
+            return false;
+        }
+    });
+
+    // Auto dismiss alerts after 5 seconds
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+</script>
+
+</body>
+</html>

@@ -9,7 +9,8 @@
     <div class="startbar d-print-none">
 
         <div class="brand">
-            <a th:href="@{/}" class="logo">
+            <!-- FIX: Đổi / thành /admin/dashboard -->
+            <a th:href="@{/admin/dashboard}" class="logo">
                 <span>
                     <img th:src="@{/images/logo-sm.png}" alt="logo-small" class="logo-sm">
                 </span>
@@ -26,14 +27,12 @@
 
                     <ul class="navbar-nav mb-auto w-100">
                         <li class="menu-label pt-0 mt-0">
-                            <!-- <small class="label-border">
-                                <div class="border_left hidden-xs"></div>
-                                <div class="border_right"></div>
-                            </small> -->
                             <span>Main Menu</span>
                         </li>
+
+                        <!-- FIX: Đổi / thành /admin/dashboard -->
                         <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                            <a class="nav-link" th:href="@{/}">
+                            <a class="nav-link" th:href="@{/admin/dashboard}">
                                 <i class="iconoir-home-simple menu-icon"></i>
                                 <span>Dashboards</span>
                             </a>
