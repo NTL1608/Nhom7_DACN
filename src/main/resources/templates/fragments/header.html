@@ -11,24 +11,27 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts - Be Vietnam Pro -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
             --primary-green: #40916c;
-            --light-green: #74c69d;
-            --pale-green: #b7e4c7;
+            --light-green: #52b788;
+            --pale-green: #95d5b2;
             --extra-light: #d8f3dc;
-            --dark-text: #2d6a4f;
-            --cream: #f1faee;
+            --dark-text: #1b4332;
+            --cream: #f8f9fa;
+            --white: #ffffff;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Be Vietnam Pro', sans-serif;
         }
 
         body {
@@ -36,32 +39,44 @@
             background-color: var(--cream);
         }
 
-        /* Header Styles - Booksaw inspired */
+        /* Header Styles */
         #header-wrap {
-            background-color: white;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            background: var(--white);
+            box-shadow: 0 2px 20px rgba(64, 145, 108, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .navbar {
             padding: 1rem 0;
         }
 
+        /* Logo with Gradient */
         .navbar-brand {
-            font-weight: 700;
-            font-size: 1.8rem;
-            color: var(--primary-green) !important;
+            font-weight: 800;
+            font-size: 1.75rem;
+            background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.6rem;
             transition: all 0.3s ease;
+            text-decoration: none;
         }
 
         .navbar-brand:hover {
-            transform: scale(1.05);
+            transform: translateY(-2px);
+            filter: brightness(1.1);
         }
 
         .navbar-brand i {
-            font-size: 2rem;
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         /* Navigation Links */
@@ -71,66 +86,66 @@
 
         .navbar-nav .nav-link {
             color: var(--dark-text) !important;
-            font-weight: 500;
-            font-size: 1rem;
-            padding: 0.5rem 1rem !important;
-            transition: all 0.3s ease;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 0.7rem 1.5rem !important;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
         }
 
         .navbar-nav .nav-link:hover {
+            background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
             color: var(--primary-green) !important;
-        }
-
-        .navbar-nav .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: var(--primary-green);
-            transition: all 0.3s ease;
-            transform: translateX(-50%);
-        }
-
-        .navbar-nav .nav-link:hover::after {
-            width: 70%;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(64, 145, 108, 0.15);
         }
 
         /* Right Side Icons */
         .right-element {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 1rem;
         }
 
         .icon-link {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: var(--dark-text);
             font-size: 1.5rem;
+            border-radius: 12px;
             transition: all 0.3s ease;
             position: relative;
             cursor: pointer;
+            text-decoration: none;
+            background: transparent;
         }
 
         .icon-link:hover {
+            background: var(--extra-light);
             color: var(--primary-green);
-            transform: scale(1.1);
+            transform: translateY(-2px);
         }
 
         /* Cart Badge */
         .cart-count {
             position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #ff6b6b;
+            top: -4px;
+            right: -4px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
             color: white;
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 2px 6px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 3px 7px;
             border-radius: 50%;
             min-width: 20px;
             text-align: center;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
         }
 
         /* User Dropdown */
@@ -139,10 +154,10 @@
         }
 
         .user-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--extra-light);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
             display: flex;
             align-items: center;
             justify-content: center;
@@ -152,109 +167,111 @@
         }
 
         .user-icon:hover {
-            background: var(--primary-green);
+            background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(64, 145, 108, 0.3);
+        }
+
+        .user-icon:hover i {
             color: white;
-            border-color: var(--primary-green);
         }
 
         .user-icon i {
-            font-size: 1.3rem;
+            font-size: 1.5rem;
+            color: var(--primary-green);
+            transition: all 0.3s ease;
         }
 
         /* Dropdown Menu */
         .dropdown-menu {
             border: none;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.15);
-            border-radius: 12px;
-            padding: 0.5rem 0;
-            min-width: 220px;
-            margin-top: 0.5rem !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border-radius: 16px;
+            padding: 0.8rem 0;
+            min-width: 240px;
+            margin-top: 0.8rem !important;
+            background: white;
         }
 
         .dropdown-item {
-            padding: 0.7rem 1.5rem;
+            padding: 0.8rem 1.5rem;
             transition: all 0.3s ease;
             color: var(--dark-text);
             font-weight: 500;
+            border-radius: 8px;
+            margin: 0 0.5rem;
         }
 
         .dropdown-item:hover {
             background: var(--extra-light);
             color: var(--primary-green);
-            padding-left: 1.8rem;
+            transform: translateX(5px);
         }
 
         .dropdown-item i {
-            margin-right: 10px;
+            margin-right: 12px;
             width: 20px;
             text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .dropdown-item-text {
+            background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+            border-radius: 10px;
+            margin: 0 0.5rem 0.5rem;
+        }
+
+        .dropdown-item-text strong {
+            color: var(--primary-green);
+            font-size: 1.05rem;
         }
 
         .dropdown-divider {
-            margin: 0.5rem 0;
+            margin: 0.5rem 1rem;
             border-color: var(--pale-green);
+            opacity: 0.4;
         }
 
-        /* Auth Buttons */
-        .btn-login, .btn-register {
-            border: 2px solid var(--primary-green);
-            color: var(--primary-green);
-            font-weight: 600;
-            padding: 0.5rem 1.5rem;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
+        .dropdown-item.text-danger:hover {
+            background: #fee2e2;
+            color: #dc3545 !important;
         }
 
-        .btn-login:hover {
-            background: var(--primary-green);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .btn-register {
-            background: var(--primary-green);
-            color: white;
-            border-color: var(--primary-green);
-        }
-
-        .btn-register:hover {
-            background: var(--light-green);
-            border-color: var(--light-green);
-            transform: translateY(-2px);
-        }
-
-        /* Mobile Menu */
+        /* Mobile Toggle */
         .navbar-toggler {
-            border: none;
-            padding: 0.5rem;
+            border: 2px solid var(--pale-green);
+            padding: 0.5rem 0.75rem;
+            border-radius: 10px;
         }
 
         .navbar-toggler:focus {
-            box-shadow: none;
+            box-shadow: 0 0 0 3px rgba(64, 145, 108, 0.1);
         }
 
         /* Responsive */
         @media (max-width: 991px) {
             .navbar-nav {
                 padding: 1rem 0;
+                background: var(--cream);
+                border-radius: 12px;
+                margin-top: 1rem;
             }
 
             .navbar-nav .nav-item {
-                margin: 0.2rem 0;
-            }
-
-            .navbar-nav .nav-link::after {
-                display: none;
+                margin: 0.3rem 0;
             }
 
             .right-element {
                 margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 2px solid var(--pale-green);
                 justify-content: flex-start;
             }
         }
     </style>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 
@@ -305,13 +322,13 @@
                               th:text="${cartItemCount}">0</span>
                     </a>
 
-                    <!-- User Dropdown -->
+                    <!-- User Dropdown - GIỮ NGUYÊN CẤU TRÚC CŨ -->
                     <div class="dropdown user-dropdown">
-                        <div class="user-icon" id="userDropdown" role="button" aria-expanded="false">
+                        <div class="user-icon" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person"></i>
                         </div>
 
-                        <ul class="dropdown-menu dropdown-menu-end" id="userMenu">
+                        <ul class="dropdown-menu dropdown-menu-end">
                             <!-- Khi CHƯA đăng nhập -->
                             <th:block th:if="${isLoggedIn == null || isLoggedIn == false}">
                                 <li>
@@ -329,20 +346,15 @@
                             <!-- Khi ĐÃ đăng nhập -->
                             <th:block th:if="${isLoggedIn != null && isLoggedIn == true}">
                                 <li>
-                <span class="dropdown-item-text px-3 py-2">
-                    <small class="text-muted">Xin chào,</small><br>
-                    <strong th:text="${userName != null ? userName : 'User'}">User</strong>
-                </span>
+                                    <span class="dropdown-item-text px-3 py-2">
+                                        <small class="text-muted">Xin chào,</small><br>
+                                        <strong th:text="${userName != null ? userName : 'User'}">User</strong>
+                                    </span>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item" th:href="@{/profile}">
-                                        <i class="bi bi-person"></i> Thông tin cá nhân
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" th:href="@{/customer/orders}">
-                                        <i class="bi bi-box-seam"></i> Đơn hàng của tôi
+                                        <i class="bi bi-person-circle"></i> Thông tin cá nhân
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
@@ -356,8 +368,6 @@
                             </th:block>
                         </ul>
                     </div>
-
-
                 </div>
             </div>
         </div>

@@ -2,6 +2,7 @@ package com.sieuvjp.greenbook.service;
 
 import com.sieuvjp.greenbook.entity.Order;
 import com.sieuvjp.greenbook.enums.OrderStatus;
+import com.sieuvjp.greenbook.enums.PaymentMethod;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -26,4 +27,7 @@ public interface OrderService {
     Map<String, Double> getMonthlySales();
     List<Map<String, Object>> getTopSellingBooks(int limit);
     double getTotalDiscount();
+
+    // ✅ THÊM 2 METHOD MỚI ĐÂY
+    Order getOrderWithDetails(Long orderId);
 }

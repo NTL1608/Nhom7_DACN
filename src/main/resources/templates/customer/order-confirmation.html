@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/header :: header}"></head>
+<body>
+
+<!-- Header -->
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<!-- Order Confirmation -->
+<section class="confirmation-section">
+    <div class="container">
+        <div class="confirmation-wrapper">
+            <!-- Success Icon -->
+            <div class="success-animation">
+                <div class="checkmark-circle">
+                    <div class="checkmark draw"></div>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <h1 class="confirmation-title">Đặt hàng thành công!</h1>
+            <p class="confirmation-subtitle">Cảm ơn bạn đã mua sắm tại Greenbook</p>
+
+            <!-- Order Info Card -->
+            <div class="order-info-card">
+                <div class="order-header">
+                    <div class="order-number">
+                        <i class="bi bi-receipt-cutoff me-2"></i>
+                        Mã đơn hàng: <strong th:text="'#' + ${order.id}">#12345</strong>
+                    </div>
+                    <div class="order-status">
+                        <span class="status-badge pending">
+                            <i class="bi bi-clock-history me-1"></i>Chờ xử lý
+                        </span>
+                    </div>
+                </div>
+
+                <div class="order-details">
+                    <!-- Customer Info -->
+                    <div class="detail-section">
+                        <h6 class="section-title">
+                            <i class="bi bi-person-circle me-2"></i>Thông tin khách hàng
+                        </h6>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="label">Họ tên:</span>
+                                <span class="value" th:text="${order.user.fullName}">Nguyễn Văn A</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Email:</span>
+                                <span class="value" th:text="${order.user.email}">email@example.com</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Số điện thoại:</span>
+                                <span class="value" th:text="${order.user.phone}">0123456789</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shipping Info -->
+                    <div class="detail-section">
+                        <h6 class="section-title">
+                            <i class="bi bi-truck me-2"></i>Thông tin giao hàng
+                        </h6>
+                        <div class="info-item">
+                            <span class="label">Địa chỉ:</span>
+                            <span class="value" th:text="${order.shippingAddress}">Địa chỉ giao hàng</span>
+                        </div>
+                        <div class="info-item" th:if="${order.note != null && !order.note.isEmpty()}">
+                            <span class="label">Ghi chú:</span>
+                            <span class="value" th:text="${order.note}">Ghi chú</span>
+                        </div>
+                    </div>
+
+                    <!-- Payment Info -->
+                    <div class="detail-section">
+                        <h6 class="section-title">
+                            <i class="bi bi-credit-card me-2"></i>Phương thức thanh toán
+                        </h6>
+                        <div class="payment-method-display">
+                            <span th:if="${order.paymentMethod == T(com.sieuvjp.greenbook.enums.PaymentMethod).CASH_ON_DELIVERY}">
+                                <i class="bi bi-cash-coin me-2"></i>Thanh toán khi nhận hàng (COD)
+                            </span>
+                            <span th:if="${order.paymentMethod == T(com.sieuvjp.greenbook.enums.PaymentMethod).BANK_TRANSFER}">
+                                <i class="bi bi-bank me-2"></i>Chuyển khoản ngân hàng
+                            </span>
+                            <span th:if="${order.paymentMethod == T(com.sieuvjp.greenbook.enums.PaymentMethod).CREDIT_CARD}">
+                                <i class="bi bi-credit-card me-2"></i>Thẻ tín dụng/ghi nợ
+                            </span>
+                            <span th:if="${order.paymentMethod == T(com.sieuvjp.greenbook.enums.PaymentMethod).E_WALLET}">
+                                <i class="bi bi-wallet2 me-2"></i>Ví điện tử
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Order Items -->
+                    <div class="detail-section">
+                        <h6 class="section-title">
+                            <i class="bi bi-box-seam me-2"></i>Sản phẩm đã đặt
+                        </h6>
+                        <div class="order-items-list">
+                            <div class="order-item-row" th:each="detail : ${order.orderDetails}">
+                                <div class="item-info">
+                                    <img th:src="${detail.book.imageUrls != null && !detail.book.imageUrls.isEmpty() ? detail.book.imageUrls[0] : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=100&h=150&fit=crop'}"
+                                         th:alt="${detail.book.title}"
+                                         class="item-thumb">
+                                    <div>
+                                        <h6 class="item-name" th:text="${detail.book.title}">Tên sách</h6>
+                                        <p class="item-qty">Số lượng: <strong th:text="${detail.quantity}">1</strong></p>
+                                    </div>
+                                </div>
+                                <div class="item-price">
+                                    <span th:text="${#numbers.formatDecimal(detail.subtotal, 0, 'COMMA', 0, 'POINT')} + 'đ'">120,000đ</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="order-summary-box">
+                        <div class="summary-row">
+                            <span>Tạm tính:</span>
+                            <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + 'đ'">200,000đ</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Phí vận chuyển:</span>
+                            <span th:text="${order.totalAmount >= 200000 ? 'Miễn phí' : '30,000đ'}">30,000đ</span>
+                        </div>
+                        <div class="summary-divider"></div>
+                        <div class="summary-row total">
+                            <span>Tổng cộng:</span>
+                            <span class="total-amount" th:text="${#numbers.formatDecimal(order.finalAmount, 0, 'COMMA', 0, 'POINT')} + 'đ'">230,000đ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a th:href="@{/orders/{id}(id=${order.id})}" class="btn-view-order">
+                    <i class="bi bi-eye me-2"></i>Xem chi tiết đơn hàng
+                </a>
+                <a th:href="@{/books}" class="btn-continue-shopping">
+                    <i class="bi bi-arrow-left me-2"></i>Tiếp tục mua sắm
+                </a>
+            </div>
+
+            <!-- What's Next -->
+            <div class="whats-next-card">
+                <h6 class="whats-next-title">
+                    <i class="bi bi-info-circle me-2"></i>Bước tiếp theo
+                </h6>
+                <ul class="next-steps">
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        Chúng tôi đã gửi email xác nhận đến <strong th:text="${order.user.email}">email của bạn</strong>
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        Đơn hàng sẽ được xử lý trong vòng <strong>24 giờ</strong>
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        Bạn có thể theo dõi đơn hàng trong mục <strong>Đơn hàng của tôi</strong>
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle-fill"></i>
+                        Liên hệ với chúng tôi nếu có bất kỳ thắc mắc nào
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    :root {
+        --primary-green: #40916c;
+        --light-green: #74c69d;
+        --pale-green: #b7e4c7;
+        --extra-light: #d8f3dc;
+        --dark-text: #2d6a4f;
+    }
+
+    .confirmation-section {
+        min-height: 100vh;
+        background: linear-gradient(135deg, var(--extra-light) 0%, white 100%);
+        padding: 4rem 0;
+    }
+
+    .confirmation-wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    /* Success Animation */
+    .success-animation {
+        margin-bottom: 2rem;
+    }
+
+    .checkmark-circle {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        position: relative;
+        box-shadow: 0 10px 40px rgba(64, 145, 108, 0.3);
+        animation: scaleIn 0.5s ease;
+    }
+
+    @keyframes scaleIn {
+        from {
+            transform: scale(0);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .checkmark {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60px;
+        height: 60px;
+    }
+
+    .checkmark.draw:after {
+        content: '';
+        position: absolute;
+        width: 25px;
+        height: 50px;
+        border: solid white;
+        border-width: 0 6px 6px 0;
+        transform: rotate(45deg);
+        animation: checkmark 0.5s ease 0.3s forwards;
+        opacity: 0;
+    }
+
+    @keyframes checkmark {
+        to {
+            opacity: 1;
+        }
+    }
+
+    .confirmation-title {
+        color: var(--dark-text);
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        animation: fadeInUp 0.6s ease;
+    }
+
+    .confirmation-subtitle {
+        color: #6c757d;
+        font-size: 1.1rem;
+        margin-bottom: 3rem;
+        animation: fadeInUp 0.7s ease;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Order Info Card */
+    .order-info-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 2rem;
+        text-align: left;
+        animation: fadeInUp 0.8s ease;
+    }
+
+    .order-header {
+        background: linear-gradient(135deg, var(--extra-light), white);
+        padding: 1.5rem 2rem;
+        border-bottom: 2px solid var(--pale-green);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .order-number {
+        font-size: 1.1rem;
+        color: var(--dark-text);
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .status-badge.pending {
+        background: linear-gradient(135deg, #faad14, #ffc53d);
+        color: white;
+    }
+
+    .order-details {
+        padding: 2rem;
+    }
+
+    .detail-section {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .detail-section:last-of-type {
+        border-bottom: none;
+    }
+
+    .section-title {
+        color: var(--dark-text);
+        font-weight: 600;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .value {
+        color: var(--dark-text);
+        font-weight: 500;
+    }
+
+    .payment-method-display {
+        background: var(--extra-light);
+        padding: 1rem;
+        border-radius: 12px;
+        color: var(--primary-green);
+        font-weight: 600;
+    }
+
+    /* Order Items List */
+    .order-items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .order-item-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background: var(--extra-light);
+        border-radius: 12px;
+    }
+
+    .item-info {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex: 1;
+    }
+
+    .item-thumb {
+        width: 60px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .item-name {
+        margin: 0 0 0.3rem 0;
+        color: var(--dark-text);
+        font-size: 0.95rem;
+    }
+
+    .item-qty {
+        margin: 0;
+        color: #6c757d;
+        font-size: 0.85rem;
+    }
+
+    .item-price {
+        font-weight: 600;
+        color: var(--primary-green);
+        font-size: 1.1rem;
+    }
+
+    /* Order Summary Box */
+    .order-summary-box {
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+        padding: 1.5rem;
+        border-radius: 12px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.8rem;
+        color: #6c757d;
+    }
+
+    .summary-row.total {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-top: 1rem;
+    }
+
+    .total-amount {
+        color: var(--primary-green);
+        font-size: 1.5rem;
+    }
+
+    .summary-divider {
+        height: 2px;
+        background: white;
+        margin: 1rem 0;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-view-order,
+    .btn-continue-shopping {
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .btn-view-order {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+        box-shadow: 0 4px 15px rgba(64, 145, 108, 0.3);
+    }
+
+    .btn-view-order:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(64, 145, 108, 0.4);
+        color: white;
+    }
+
+    .btn-continue-shopping {
+        background: white;
+        color: var(--primary-green);
+        border: 2px solid var(--primary-green);
+    }
+
+    .btn-continue-shopping:hover {
+        background: var(--extra-light);
+        transform: translateY(-2px);
+    }
+
+    /* What's Next Card */
+    .whats-next-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        text-align: left;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .whats-next-title {
+        color: var(--dark-text);
+        font-weight: 600;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .next-steps {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .next-steps li {
+        padding: 0.8rem 0;
+        color: #6c757d;
+        display: flex;
+        align-items: start;
+        gap: 0.8rem;
+    }
+
+    .next-steps li i {
+        color: var(--primary-green);
+        font-size: 1.2rem;
+        margin-top: 0.2rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .confirmation-title {
+            font-size: 2rem;
+        }
+
+        .order-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .order-details {
+            padding: 1.5rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .btn-view-order,
+        .btn-continue-shopping {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: footer-bottom}"></div>
+
+<!-- Scripts -->
+<th:block th:replace="~{fragments/footer :: scripts}"></th:block>
+
+</body>
+</html>

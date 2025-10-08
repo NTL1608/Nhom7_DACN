@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/header :: header}"></head>
+<body>
+
+<!-- Header -->
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<!-- Breadcrumb -->
+<section class="py-3 bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/profile(tab='orders')}">Đơn hàng của tôi</a></li>
+                <li class="breadcrumb-item active" th:text="'Đơn hàng #' + ${order.id}">Đơn hàng #123</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Order Detail Content -->
+<section class="order-detail-section">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Left: Order Details -->
+            <div class="col-lg-8">
+                <!-- Order Header -->
+                <div class="order-detail-card">
+                    <div class="order-detail-header">
+                        <div class="order-info-header">
+                            <h3 class="order-title">
+                                <i class="bi bi-receipt-cutoff me-2"></i>
+                                Đơn hàng <span th:text="'#' + ${order.id}">#123</span>
+                            </h3>
+                            <p class="order-date">
+                                Đặt ngày: <strong th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:30</strong>
+                            </p>
+                        </div>
+                        <div class="order-status-badge">
+                            <span class="status-badge pending" th:if="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).PENDING}">
+                                <i class="bi bi-clock-history me-1"></i>Chờ xử lý
+                            </span>
+                            <span class="status-badge processing" th:if="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).PROCESSING}">
+                                <i class="bi bi-arrow-repeat me-1"></i>Đang xử lý
+                            </span>
+                            <span class="status-badge shipped" th:if="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).SHIPPED}">
+                                <i class="bi bi-truck me-1"></i>Đang giao
+                            </span>
+                            <span class="status-badge delivered" th:if="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).DELIVERED}">
+                                <i class="bi bi-box-seam me-1"></i>Đã giao
+                            </span>
+                            <span class="status-badge completed" th:if="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).COMPLETED}">
+                                <i class="bi bi-check-circle me-1"></i>Hoàn thành
+                            </span>
+                            <span class="status-badge cancelled" th:if="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).CANCELLED}">
+                                <i class="bi bi-x-circle me-1"></i>Đã hủy
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="order-detail-card mt-4">
+                    <div class="card-section-header">
+                        <h5 class="section-title">
+                            <i class="bi bi-box-seam me-2"></i>Sản phẩm
+                        </h5>
+                    </div>
+                    <div class="order-items-table">
+                        <div class="order-item-detail" th:each="detail : ${order.orderDetails}">
+                            <div class="item-image-wrapper">
+                                <img th:src="${detail.book.imageUrls != null && !detail.book.imageUrls.isEmpty() ? detail.book.imageUrls[0] : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=100&h=150&fit=crop'}"
+                                     th:alt="${detail.book.title}"
+                                     class="item-image">
+                            </div>
+                            <div class="item-info-detail">
+                                <h6 class="item-title-detail">
+                                    <a th:href="@{/books/{id}(id=${detail.book.id})}" th:text="${detail.book.title}">Tên sách</a>
+                                </h6>
+                                <p class="item-author" th:if="${detail.book.author != null}">
+                                    <i class="bi bi-person me-1"></i>
+                                    <span th:text="${detail.book.author}">Tác giả</span>
+                                </p>
+                                <div class="item-price-info">
+                                    <span class="price-label">Đơn giá:</span>
+                                    <span class="price-value" th:text="${#numbers.formatDecimal(detail.originalPrice, 0, 'COMMA', 0, 'POINT')} + 'đ'">120,000đ</span>
+                                </div>
+                            </div>
+                            <div class="item-quantity-detail">
+                                <span class="qty-label">Số lượng:</span>
+                                <span class="qty-value" th:text="${detail.quantity}">1</span>
+                            </div>
+                            <div class="item-subtotal-detail">
+                                <span class="subtotal-value" th:text="${#numbers.formatDecimal(detail.subtotal, 0, 'COMMA', 0, 'POINT')} + 'đ'">120,000đ</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shipping Info -->
+                <div class="order-detail-card mt-4">
+                    <div class="card-section-header">
+                        <h5 class="section-title">
+                            <i class="bi bi-truck me-2"></i>Thông tin giao hàng
+                        </h5>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-row">
+                            <span class="info-label">Người nhận:</span>
+                            <span class="info-value" th:text="${order.user.fullName}">Nguyễn Văn A</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Số điện thoại:</span>
+                            <span class="info-value" th:text="${order.user.phone}">0123456789</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Địa chỉ:</span>
+                            <span class="info-value" th:text="${order.shippingAddress}">Địa chỉ giao hàng</span>
+                        </div>
+                        <div class="info-row" th:if="${order.note != null && !order.note.isEmpty()}">
+                            <span class="info-label">Ghi chú:</span>
+                            <span class="info-value" th:text="${order.note}">Ghi chú</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Info -->
+                <div class="order-detail-card mt-4">
+                    <div class="card-section-header">
+                        <h5 class="section-title">
+                            <i class="bi bi-credit-card me-2"></i>Phương thức thanh toán
+                        </h5>
+                    </div>
+                    <div class="info-content">
+                        <div class="payment-method-info">
+                            <span th:if="${order.paymentMethod == T(com.sieuvjp.greenbook.enums.PaymentMethod).CASH_ON_DELIVERY}">
+                                <i class="bi bi-cash-coin me-2"></i>Thanh toán khi nhận hàng (COD)
+                            </span>
+                            <span th:if="${order.paymentMethod == T(com.sieuvjp.greenbook.enums.PaymentMethod).BANK_TRANSFER}">
+                                <i class="bi bi-bank me-2"></i>Chuyển khoản ngân hàng
+                            </span>
+                            <span th:if="${order.paymentMethod == T(com.sieuvjp.greenbook.enums.PaymentMethod).CREDIT_CARD}">
+                                <i class="bi bi-credit-card me-2"></i>Thẻ tín dụng/ghi nợ
+                            </span>
+                            <span th:if="${order.paymentMethod == T(com.sieuvjp.greenbook.enums.PaymentMethod).E_WALLET}">
+                                <i class="bi bi-wallet2 me-2"></i>Ví điện tử
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Order Summary -->
+            <div class="col-lg-4">
+                <div class="order-summary-sticky">
+                    <!-- Order Summary Card -->
+                    <div class="order-detail-card">
+                        <div class="card-section-header">
+                            <h5 class="section-title">
+                                <i class="bi bi-calculator me-2"></i>Tổng đơn hàng
+                            </h5>
+                        </div>
+                        <div class="summary-content">
+                            <div class="summary-row">
+                                <span>Tạm tính:</span>
+                                <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + 'đ'">200,000đ</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Phí vận chuyển:</span>
+                                <span th:if="${order.totalAmount >= 200000}">Miễn phí</span>
+                                <span th:if="${order.totalAmount < 200000}">30,000đ</span>
+                            </div>
+                            <div class="summary-row" th:if="${order.discountAmount > 0}">
+                                <span>Giảm giá:</span>
+                                <span class="text-success" th:text="'-' + ${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT')} + 'đ'">-10,000đ</span>
+                            </div>
+                            <div class="summary-divider"></div>
+                            <div class="summary-row total-row">
+                                <span>Tổng cộng:</span>
+                                <span class="total-amount" th:text="${#numbers.formatDecimal(order.finalAmount, 0, 'COMMA', 0, 'POINT')} + 'đ'">230,000đ</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons-sticky">
+                        <a th:href="@{/profile(tab='orders')}" class="btn-back">
+                            <i class="bi bi-arrow-left me-2"></i>Quay lại danh sách
+                        </a>
+                        <a href="#" class="btn-help">
+                            <i class="bi bi-headset me-2"></i>Hỗ trợ
+                        </a>
+                    </div>
+
+                    <!-- Order Timeline -->
+                    <div class="order-detail-card mt-4" th:if="${order.status != T(com.sieuvjp.greenbook.enums.OrderStatus).CANCELLED}">
+                        <div class="card-section-header">
+                            <h5 class="section-title">
+                                <i class="bi bi-clock-history me-2"></i>Trạng thái đơn hàng
+                            </h5>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-item active">
+                                <div class="timeline-icon">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                </div>
+                                <div class="timeline-content-text">
+                                    <h6>Đơn hàng đã đặt</h6>
+                                    <p th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:30</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item"
+                                 th:classappend="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).PROCESSING ||
+                                                   order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).SHIPPED ||
+                                                   order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).DELIVERED ||
+                                                   order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).COMPLETED} ? 'active' : ''">
+                                <div class="timeline-icon">
+                                    <i class="bi bi-box-seam-fill"></i>
+                                </div>
+                                <div class="timeline-content-text">
+                                    <h6>Đang xử lý</h6>
+                                    <p>Đơn hàng đang được chuẩn bị</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item"
+                                 th:classappend="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).SHIPPED ||
+                                                   order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).DELIVERED ||
+                                                   order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).COMPLETED} ? 'active' : ''">
+                                <div class="timeline-icon">
+                                    <i class="bi bi-truck"></i>
+                                </div>
+                                <div class="timeline-content-text">
+                                    <h6>Đang giao hàng</h6>
+                                    <p>Đơn hàng đang được vận chuyển</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item"
+                                 th:classappend="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).DELIVERED ||
+                                                   order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).COMPLETED} ? 'active' : ''">
+                                <div class="timeline-icon">
+                                    <i class="bi bi-check-all"></i>
+                                </div>
+                                <div class="timeline-content-text">
+                                    <h6>Đã giao hàng</h6>
+                                    <p th:if="${order.completedDate != null}"
+                                       th:text="${#temporals.format(order.completedDate, 'dd/MM/yyyy HH:mm')}">02/01/2024 15:00</p>
+                                    <p th:if="${order.completedDate == null}">Đơn hàng sẽ được giao sớm</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    :root {
+        --primary-green: #40916c;
+        --light-green: #74c69d;
+        --pale-green: #b7e4c7;
+        --extra-light: #d8f3dc;
+        --dark-text: #2d6a4f;
+    }
+
+    .breadcrumb-item a {
+        color: var(--primary-green);
+        text-decoration: none;
+    }
+
+    .order-detail-section {
+        padding: 3rem 0;
+        background: linear-gradient(180deg, #f8f9fa 0%, white 100%);
+    }
+
+    .order-detail-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .order-detail-header {
+        background: linear-gradient(135deg, var(--extra-light), white);
+        padding: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid var(--pale-green);
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .order-title {
+        color: var(--dark-text);
+        margin: 0;
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+
+    .order-date {
+        color: #6c757d;
+        margin: 0.5rem 0 0 0;
+        font-size: 0.95rem;
+    }
+
+    .status-badge {
+        padding: 0.6rem 1.2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .status-badge.pending {
+        background: linear-gradient(135deg, #faad14, #ffc53d);
+        color: white;
+    }
+
+    .status-badge.processing {
+        background: linear-gradient(135deg, #1890ff, #40a9ff);
+        color: white;
+    }
+
+    .status-badge.shipped {
+        background: linear-gradient(135deg, #722ed1, #9254de);
+        color: white;
+    }
+
+    .status-badge.delivered,
+    .status-badge.completed {
+        background: linear-gradient(135deg, #52c41a, #73d13d);
+        color: white;
+    }
+
+    .status-badge.cancelled {
+        background: linear-gradient(135deg, #ff4d4f, #ff7875);
+        color: white;
+    }
+
+    .card-section-header {
+        padding: 1.5rem 2rem;
+        background: var(--extra-light);
+        border-bottom: 2px solid var(--pale-green);
+    }
+
+    .section-title {
+        margin: 0;
+        color: var(--dark-text);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    /* Order Items */
+    .order-items-table {
+        padding: 1.5rem 2rem;
+    }
+
+    .order-item-detail {
+        display: grid;
+        grid-template-columns: 100px 1fr auto auto;
+        gap: 1.5rem;
+        padding: 1.5rem 0;
+        border-bottom: 1px solid #f0f0f0;
+        align-items: center;
+    }
+
+    .order-item-detail:last-child {
+        border-bottom: none;
+    }
+
+    .item-image {
+        width: 100px;
+        height: 130px;
+        object-fit: cover;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .item-title-detail {
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .item-title-detail a {
+        color: var(--dark-text);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .item-title-detail a:hover {
+        color: var(--primary-green);
+    }
+
+    .item-author {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .item-price-info {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .price-label {
+        color: #6c757d;
+        font-size: 0.85rem;
+    }
+
+    .price-value {
+        color: var(--primary-green);
+        font-weight: 600;
+    }
+
+    .item-quantity-detail {
+        text-align: center;
+    }
+
+    .qty-label {
+        display: block;
+        color: #6c757d;
+        font-size: 0.85rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .qty-value {
+        display: block;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--dark-text);
+    }
+
+    .item-subtotal-detail {
+        text-align: right;
+    }
+
+    .subtotal-value {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary-green);
+    }
+
+    /* Info Content */
+    .info-content {
+        padding: 1.5rem 2rem;
+    }
+
+    .info-row {
+        display: flex;
+        margin-bottom: 1rem;
+        gap: 1rem;
+    }
+
+    .info-label {
+        color: #6c757d;
+        min-width: 120px;
+        font-weight: 500;
+    }
+
+    .info-value {
+        color: var(--dark-text);
+        font-weight: 500;
+        flex: 1;
+    }
+
+    .payment-method-info {
+        background: var(--extra-light);
+        padding: 1rem;
+        border-radius: 12px;
+        color: var(--primary-green);
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    /* Order Summary */
+    .order-summary-sticky {
+        position: sticky;
+        top: 20px;
+    }
+
+    .summary-content {
+        padding: 1.5rem 2rem;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+        color: #6c757d;
+    }
+
+    .summary-row.total-row {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-top: 1rem;
+    }
+
+    .total-amount {
+        color: var(--primary-green);
+        font-size: 1.5rem;
+    }
+
+    .summary-divider {
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--pale-green), transparent);
+        margin: 1rem 0;
+    }
+
+    /* Action Buttons */
+    .action-buttons-sticky {
+        margin-top: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .btn-back,
+    .btn-help {
+        padding: 0.8rem 1.5rem;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.3s ease;
+        display: block;
+    }
+
+    .btn-back {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+    }
+
+    .btn-back:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(64, 145, 108, 0.3);
+        color: white;
+    }
+
+    .btn-help {
+        background: white;
+        color: var(--primary-green);
+        border: 2px solid var(--primary-green);
+    }
+
+    .btn-help:hover {
+        background: var(--extra-light);
+    }
+
+    /* Timeline */
+    .timeline-content {
+        padding: 2rem;
+    }
+
+    .timeline-item {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .timeline-item:not(:last-child)::before {
+        content: '';
+        position: absolute;
+        left: 19px;
+        top: 45px;
+        width: 2px;
+        height: calc(100% + 10px);
+        background: #e0e0e0;
+    }
+
+    .timeline-item.active:not(:last-child)::before {
+        background: var(--primary-green);
+    }
+
+    .timeline-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .timeline-item.active .timeline-icon {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+    }
+
+    .timeline-content-text h6 {
+        margin: 0 0 0.3rem 0;
+        color: var(--dark-text);
+        font-weight: 600;
+    }
+
+    .timeline-content-text p {
+        margin: 0;
+        color: #6c757d;
+        font-size: 0.85rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .order-summary-sticky {
+            position: static;
+            margin-top: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .order-detail-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .order-item-detail {
+            grid-template-columns: 80px 1fr;
+            gap: 1rem;
+        }
+
+        .item-quantity-detail,
+        .item-subtotal-detail {
+            grid-column: 2;
+            text-align: left;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .qty-label,
+        .qty-value {
+            display: inline;
+        }
+    }
+</style>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: footer-bottom}"></div>
+
+<!-- Scripts -->
+<th:block th:replace="~{fragments/footer :: scripts}"></th:block>
+
+</body>
+</html>
