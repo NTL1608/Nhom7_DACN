@@ -8,150 +8,202 @@
 <!-- Header -->
 <div th:replace="~{fragments/header :: navbar}"></div>
 
-<!-- Hero Banner -->
+<!-- Hero Banner Enhanced -->
 <section id="billboard" class="position-relative overflow-hidden">
-    <div class="container">
+    <div class="hero-background"></div>
+    <div class="container position-relative">
         <div class="row align-items-center py-5">
             <div class="col-md-6 py-5">
-                <div class="banner-content">
-                    <h1 class="display-3 fw-bold mb-4">
-                        Khám phá <span class="text-primary">thế giới sách</span>
+                <div class="banner-content animate-fade-in">
+                    <div class="hero-badge mb-3">
+                        <i class="bi bi-star-fill"></i>
+                        <span>CHÀO MỪNG ĐẾN VỚI GREENBOOK</span>
+                    </div>
+                    <h1 class="hero-title mb-4">
+                        Khám phá <span class="gradient-text">thế giới sách</span>
+                        <br>trong tầm tay bạn
                     </h1>
-                    <p class="lead mb-4">
+                    <p class="hero-description mb-4">
                         Hàng ngàn đầu sách chất lượng từ các thể loại văn học, khoa học, thiếu nhi và nhiều hơn nữa.
-                        Mua sắm dễ dàng, giao hàng nhanh chóng.
+                        Mua sắm dễ dàng, giao hàng nhanh chóng đến tận nhà.
                     </p>
-                    <div class="btn-wrap d-flex gap-3">
-                        <a th:href="@{/books}" class="btn btn-primary btn-lg px-4">
-                            Mua sắm ngay <i class="bi bi-arrow-right ms-2"></i>
+                    <div class="btn-wrap d-flex gap-3 flex-wrap">
+                        <a th:href="@{/books}" class="btn-hero btn-hero-primary">
+                            <span>Mua sắm ngay</span>
+                            <i class="bi bi-arrow-right ms-2"></i>
                         </a>
-                        <a th:href="@{/about}" class="btn btn-outline-primary btn-lg px-4">
-                            Tìm hiểu thêm
+                        <a th:href="@{/about}" class="btn-hero btn-hero-outline">
+                            <span>Tìm hiểu thêm</span>
+                            <i class="bi bi-info-circle ms-2"></i>
                         </a>
+                    </div>
+                    <!-- Stats -->
+                    <div class="hero-stats mt-5">
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="bi bi-book-fill"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>5000+</h3>
+                                <p>Đầu sách</p>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>10K+</h3>
+                                <p>Khách hàng</p>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="bi bi-star-fill"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>4.9/5</h3>
+                                <p>Đánh giá</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="col-md-6 text-center">
-                <div class="banner-image">
+                <div class="banner-image-wrapper">
+                    <div class="floating-shape shape-1"></div>
+                    <div class="floating-shape shape-2"></div>
+                    <div class="floating-shape shape-3"></div>
                     <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&h=600&fit=crop"
                          alt="Books Collection"
-                         class="img-fluid rounded shadow-lg">
+                         class="hero-image">
                 </div>
             </div>
         </div>
     </div>
-    <div class="pattern-overlay"></div>
 </section>
 
-<!-- Categories Section -->
-<section id="categories" class="py-5 bg-light">
+<!-- Categories Section Enhanced -->
+<section id="categories" class="section-padding">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="display-6 fw-bold" style="color: var(--primary-green);">Danh mục nổi bật</h2>
-            <p class="text-muted">Khám phá sách theo từng thể loại</p>
+        <div class="section-header text-center mb-5">
+            <span class="section-badge">DANH MỤC</span>
+            <h2 class="section-title">Khám phá theo thể loại</h2>
+            <p class="section-description">Tìm kiếm sách yêu thích của bạn theo từng danh mục</p>
         </div>
         <div class="row g-4">
-            <!-- Nếu có categories từ controller -->
             <div class="col-lg-3 col-md-6" th:each="category : ${categories}">
-                <a th:href="@{/books(categoryId=${category.id})}" class="category-card">
-                    <div class="card border-0 shadow-sm h-100 text-center">
-                        <div class="card-body py-4">
-                            <div class="category-icon-wrapper">
-                                <i class="bi bi-book category-icon"></i>
-                            </div>
-                            <h5 class="mt-3 mb-2 fw-bold" th:text="${category.name}">Danh mục</h5>
-                            <p class="text-muted small mb-0" th:text="${category.description}">Mô tả</p>
+                <a th:href="@{/books(categoryId=${category.id})}" class="category-card-modern">
+                    <div class="category-card-inner">
+                        <div class="category-icon-modern">
+                            <i class="bi bi-book-fill"></i>
+                        </div>
+                        <h5 class="category-name-modern" th:text="${category.name}">Danh mục</h5>
+                        <p class="category-desc-modern" th:text="${category.description}">Mô tả danh mục</p>
+                        <div class="category-arrow">
+                            <i class="bi bi-arrow-right"></i>
                         </div>
                     </div>
                 </a>
             </div>
-
-
         </div>
     </div>
 </section>
 
-<!-- Featured Books -->
-<section id="featured-books" class="py-5 my-4">
+<!-- Featured Books Enhanced -->
+<section id="featured-books" class="section-padding bg-light-gradient">
     <div class="container">
-        <div class="row mb-5">
-            <div class="col-md-6">
-                <h2 class="display-6 fw-bold">Sách bán chạy</h2>
+        <div class="section-header-flex mb-5">
+            <div>
+                <span class="section-badge">BÁN CHẠY</span>
+                <h2 class="section-title mb-2">Sách bán chạy nhất</h2>
+                <p class="section-description">Những cuốn sách được yêu thích nhất</p>
             </div>
-            <div class="col-md-6 text-md-end">
-                <a th:href="@{/books}" class="btn btn-outline-primary">
-                    Xem tất cả <i class="bi bi-arrow-right ms-2"></i>
+            <div>
+                <a th:href="@{/books}" class="btn-view-all-modern">
+                    <span>Xem tất cả</span>
+                    <i class="bi bi-arrow-right ms-2"></i>
                 </a>
             </div>
         </div>
 
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-4 col-sm-6" th:each="book : ${latestBooks}">
-                <div class="product-card">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="product-image position-relative">
+        <div class="books-grid-modern">
+            <div class="book-card-modern" th:each="book : ${latestBooks}">
+                <div class="book-card-inner-modern">
+                    <!-- Book Image -->
+                    <div class="book-image-modern">
+                        <a th:href="@{/books/{id}(id=${book.id})}">
                             <img th:src="${book.imageUrls != null && !book.imageUrls.isEmpty() ? book.imageUrls[0] : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=600&fit=crop'}"
                                  th:alt="${book.title}"
-                                 class="card-img-top">
+                                 class="book-img">
+                        </a>
 
-                            <!-- Badge -->
-                            <div class="position-absolute top-0 end-0 m-2">
-                                <span th:if="${book.stockQuantity > 0}" class="badge bg-success">Còn hàng</span>
-                                <span th:if="${book.stockQuantity == 0}" class="badge bg-danger">Hết hàng</span>
-                            </div>
-                            <!-- Quick Actions -->
-                            <div class="product-actions">
-                                <a th:href="@{/books/{id}(id=${book.id})}"
-                                   class="btn btn-sm btn-light"
-                                   title="Xem chi tiết">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-
-                                <!-- Form thêm vào giỏ -->
-                                <form class="cart-form" style="display: inline;">
-                                <input type="hidden" name="bookId" th:value="${book.id}">
-                                    <input type="hidden" name="quantity" value="1">
-                                    <button type="submit"
-                                            class="btn btn-sm btn-light"
-                                            th:if="${book.stockQuantity > 0}"
-                                            title="Thêm vào giỏ">
-                                        <i class="bi bi-cart-plus"></i>
-                                    </button>
-                                </form>
-
-                                <button class="btn btn-sm btn-light"
-                                        title="Yêu thích">
-                                    <i class="bi bi-heart"></i>
-                                </button>
-                            </div>
+                        <!-- Stock Badge -->
+                        <div class="stock-badge-modern" th:if="${book.stockQuantity > 0}">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span>Còn hàng</span>
+                        </div>
+                        <div class="stock-badge-modern out-stock" th:if="${book.stockQuantity == 0}">
+                            <i class="bi bi-x-circle-fill"></i>
+                            <span>Hết hàng</span>
                         </div>
 
-                        <div class="card-body">
-                            <h6 class="card-title text-truncate mb-2" th:text="${book.title}">Tên sách</h6>
-                            <p class="text-muted small mb-2" th:text="${book.author}">Tác giả</p>
+                        <!-- Quick Actions -->
+                        <div class="quick-actions-modern">
+                            <a th:href="@{/books/{id}(id=${book.id})}"
+                               class="action-btn-modern"
+                               title="Xem chi tiết">
+                                <i class="bi bi-eye-fill"></i>
+                            </a>
 
-                            <!-- Hiển thị giá có khuyến mãi nếu có -->
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="price-wrapper">
-                                    <!-- Giá gốc bị gạch nếu có promotion -->
-                                    <span class="h6 mb-0 text-primary"
-                                          th:text="${book.originalPrice != null ? #numbers.formatDecimal(book.originalPrice, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">
-                                        120,000đ
-                                    </span>
-                                </div>
-                                <div class="rating">
-                                    <i class="bi bi-star-fill text-warning"></i>
-                                    <i class="bi bi-star-fill text-warning"></i>
-                                    <i class="bi bi-star-fill text-warning"></i>
-                                    <i class="bi bi-star-fill text-warning"></i>
-                                    <i class="bi bi-star text-warning"></i>
-                                </div>
-                            </div>
+                            <form class="cart-form" style="display: inline;">
+                                <input type="hidden" name="bookId" th:value="${book.id}">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit"
+                                        class="action-btn-modern cart"
+                                        th:if="${book.stockQuantity > 0}"
+                                        title="Thêm vào giỏ">
+                                    <i class="bi bi-cart-plus-fill"></i>
+                                </button>
+                            </form>
 
-                            <!-- Hiển thị category nếu có -->
-                            <div class="mt-2" th:if="${book.category != null}">
-                                <span class="badge bg-light text-dark" th:text="${book.category.name}">Danh mục</span>
-                            </div>
+                            <button class="action-btn-modern wishlist"
+                                    title="Yêu thích">
+                                <i class="bi bi-heart-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Book Info -->
+                    <div class="book-info-modern">
+                        <div class="book-category-modern" th:if="${book.category != null}">
+                            <i class="bi bi-tag-fill"></i>
+                            <span th:text="${book.category.name}">Danh mục</span>
+                        </div>
+
+                        <a th:href="@{/books/{id}(id=${book.id})}" class="book-title-link-modern">
+                            <h6 class="book-title-modern" th:text="${book.title}">Tên sách</h6>
+                        </a>
+
+                        <p class="book-author-modern">
+                            <i class="bi bi-person-fill"></i>
+                            <span th:text="${book.author}">Tác giả</span>
+                        </p>
+
+                        <div class="book-rating-modern">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-half"></i>
+                            <span class="rating-number">(4.5)</span>
+                        </div>
+
+                        <div class="book-price-modern">
+                            <span class="price-current-modern"
+                                  th:text="${book.originalPrice != null ? #numbers.formatDecimal(book.originalPrice, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">
+                                120,000đ
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -160,79 +212,129 @@
     </div>
 </section>
 
-<!-- Features Section -->
-<section id="features" class="py-5 bg-light">
+<!-- Features Section Enhanced -->
+<section id="features" class="section-padding">
     <div class="container">
+        <div class="section-header text-center mb-5">
+            <span class="section-badge">DỊCH VỤ</span>
+            <h2 class="section-title">Tại sao chọn Greenbook?</h2>
+            <p class="section-description">Cam kết mang đến trải nghiệm mua sắm tốt nhất</p>
+        </div>
         <div class="row g-4">
             <div class="col-lg-3 col-md-6">
-                <div class="feature-box text-center p-4">
-                    <i class="bi bi-truck feature-icon"></i>
-                    <h5 class="mt-3 mb-2">Miễn phí vận chuyển</h5>
-                    <p class="text-muted small mb-0">Đơn hàng từ 200,000đ</p>
+                <div class="feature-card-modern">
+                    <div class="feature-icon-modern truck">
+                        <i class="bi bi-truck"></i>
+                    </div>
+                    <h5 class="feature-title-modern">Miễn phí vận chuyển</h5>
+                    <p class="feature-desc-modern">Đơn hàng từ 200,000đ trở lên</p>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <div class="feature-box text-center p-4">
-                    <i class="bi bi-arrow-repeat feature-icon"></i>
-                    <h5 class="mt-3 mb-2">Đổi trả dễ dàng</h5>
-                    <p class="text-muted small mb-0">Trong vòng 7 ngày</p>
+                <div class="feature-card-modern">
+                    <div class="feature-icon-modern return">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </div>
+                    <h5 class="feature-title-modern">Đổi trả dễ dàng</h5>
+                    <p class="feature-desc-modern">Trong vòng 7 ngày không lý do</p>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <div class="feature-box text-center p-4">
-                    <i class="bi bi-shield-check feature-icon"></i>
-                    <h5 class="mt-3 mb-2">Thanh toán an toàn</h5>
-                    <p class="text-muted small mb-0">Bảo mật 100%</p>
+                <div class="feature-card-modern">
+                    <div class="feature-icon-modern secure">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h5 class="feature-title-modern">Thanh toán an toàn</h5>
+                    <p class="feature-desc-modern">Bảo mật thông tin 100%</p>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <div class="feature-box text-center p-4">
-                    <i class="bi bi-headset feature-icon"></i>
-                    <h5 class="mt-3 mb-2">Hỗ trợ 24/7</h5>
-                    <p class="text-muted small mb-0">Luôn sẵn sàng phục vụ</p>
+                <div class="feature-card-modern">
+                    <div class="feature-icon-modern support">
+                        <i class="bi bi-headset"></i>
+                    </div>
+                    <h5 class="feature-title-modern">Hỗ trợ 24/7</h5>
+                    <p class="feature-desc-modern">Luôn sẵn sàng hỗ trợ bạn</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Quote Section -->
-<section id="quotation" class="py-5 my-5">
+<!-- Quote Section Enhanced -->
+<section id="quotation" class="quote-section">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-8 text-center">
-                <blockquote class="quote-box">
-                    <i class="bi bi-quote quote-icon"></i>
-                    <p class="quote-text">
-                        "Một căn phòng không có sách giống như một cơ thể không có linh hồn."
+            <div class="col-lg-8">
+                <div class="quote-card-modern">
+                    <div class="quote-icon-modern">
+                        <i class="bi bi-quote"></i>
+                    </div>
+                    <p class="quote-text-modern">
+                        "Một căn phòng không có sách giống như một cơ thể không có linh hồn"
                     </p>
-                    <footer class="quote-author">— Marcus Tullius Cicero</footer>
-                </blockquote>
+                    <div class="quote-author-modern">
+                        <div class="author-avatar">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                        <div class="author-info">
+                            <p class="author-name">Marcus Tullius Cicero</p>
+                            <p class="author-title">Triết gia La Mã</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Newsletter -->
-<section id="subscribe" class="py-5 bg-primary text-white">
+<!-- Newsletter Enhanced -->
+<section id="subscribe" class="newsletter-section">
     <div class="container">
-        <div class="row justify-content-center align-items-center">
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <h3 class="fw-bold mb-2">Đăng ký nhận tin</h3>
-                <p class="mb-0">Nhận thông tin về sách mới, khuyến mãi và ưu đãi đặc biệt</p>
-            </div>
-            <div class="col-lg-6">
-                <form th:action="@{/subscribe}" method="post" class="newsletter-form">
-                    <div class="input-group input-group-lg">
-                        <input type="email" name="email" class="form-control"
-                               placeholder="Nhập email của bạn"
-                               aria-label="Email đăng ký nhận tin"
-                               required>
-                        <button class="btn btn-light text-primary fw-bold" type="submit">
-                            Đăng ký <i class="bi bi-send-fill ms-2"></i>
-                        </button>
+        <div class="newsletter-card">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="newsletter-content">
+                        <div class="newsletter-icon">
+                            <i class="bi bi-envelope-heart"></i>
+                        </div>
+                        <h3 class="newsletter-title">Đăng ký nhận tin</h3>
+                        <p class="newsletter-text">Nhận thông tin về sách mới, khuyến mãi và ưu đãi đặc biệt mỗi tuần</p>
+                        <div class="newsletter-badges">
+                            <span class="newsletter-badge">
+                                <i class="bi bi-check-circle-fill"></i> Sách mới
+                            </span>
+                            <span class="newsletter-badge">
+                                <i class="bi bi-check-circle-fill"></i> Khuyến mãi
+                            </span>
+                            <span class="newsletter-badge">
+                                <i class="bi bi-check-circle-fill"></i> Ưu đãi
+                            </span>
+                        </div>
                     </div>
-                </form>
+                </div>
+                <div class="col-lg-6">
+                    <form th:action="@{/subscribe}" method="post" class="newsletter-form-modern">
+                        <div class="input-group-modern">
+                            <div class="input-icon">
+                                <i class="bi bi-envelope-fill"></i>
+                            </div>
+                            <input type="email"
+                                   name="email"
+                                   class="form-control-modern"
+                                   placeholder="Nhập email của bạn"
+                                   required>
+                            <button class="btn-subscribe-modern" type="submit">
+                                <span>Đăng ký ngay</span>
+                                <i class="bi bi-send-fill ms-2"></i>
+                            </button>
+                        </div>
+                        <p class="privacy-text">
+                            <i class="bi bi-shield-check"></i>
+                            Chúng tôi cam kết bảo mật thông tin của bạn
+                        </p>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -244,60 +346,252 @@
 
 <!-- Scripts -->
 <th:block th:replace="~{fragments/footer :: scripts}"></th:block>
-<!-- Cart JavaScript -->
 <script th:src="@{/js/cart.js}"></script>
 
 <style>
-    /* CSS Variables */
     :root {
         --primary-green: #40916c;
-        --light-green: #74c69d;
-        --pale-green: #b7e4c7;
+        --light-green: #52b788;
+        --pale-green: #95d5b2;
         --extra-light: #d8f3dc;
-        --dark-text: #2d6a4f;
-        --cream: #f1faee;
+        --dark-text: #1b4332;
+        --cream: #f8f9fa;
     }
 
-    /* Override Bootstrap primary color */
-    .btn-primary {
-        background-color: var(--primary-green);
-        border-color: var(--primary-green);
+    /* Global Styles */
+    body {
+        font-family: 'Be Vietnam Pro', sans-serif;
+        color: var(--dark-text);
     }
 
-    .btn-primary:hover {
-        background-color: var(--light-green);
-        border-color: var(--light-green);
+    .section-padding {
+        padding: 5rem 0;
     }
 
-    .btn-outline-primary {
+    /* Section Headers */
+    .section-header {
+        position: relative;
+    }
+
+    .section-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
         color: var(--primary-green);
-        border-color: var(--primary-green);
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 1.5px;
+        margin-bottom: 1rem;
     }
 
-    .btn-outline-primary:hover {
-        background-color: var(--primary-green);
-        border-color: var(--primary-green);
-        color: white;
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--dark-text);
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
-    .text-primary {
-        color: var(--primary-green) !important;
+    .section-description {
+        color: #6c757d;
+        font-size: 1.1rem;
+        margin-bottom: 0;
     }
 
-    .bg-primary {
-        background-color: var(--primary-green) !important;
+    .section-header-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 2rem;
     }
 
     /* Hero Section */
     #billboard {
-        background: linear-gradient(135deg, var(--extra-light) 0%, white 100%);
-        min-height: 600px;
+        background: linear-gradient(135deg, var(--extra-light) 0%, white 50%, var(--cream) 100%);
+        min-height: 700px;
         display: flex;
         align-items: center;
+        position: relative;
+        overflow: hidden;
     }
 
-    .banner-image img {
-        animation: float 3s ease-in-out infinite;
+    .hero-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background:
+                radial-gradient(circle at 20% 50%, rgba(64, 145, 108, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(149, 213, 178, 0.15) 0%, transparent 50%);
+        z-index: 0;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, #ffd700, #ffed4e);
+        color: var(--dark-text);
+        padding: 0.6rem 1.2rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 900;
+        color: var(--dark-text);
+        line-height: 1.2;
+        letter-spacing: -1px;
+    }
+
+    .gradient-text {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        position: relative;
+        display: inline-block;
+    }
+
+    .hero-description {
+        font-size: 1.2rem;
+        color: #6c757d;
+        line-height: 1.8;
+    }
+
+    .btn-hero {
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        letter-spacing: 0.5px;
+    }
+
+    .btn-hero-primary {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+        box-shadow: 0 10px 30px rgba(64, 145, 108, 0.3);
+    }
+
+    .btn-hero-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(64, 145, 108, 0.4);
+        color: white;
+    }
+
+    .btn-hero-outline {
+        background: white;
+        color: var(--primary-green);
+        border: 2px solid var(--primary-green);
+    }
+
+    .btn-hero-outline:hover {
+        background: var(--primary-green);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(64, 145, 108, 0.3);
+    }
+
+    /* Hero Stats */
+    .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: white;
+        padding: 1rem 1.5rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: var(--primary-green);
+    }
+
+    .stat-info h3 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--primary-green);
+        margin: 0;
+    }
+
+    .stat-info p {
+        margin: 0;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    /* Hero Image */
+    .banner-image-wrapper {
+        position: relative;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .hero-image {
+        width: 100%;
+        border-radius: 30px;
+        box-shadow: 0 30px 60px rgba(64, 145, 108, 0.3);
+        position: relative;
+        z-index: 2;
+    }
+
+    .floating-shape {
+        position: absolute;
+        border-radius: 50%;
+        z-index: 1;
+        animation: float-shape 8s ease-in-out infinite;
+    }
+
+    .shape-1 {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, var(--pale-green), var(--extra-light));
+        top: -20px;
+        left: -20px;
+        animation-delay: 0s;
+    }
+
+    .shape-2 {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--light-green), var(--pale-green));
+        bottom: 50px;
+        right: -30px;
+        animation-delay: 1s;
+    }
+
+    .shape-3 {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        top: 50%;
+        right: -10px;
+        animation-delay: 2s;
     }
 
     @keyframes float {
@@ -305,290 +599,760 @@
         50% { transform: translateY(-20px); }
     }
 
-    /* Categories */
-    .category-card {
-        text-decoration: none;
-        color: inherit;
+    @keyframes float-shape {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        50% { transform: translate(10px, 10px) rotate(180deg); }
+    }
+
+    /* Categories Modern */
+    .category-card-modern {
         display: block;
+        text-decoration: none;
+        height: 100%;
+    }
+
+    .category-card-inner {
+        background: white;
+        border-radius: 24px;
+        padding: 2.5rem 2rem;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .category-card-inner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-green), var(--light-green));
+        transform: scaleX(0);
         transition: transform 0.3s ease;
     }
 
-    .category-card:hover {
-        transform: translateY(-10px);
+    .category-card-modern:hover .category-card-inner {
+        transform: translateY(-15px);
+        box-shadow: 0 20px 50px rgba(64, 145, 108, 0.25);
     }
 
-    .category-card:hover .card {
-        box-shadow: 0 15px 40px rgba(64, 145, 108, 0.2) !important;
+    .category-card-modern:hover .category-card-inner::before {
+        transform: scaleX(1);
     }
 
-    .category-icon-wrapper {
-        width: 80px;
-        height: 80px;
-        margin: 0 auto;
-        background: var(--extra-light);
-        border-radius: 50%;
+    .category-icon-modern {
+        width: 90px;
+        height: 90px;
+        margin: 0 auto 1.5rem;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+        border-radius: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.3s ease;
-    }
-
-    .category-card:hover .category-icon-wrapper {
-        background: var(--primary-green);
-    }
-
-    .category-icon {
         font-size: 2.5rem;
+        color: var(--primary-green);
+        transition: all 0.4s ease;
+    }
+
+    .category-card-modern:hover .category-icon-modern {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .category-name-modern {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-bottom: 0.8rem;
+    }
+
+    .category-desc-modern {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+
+    .category-arrow {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: var(--extra-light);
+        border-radius: 50%;
         color: var(--primary-green);
         transition: all 0.3s ease;
     }
 
-    .category-card:hover .category-icon {
+    .category-card-modern:hover .category-arrow {
+        background: var(--primary-green);
         color: white;
-        transform: scale(1.1);
+        transform: translateX(5px);
     }
 
-    /* Product Card */
-    .product-card {
-        transition: transform 0.3s ease;
+    /* Books Grid Modern */
+    .bg-light-gradient {
+        background: linear-gradient(180deg, #f8f9fa 0%, white 100%);
     }
 
-    .product-card:hover {
+    .btn-view-all-modern {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.8rem 2rem;
+        background: white;
+        color: var(--primary-green);
+        border: 2px solid var(--primary-green);
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+
+    .btn-view-all-modern:hover {
+        background: var(--primary-green);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(64, 145, 108, 0.3);
+    }
+
+    .books-grid-modern {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .book-card-modern {
+        height: 100%;
+        animation: fadeInUp 0.6s ease forwards;
+        opacity: 0;
+    }
+
+    .book-card-modern:nth-child(1) { animation-delay: 0.1s; }
+    .book-card-modern:nth-child(2) { animation-delay: 0.2s; }
+    .book-card-modern:nth-child(3) { animation-delay: 0.3s; }
+    .book-card-modern:nth-child(4) { animation-delay: 0.4s; }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .book-card-inner-modern {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .book-card-modern:hover .book-card-inner-modern {
         transform: translateY(-10px);
+        box-shadow: 0 20px 50px rgba(64, 145, 108, 0.2);
     }
 
-    .product-image {
+    .book-image-modern {
+        position: relative;
         height: 350px;
         overflow: hidden;
-        border-radius: 8px 8px 0 0;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
     }
 
-    .product-image img {
-        height: 100%;
+    .book-img {
         width: 100%;
+        height: 100%;
         object-fit: cover;
-        transition: transform 0.3s ease;
+        transition: transform 0.5s ease;
     }
 
-    .product-card:hover .product-image img {
+    .book-card-modern:hover .book-img {
         transform: scale(1.1);
     }
 
-    .product-actions {
+    .stock-badge-modern {
         position: absolute;
-        bottom: 10px;
+        top: 1rem;
+        right: 1rem;
+        background: linear-gradient(135deg, #52c41a, #73d13d);
+        color: white;
+        padding: 0.4rem 0.9rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+    }
+
+    .stock-badge-modern.out-stock {
+        background: linear-gradient(135deg, #ff4d4f, #ff7875);
+        box-shadow: 0 4px 12px rgba(255, 77, 79, 0.3);
+    }
+
+    .quick-actions-modern {
+        position: absolute;
+        bottom: 1rem;
         left: 50%;
         transform: translateX(-50%);
         display: flex;
-        gap: 10px;
+        gap: 0.6rem;
         opacity: 0;
         transition: opacity 0.3s ease;
     }
 
-    .product-card:hover .product-actions {
+    .book-card-modern:hover .quick-actions-modern {
         opacity: 1;
     }
 
-    .product-actions .btn {
-        width: 40px;
-        height: 40px;
+    .action-btn-modern {
+        width: 48px;
+        height: 48px;
+        border: none;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 50%;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    }
-
-    .product-actions .btn:hover {
-        background: var(--primary-green) !important;
-        color: white !important;
-        transform: scale(1.1);
-    }
-
-    .rating i {
-        font-size: 0.8rem;
-    }
-
-    /* Features */
-    .feature-box {
-        background: white;
-        border-radius: 10px;
+        font-size: 1.3rem;
+        cursor: pointer;
         transition: all 0.3s ease;
-    }
-
-    .feature-box:hover {
-        box-shadow: 0 10px 30px rgba(64, 145, 108, 0.15);
-        transform: translateY(-5px);
-    }
-
-    .feature-icon {
-        font-size: 3rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        background: white;
         color: var(--primary-green);
+    }
+
+    .action-btn-modern.cart {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+    }
+
+    .action-btn-modern.wishlist {
+        color: #ff4d4f;
+    }
+
+    .action-btn-modern:hover {
+        transform: scale(1.15) rotate(5deg);
+    }
+
+    .book-info-modern {
+        padding: 1.5rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .book-category-modern {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: var(--extra-light);
+        color: var(--primary-green);
+        padding: 0.4rem 0.9rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        width: fit-content;
+    }
+
+    .book-title-link-modern {
+        text-decoration: none;
+    }
+
+    .book-title-modern {
+        color: var(--dark-text);
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 0.6rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.4;
+        transition: color 0.3s ease;
+    }
+
+    .book-title-link-modern:hover .book-title-modern {
+        color: var(--primary-green);
+    }
+
+    .book-author-modern {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin-bottom: 0.6rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .book-rating-modern {
+        display: flex;
+        align-items: center;
+        gap: 0.2rem;
+        margin-bottom: 1rem;
+        color: #faad14;
+        font-size: 0.9rem;
+    }
+
+    .rating-number {
+        color: #8c8c8c;
+        font-size: 0.85rem;
+        margin-left: 0.4rem;
+    }
+
+    .book-price-modern {
+        margin-top: auto;
+    }
+
+    .price-current-modern {
+        color: var(--primary-green);
+        font-weight: 800;
+        font-size: 1.5rem;
+    }
+
+    /* Features Modern */
+    .feature-card-modern {
+        background: white;
+        border-radius: 24px;
+        padding: 2.5rem 2rem;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        height: 100%;
+    }
+
+    .feature-card-modern:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 50px rgba(64, 145, 108, 0.15);
+    }
+
+    .feature-icon-modern {
+        width: 90px;
+        height: 90px;
+        margin: 0 auto 1.5rem;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.8rem;
+        color: white;
+        transition: all 0.4s ease;
+    }
+
+    .feature-icon-modern.truck {
+        background: linear-gradient(135deg, #1890ff, #40a9ff);
+    }
+
+    .feature-icon-modern.return {
+        background: linear-gradient(135deg, #52c41a, #73d13d);
+    }
+
+    .feature-icon-modern.secure {
+        background: linear-gradient(135deg, #722ed1, #9254de);
+    }
+
+    .feature-icon-modern.support {
+        background: linear-gradient(135deg, #fa8c16, #ffa940);
+    }
+
+    .feature-card-modern:hover .feature-icon-modern {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .feature-title-modern {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-bottom: 0.8rem;
+    }
+
+    .feature-desc-modern {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin-bottom: 0;
+        line-height: 1.6;
     }
 
     /* Quote Section */
-    .quote-box {
-        padding: 3rem 2rem;
-        background: var(--extra-light);
-        border-radius: 15px;
+    .quote-section {
+        padding: 5rem 0;
+        background: linear-gradient(135deg, var(--extra-light) 0%, white 50%, var(--pale-green) 100%);
         position: relative;
-    }
-
-    .quote-icon {
-        font-size: 3rem;
-        color: var(--pale-green);
-        opacity: 0.3;
-    }
-
-    .quote-text {
-        font-size: 1.5rem;
-        font-style: italic;
-        color: var(--dark-text);
-        margin: 1.5rem 0;
-        line-height: 1.8;
-    }
-
-    .quote-author {
-        font-size: 1.1rem;
-        color: var(--primary-green);
-        font-weight: 600;
-        margin-top: 1rem;
-    }
-
-    /* Newsletter */
-    .newsletter-form .form-control {
-        border: none;
-        border-radius: 50px 0 0 50px;
-    }
-
-    .newsletter-form .btn {
-        border-radius: 0 50px 50px 0;
-        padding: 0 2rem;
-    }
-
-    .newsletter-form .form-control:focus {
-        box-shadow: none;
-        border-color: transparent;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        #billboard {
-            min-height: auto;
-            padding: 40px 0;
-        }
-
-        .display-3 {
-            font-size: 2.5rem;
-        }
-
-        .banner-image {
-            margin-top: 2rem;
-        }
-
-        .product-image {
-            height: 280px;
-        }
-
-        .quote-text {
-            font-size: 1.2rem;
-        }
-
-        .newsletter-form .form-control,
-        .newsletter-form .btn {
-            border-radius: 25px;
-        }
-
-        .newsletter-form .input-group {
-            flex-direction: column;
-        }
-
-        .newsletter-form .btn {
-            margin-top: 10px;
-            width: 100%;
-        }
-    }
-
-    /* Loading Animation */
-    @keyframes shimmer {
-        0% { background-position: -1000px 0; }
-        100% { background-position: 1000px 0; }
-    }
-
-    .loading {
-        animation: shimmer 2s infinite;
-        background: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
-        background-size: 1000px 100%;
-    }
-
-    /* Card Hover Effects */
-    .card {
-        transition: all 0.3s ease;
-        border-radius: 10px;
         overflow: hidden;
     }
 
-    .card:hover {
-        box-shadow: 0 15px 40px rgba(64, 145, 108, 0.15) !important;
+    .quote-card-modern {
+        background: white;
+        border-radius: 30px;
+        padding: 4rem 3rem;
+        box-shadow: 0 20px 60px rgba(64, 145, 108, 0.15);
+        text-align: center;
+        position: relative;
     }
 
-    /* Button Animations */
-    .btn {
+    .quote-icon-modern {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 2rem;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: var(--primary-green);
+    }
+
+    .quote-text-modern {
+        font-size: 1.8rem;
+        font-style: italic;
+        font-weight: 600;
+        color: var(--dark-text);
+        line-height: 1.8;
+        margin-bottom: 2rem;
+    }
+
+    .quote-author-modern {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        padding-top: 2rem;
+        border-top: 2px solid var(--pale-green);
+    }
+
+    .author-avatar {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+    }
+
+    .author-info {
+        text-align: left;
+    }
+
+    .author-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary-green);
+        margin-bottom: 0.2rem;
+    }
+
+    .author-title {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin-bottom: 0;
+    }
+
+    /* Newsletter Section */
+    .newsletter-section {
+        padding: 5rem 0;
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+    }
+
+    .newsletter-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 30px;
+        padding: 3rem;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .newsletter-content {
+        color: white;
+    }
+
+    .newsletter-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .newsletter-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        color: white;
+    }
+
+    .newsletter-text {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.95;
+    }
+
+    .newsletter-badges {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .newsletter-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .newsletter-form-modern {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+    }
+
+    .input-group-modern {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 1.5rem;
+        color: #6c757d;
+        font-size: 1.2rem;
+        z-index: 2;
+    }
+
+    .form-control-modern {
+        flex: 1;
+        padding: 1rem 1.5rem 1rem 3.5rem;
+        border: 2px solid var(--pale-green);
+        border-radius: 50px;
+        font-size: 1rem;
         transition: all 0.3s ease;
     }
 
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    .form-control-modern:focus {
+        outline: none;
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 4px rgba(64, 145, 108, 0.1);
     }
 
-    /* Scroll Reveal Animation */
-    .scroll-reveal {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: all 0.6s ease;
+    .btn-subscribe-modern {
+        padding: 1rem 2.5rem;
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
     }
 
-    .scroll-reveal.active {
-        opacity: 1;
-        transform: translateY(0);
+    .btn-subscribe-modern:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(64, 145, 108, 0.4);
+    }
+
+    .privacy-text {
+        color: #6c757d;
+        font-size: 0.85rem;
+        text-align: center;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    /* Animations */
+    .animate-fade-in {
+        animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+
+        .section-header-flex {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .hero-stats {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-item {
+            padding: 0.8rem 1rem;
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            font-size: 1.3rem;
+        }
+
+        .stat-info h3 {
+            font-size: 1.5rem;
+        }
+
+        .stat-info p {
+            font-size: 0.85rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        #billboard {
+            min-height: auto;
+            padding: 3rem 0;
+        }
+
+        .hero-title {
+            font-size: 2rem;
+        }
+
+        .section-padding {
+            padding: 3rem 0;
+        }
+
+        .books-grid-modern {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .book-image-modern {
+            height: 300px;
+        }
+
+        .quote-text-modern {
+            font-size: 1.3rem;
+        }
+
+        .newsletter-title {
+            font-size: 1.8rem;
+        }
+
+        .newsletter-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .input-group-modern {
+            flex-direction: column;
+        }
+
+        .btn-subscribe-modern {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .books-grid-modern {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-stats {
+            grid-template-columns: 1fr;
+            gap: 0.8rem;
+        }
+
+        .stat-item {
+            padding: 1rem 1.2rem;
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            font-size: 1.3rem;
+        }
+
+        .stat-info h3 {
+            font-size: 1.6rem;
+        }
     }
 </style>
 
 <script>
-    // Scroll Reveal Animation
-    const scrollReveal = () => {
-        const reveals = document.querySelectorAll('.scroll-reveal');
-        reveals.forEach(element => {
-            const windowHeight = window.innerHeight;
-            const elementTop = element.getBoundingClientRect().top;
-            const elementVisible = 150;
-            if (elementTop < windowHeight - elementVisible) {
-                element.classList.add('active');
-            }
-        });
-    };
-    window.addEventListener('scroll', scrollReveal);
-    window.addEventListener('load', scrollReveal);
-
-    // Wishlist - CHỈ cho nút heart (không phải button submit)
-    document.querySelectorAll('.product-actions button:not([type="submit"])').forEach(button => {
+    // Wishlist functionality
+    document.querySelectorAll('.wishlist').forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
             const icon = this.querySelector('i');
-            if (icon && icon.classList.contains('bi-heart')) {
-                icon.classList.remove('bi-heart');
-                icon.classList.add('bi-heart-fill');
-                this.classList.add('text-danger');
-            } else if (icon && icon.classList.contains('bi-heart-fill')) {
+            if (icon.classList.contains('bi-heart-fill')) {
                 icon.classList.remove('bi-heart-fill');
                 icon.classList.add('bi-heart');
-                this.classList.remove('text-danger');
+            } else {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
             }
         });
+    });
+
+    // Scroll animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.book-card-modern, .feature-card-modern, .category-card-modern').forEach(el => {
+        observer.observe(el);
     });
 </script>
 
 </body>
 </html>
-

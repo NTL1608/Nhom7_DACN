@@ -1,340 +1,336 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head th:replace="~{fragments/header :: header}"></head>
-<!-- Toast CSS -->
 <link th:href="@{/css/toast.css}" rel="stylesheet">
 <body>
 
 <!-- Header -->
 <div th:replace="~{fragments/header :: navbar}"></div>
 
-<!-- Breadcrumb -->
-<section class="py-3 bg-light">
+<!-- Breadcrumb Enhanced -->
+<section class="breadcrumb-section">
     <div class="container">
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
-                <li class="breadcrumb-item active">Kho sách</li>
+            <ol class="breadcrumb-custom mb-0">
+                <li class="breadcrumb-item-custom">
+                    <a th:href="@{/}">
+                        <i class="bi bi-house-door me-1"></i>Trang chủ
+                    </a>
+                </li>
+                <li class="breadcrumb-item-custom">
+                    <i class="bi bi-chevron-right mx-2"></i>
+                </li>
+                <li class="breadcrumb-item-custom active">
+                    <i class="bi bi-book me-1"></i>Kho sách
+                </li>
             </ol>
         </nav>
     </div>
 </section>
 
 <!-- Books List -->
-<section class="py-5">
+<section class="books-section">
     <div class="container">
-        <div class="row">
-            <!-- Sidebar Filter -->
+        <div class="row g-4">
+            <!-- Sidebar Filter Enhanced -->
             <div class="col-lg-3 mb-4">
-                <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Bộ lọc</h5>
-                    </div>
-                    <div class="card-body">
-                        <!-- Category Filter -->
-                        <div class="mb-4">
-                            <h6 class="fw-bold mb-3">Danh mục</h6>
-
-                            <!-- Container với scroll -->
-                            <div class="category-scroll-container">
-                                <div class="list-group">
-                                    <a th:href="@{/books(page=0)}"
-                                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                       th:classappend="${selectedCategoryId == null ? 'active' : ''}"
-                                       data-category-id="">
-                                        <span><i class="bi bi-grid-3x3-gap me-2"></i>Tất cả</span>
-                                        <span class="badge bg-secondary rounded-pill" th:text="${totalItems}">0</span>
-                                    </a>
-
-                                    <a th:each="category : ${categories}"
-                                       th:href="@{/books(categoryId=${category.id}, page=0)}"
-                                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                       th:classappend="${category.id == selectedCategoryId ? 'active' : ''}"
-                                       th:data-category-id="${category.id}">
-                                        <span th:text="${category.name}">Danh mục</span>
-                                    </a>
-                                </div>
-                            </div>
+                <div class="filter-sidebar">
+                    <!-- Filter Header -->
+                    <div class="filter-header">
+                        <div class="filter-icon-wrapper">
+                            <i class="bi bi-funnel-fill"></i>
                         </div>
+                        <h5 class="mb-0">Bộ lọc</h5>
+                    </div>
 
-                        <!-- Reset Filter -->
-                        <a th:href="@{/books}" class="btn btn-outline-primary w-100">
+                    <!-- Category Filter -->
+                    <div class="filter-section">
+                        <h6 class="filter-title">
+                            <i class="bi bi-grid-3x3-gap me-2"></i>Danh mục
+                        </h6>
+
+                        <div class="category-list">
+                            <!-- All Categories -->
+                            <a th:href="@{/books(page=0)}"
+                               class="category-item"
+                               th:classappend="${selectedCategoryId == null ? 'active' : ''}">
+                                <div class="category-icon all-icon">
+                                    <i class="bi bi-grid-fill"></i>
+                                </div>
+                                <span class="category-name">Tất cả</span>
+                                <span class="category-count" th:text="${totalItems}">0</span>
+                            </a>
+
+                            <!-- Individual Categories -->
+                            <a th:each="category : ${categories}"
+                               th:href="@{/books(categoryId=${category.id}, page=0)}"
+                               class="category-item"
+                               th:classappend="${category.id == selectedCategoryId ? 'active' : ''}">
+                                <div class="category-icon">
+                                    <i class="bi bi-book"></i>
+                                </div>
+                                <span class="category-name" th:text="${category.name}">Danh mục</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Reset Filter -->
+                    <div class="filter-footer">
+                        <a th:href="@{/books}" class="btn-reset-filter">
                             <i class="bi bi-arrow-counterclockwise me-2"></i>Đặt lại bộ lọc
                         </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Books Grid -->
+            <!-- Books Grid Enhanced -->
             <div class="col-lg-9">
-                <!-- Toolbar -->
-                <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-                    <div>
-                        <h4 class="mb-1">
-                            <span th:if="${selectedCategoryId == null}">Tất cả sách</span>
-                            <span th:if="${selectedCategoryId != null}" th:each="cat : ${categories}">
-                                <span th:if="${cat.id == selectedCategoryId}" th:text="${cat.name}">Danh mục</span>
-                            </span>
-                        </h4>
-                        <p class="text-muted mb-0" id="bookInfoText">
-                            Hiển thị
-                            <strong th:text="${#lists.size(books)}">0</strong>
-                            trong tổng số
-                            <strong th:text="${totalItems}">0</strong> cuốn sách
-                        </p>
+                <!-- Toolbar Enhanced -->
+                <div class="toolbar-wrapper">
+                    <div class="toolbar-left">
+                        <div class="page-info">
+                            <h3 class="page-title">
+                                <span th:if="${selectedCategoryId == null}">Tất cả sách</span>
+                                <span th:if="${selectedCategoryId != null}" th:each="cat : ${categories}">
+                                    <span th:if="${cat.id == selectedCategoryId}" th:text="${cat.name}">Danh mục</span>
+                                </span>
+                            </h3>
+                            <p class="result-count">
+                                Hiển thị <strong th:text="${#lists.size(books)}">0</strong> trong
+                                <strong th:text="${totalItems}">0</strong> cuốn sách
+                            </p>
+                        </div>
                     </div>
 
-                    <div class="d-flex gap-2 align-items-center">
-                        <!-- Sort Dropdown -->
-                        <select class="form-select" style="width: auto;" id="sortSelect">
-                            <option value="" disabled selected>Sắp xếp theo</option>
-                            <option th:value="@{/books(categoryId=${selectedCategoryId}, page=${currentPage}, sort='id', order='desc')}"
-                                    th:selected="${currentSort == 'id' && currentOrder == 'desc'}">
-                                Mới nhất
-                            </option>
-                            <option th:value="@{/books(categoryId=${selectedCategoryId}, page=${currentPage}, sort='originalPrice', order='asc')}"
-                                    th:selected="${currentSort == 'originalPrice' && currentOrder == 'asc'}">
-                                Giá tăng dần
-                            </option>
-                            <option th:value="@{/books(categoryId=${selectedCategoryId}, page=${currentPage}, sort='originalPrice', order='desc')}"
-                                    th:selected="${currentSort == 'originalPrice' && currentOrder == 'desc'}">
-                                Giá giảm dần
-                            </option>
-                            <option th:value="@{/books(categoryId=${selectedCategoryId}, page=${currentPage}, sort='title', order='asc')}"
-                                    th:selected="${currentSort == 'title' && currentOrder == 'asc'}">
-                                Tên A-Z
-                            </option>
-                            <option th:value="@{/books(categoryId=${selectedCategoryId}, page=${currentPage}, sort='title', order='desc')}"
-                                    th:selected="${currentSort == 'title' && currentOrder == 'desc'}">
-                                Tên Z-A
-                            </option>
-                        </select>
+                    <div class="toolbar-right">
+                        <!-- Sort Dropdown Enhanced -->
+                        <div class="sort-dropdown">
+                            <select class="form-select-custom" id="sortSelect">
+                                <option value="" disabled selected>
+                                    <i class="bi bi-sort-down"></i> Sắp xếp
+                                </option>
+                                <option th:value="@{/books(categoryId=${selectedCategoryId}, page=${currentPage}, sort='id', order='desc')}"
+                                        th:selected="${currentSort == 'id' && currentOrder == 'desc'}">
+                                    Mới nhất
+                                </option>
+                                <option th:value="@{/books(categoryId=${selectedCategoryId}, page=${currentPage}, sort='originalPrice', order='asc')}"
+                                        th:selected="${currentSort == 'originalPrice' && currentOrder == 'asc'}">
+                                    Giá tăng dần
+                                </option>
+                                <option th:value="@{/books(categoryId=${selectedCategoryId}, page=${currentPage}, sort='originalPrice', order='desc')}"
+                                        th:selected="${currentSort == 'originalPrice' && currentOrder == 'desc'}">
+                                    Giá giảm dần
+                                </option>
+                                <option th:value="@{/books(categoryId=${selectedCategoryId}, page=${currentPage}, sort='title', order='asc')}"
+                                        th:selected="${currentSort == 'title' && currentOrder == 'asc'}">
+                                    Tên A-Z
+                                </option>
+                                <option th:value="@{/books(categoryId=${selectedCategoryId}, page=${currentPage}, sort='title', order='desc')}"
+                                        th:selected="${currentSort == 'title' && currentOrder == 'desc'}">
+                                    Tên Z-A
+                                </option>
+                            </select>
+                        </div>
 
                         <!-- View Toggle -->
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-outline-secondary active" title="Xem dạng lưới">
+                        <div class="view-toggle">
+                            <button type="button" class="view-btn active" title="Xem dạng lưới">
                                 <i class="bi bi-grid-3x3-gap-fill"></i>
                             </button>
-                            <button type="button" class="btn btn-outline-secondary" title="Xem dạng danh sách">
+                            <button type="button" class="view-btn" title="Xem dạng danh sách">
                                 <i class="bi bi-list-ul"></i>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Empty State -->
-                <div th:if="${#lists.isEmpty(books)}" class="text-center py-5">
-                    <i class="bi bi-inbox display-1 text-muted"></i>
-                    <h4 class="mt-3">Không tìm thấy sách nào</h4>
-                    <p class="text-muted">Vui lòng thử lại với bộ lọc khác</p>
-                    <a th:href="@{/books}" class="btn btn-primary">Xem tất cả sách</a>
+                <!-- Empty State Enhanced -->
+                <div th:if="${#lists.isEmpty(books)}" class="empty-state">
+                    <div class="empty-icon">
+                        <i class="bi bi-inbox"></i>
+                    </div>
+                    <h4 class="empty-title">Không tìm thấy sách nào</h4>
+                    <p class="empty-text">Vui lòng thử lại với bộ lọc khác hoặc xem tất cả sách</p>
+                    <a th:href="@{/books}" class="btn-view-all">
+                        <i class="bi bi-arrow-left me-2"></i>Xem tất cả sách
+                    </a>
                 </div>
 
-                <!-- Books Grid -->
-                <div class="row g-4" id="booksContainer" th:if="${!#lists.isEmpty(books)}">
-                    <div class="col-lg-4 col-md-6" th:each="book : ${books}">
-                        <div class="product-card">
-                            <div class="card border-0 shadow-sm h-100">
-                                <div class="product-image position-relative">
-                                    <a th:href="@{/books/{id}(id=${book.id})}">
-                                        <img th:src="${book.imageUrls != null && !book.imageUrls.isEmpty() ? book.imageUrls[0] : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=600&fit=crop'}"
-                                             th:alt="${book.title}"
-                                             class="card-img-top">
-                                    </a>
+                <!-- Books Grid Enhanced -->
+                <div class="books-grid" th:if="${!#lists.isEmpty(books)}">
+                    <div class="book-card-wrapper" th:each="book : ${books}">
+                        <div class="book-card">
+                            <!-- Book Image -->
+                            <div class="book-image-container">
+                                <a th:href="@{/books/{id}(id=${book.id})}" class="image-link">
+                                    <img th:src="${book.imageUrls != null && !book.imageUrls.isEmpty() ? book.imageUrls[0] : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=600&fit=crop'}"
+                                         th:alt="${book.title}"
+                                         class="book-image">
+                                </a>
 
-                                    <!-- Badge -->
-                                    <div class="position-absolute top-0 end-0 m-2">
-                                        <span th:if="${book.stockQuantity > 0}" class="badge bg-success">
-                                            <i class="bi bi-check-circle me-1"></i>Còn hàng
-                                        </span>
-                                        <span th:if="${book.stockQuantity == 0}" class="badge bg-danger">
-                                            <i class="bi bi-x-circle me-1"></i>Hết hàng
-                                        </span>
-                                    </div>
-
-                                    <!-- Quick Actions -->
-                                    <div class="product-actions">
-                                        <a th:href="@{/books/{id}(id=${book.id})}"
-                                           class="btn btn-sm btn-light"
-                                           title="Xem chi tiết">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <form class="cart-form" style="display: inline;">
-                                            <input type="hidden" name="bookId" th:value="${book.id}">
-                                            <input type="hidden" name="quantity" value="1">
-                                            <button type="submit"
-                                                    class="btn btn-sm btn-light"
-                                                    th:if="${book.stockQuantity > 0}"
-                                                    title="Thêm vào giỏ">
-                                                <i class="bi bi-cart-plus"></i>
-                                            </button>
-                                        </form>
-                                        <button class="btn btn-sm btn-light wishlist-btn"
-                                                th:data-book-id="${book.id}"
-                                                title="Yêu thích">
-                                            <i class="bi bi-heart"></i>
-                                        </button>
-                                    </div>
+                                <!-- Stock Badge -->
+                                <div class="stock-badge" th:if="${book.stockQuantity > 0}">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    <span>Còn hàng</span>
+                                </div>
+                                <div class="stock-badge out-of-stock" th:if="${book.stockQuantity == 0}">
+                                    <i class="bi bi-x-circle-fill"></i>
+                                    <span>Hết hàng</span>
                                 </div>
 
-                                <div class="card-body">
-                                    <a th:href="@{/books/{id}(id=${book.id})}" class="text-decoration-none">
-                                        <h6 class="card-title text-truncate mb-2"
-                                            th:text="${book.title}"
-                                            th:title="${book.title}">
-                                            Tên sách
-                                        </h6>
+                                <!-- Quick Actions -->
+                                <div class="quick-actions">
+                                    <a th:href="@{/books/{id}(id=${book.id})}"
+                                       class="action-btn view-btn"
+                                       title="Xem chi tiết">
+                                        <i class="bi bi-eye-fill"></i>
                                     </a>
-                                    <p class="text-muted small mb-2">
-                                        <i class="bi bi-person me-1"></i>
-                                        <span th:text="${book.author}">Tác giả</span>
-                                    </p>
 
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="h6 mb-0 text-primary fw-bold"
-                                              th:text="${book.originalPrice != null ? #numbers.formatDecimal(book.originalPrice, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">
-                                            120,000đ
-                                        </span>
-                                        <div class="rating">
-                                            <i class="bi bi-star-fill text-warning"></i>
-                                            <i class="bi bi-star-fill text-warning"></i>
-                                            <i class="bi bi-star-fill text-warning"></i>
-                                            <i class="bi bi-star-fill text-warning"></i>
-                                            <i class="bi bi-star text-warning"></i>
-                                        </div>
-                                    </div>
+                                    <form class="cart-form" style="display: inline;">
+                                        <input type="hidden" name="bookId" th:value="${book.id}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit"
+                                                class="action-btn cart-btn"
+                                                th:if="${book.stockQuantity > 0}"
+                                                title="Thêm vào giỏ">
+                                            <i class="bi bi-cart-plus-fill"></i>
+                                        </button>
+                                    </form>
 
-                                    <!-- Category Badge -->
-                                    <div th:if="${book.category != null}">
-                                        <span class="badge bg-light text-dark">
-                                            <i class="bi bi-tag me-1"></i>
-                                            <span th:text="${book.category.name}">Danh mục</span>
-                                        </span>
-                                    </div>
+                                    <button class="action-btn wishlist-btn"
+                                            title="Yêu thích">
+                                        <i class="bi bi-heart-fill"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Book Info -->
+                            <div class="book-info">
+                                <!-- Category Badge -->
+                                <div class="category-badge" th:if="${book.category != null}">
+                                    <i class="bi bi-tag-fill"></i>
+                                    <span th:text="${book.category.name}">Danh mục</span>
+                                </div>
+
+                                <!-- Title -->
+                                <a th:href="@{/books/{id}(id=${book.id})}" class="book-title-link">
+                                    <h6 class="book-title"
+                                        th:text="${book.title}"
+                                        th:title="${book.title}">Tên sách</h6>
+                                </a>
+
+                                <!-- Author -->
+                                <p class="book-author">
+                                    <i class="bi bi-person-fill"></i>
+                                    <span th:text="${book.author}">Tác giả</span>
+                                </p>
+
+                                <!-- Rating -->
+                                <div class="book-rating">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-half"></i>
+                                    <span class="rating-text">(4.5)</span>
+                                </div>
+
+                                <!-- Price -->
+                                <div class="book-price">
+                                    <span class="price-current"
+                                          th:text="${book.originalPrice != null ? #numbers.formatDecimal(book.originalPrice, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">
+                                        120,000đ
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Pagination Container -->
-                <div id="paginationContainer">
-                    <nav th:if="${totalPages > 1}" class="mt-5" aria-label="Phân trang">
-                        <!-- Thông tin trang -->
-                        <div class="d-flex justify-content-between align-items-center mb-3 px-2">
-                            <p class="text-muted mb-0 small">
-                                Trang <strong class="text-primary" th:text="${currentPage + 1}">1</strong> /
-                                <strong th:text="${totalPages}">10</strong>
-                            </p>
-                            <p class="text-muted mb-0 small">
-                                Tổng <strong class="text-primary" th:text="${totalItems}">34</strong> cuốn sách
-                            </p>
-                        </div>
+                <!-- Pagination Enhanced -->
+                <nav th:if="${totalPages > 1}" class="pagination-wrapper" aria-label="Phân trang">
+                    <div class="pagination-info">
+                        <p class="page-status">
+                            Trang <strong th:text="${currentPage + 1}">1</strong> /
+                            <strong th:text="${totalPages}">10</strong>
+                        </p>
+                        <p class="total-items">
+                            Tổng <strong th:text="${totalItems}">34</strong> cuốn sách
+                        </p>
+                    </div>
 
-                        <!-- Pagination -->
-                        <ul class="pagination pagination-modern justify-content-center mb-3">
-                            <!-- First Page -->
-                            <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
-                                <a class="page-link"
-                                   th:href="@{/books(categoryId=${selectedCategoryId}, page=0, sort=${currentSort}, order=${currentOrder})}"
-                                   title="Trang đầu">
-                                    <i class="bi bi-chevron-double-left"></i>
+                    <ul class="pagination-custom">
+                        <!-- First -->
+                        <li class="page-item-custom" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link-custom"
+                               th:href="@{/books(categoryId=${selectedCategoryId}, page=0, sort=${currentSort}, order=${currentOrder})}">
+                                <i class="bi bi-chevron-double-left"></i>
+                            </a>
+                        </li>
+
+                        <!-- Previous -->
+                        <li class="page-item-custom" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link-custom"
+                               th:href="@{/books(categoryId=${selectedCategoryId}, page=${currentPage - 1}, sort=${currentSort}, order=${currentOrder})}">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        <!-- Page Numbers -->
+                        <th:block th:with="startPage=${currentPage > 2 ? currentPage - 2 : 0},
+                           endPage=${currentPage + 2 < totalPages - 1 ? currentPage + 2 : totalPages - 1}">
+
+                            <li class="page-item-custom" th:if="${startPage > 0}">
+                                <a class="page-link-custom"
+                                   th:href="@{/books(categoryId=${selectedCategoryId}, page=0, sort=${currentSort}, order=${currentOrder})}">
+                                    1
                                 </a>
                             </li>
 
-                            <!-- Previous -->
-                            <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
-                                <a class="page-link"
-                                   th:href="@{/books(categoryId=${selectedCategoryId}, page=${currentPage - 1}, sort=${currentSort}, order=${currentOrder})}"
-                                   title="Trước">
-                                    <i class="bi bi-chevron-left"></i>
-                                </a>
+                            <li class="page-item-custom dots" th:if="${startPage > 1}">
+                                <span class="page-link-custom">...</span>
                             </li>
 
-                            <!-- Page Numbers - Smart Display -->
-                            <th:block th:with="startPage=${currentPage > 2 ? currentPage - 2 : 0},
-                               endPage=${currentPage + 2 < totalPages - 1 ? currentPage + 2 : totalPages - 1}">
-
-                                <!-- First page if not in range -->
-                                <li class="page-item" th:if="${startPage > 0}">
-                                    <a class="page-link"
-                                       th:href="@{/books(categoryId=${selectedCategoryId}, page=0, sort=${currentSort}, order=${currentOrder})}">
-                                        1
-                                    </a>
-                                </li>
-
-                                <!-- Dots if there's a gap -->
-                                <li class="page-item disabled" th:if="${startPage > 1}">
-                                    <span class="page-link">...</span>
-                                </li>
-
-                                <!-- Page numbers in range -->
-                                <li th:each="i : ${#numbers.sequence(startPage, endPage)}"
-                                    class="page-item"
-                                    th:classappend="${i == currentPage ? 'active' : ''}">
-                                    <a class="page-link"
-                                       th:href="@{/books(categoryId=${selectedCategoryId}, page=${i}, sort=${currentSort}, order=${currentOrder})}"
-                                       th:text="${i + 1}">1</a>
-                                </li>
-
-                                <!-- Dots if there's a gap -->
-                                <li class="page-item disabled" th:if="${endPage < totalPages - 2}">
-                                    <span class="page-link">...</span>
-                                </li>
-
-                                <!-- Last page if not in range -->
-                                <li class="page-item" th:if="${endPage < totalPages - 1}">
-                                    <a class="page-link"
-                                       th:href="@{/books(categoryId=${selectedCategoryId}, page=${totalPages - 1}, sort=${currentSort}, order=${currentOrder})}"
-                                       th:text="${totalPages}">10</a>
-                                </li>
-                            </th:block>
-
-                            <!-- Next -->
-                            <li class="page-item" th:classappend="${currentPage + 1 >= totalPages ? 'disabled' : ''}">
-                                <a class="page-link"
-                                   th:href="@{/books(categoryId=${selectedCategoryId}, page=${currentPage + 1}, sort=${currentSort}, order=${currentOrder})}"
-                                   title="Sau">
-                                    <i class="bi bi-chevron-right"></i>
-                                </a>
+                            <li th:each="i : ${#numbers.sequence(startPage, endPage)}"
+                                class="page-item-custom"
+                                th:classappend="${i == currentPage ? 'active' : ''}">
+                                <a class="page-link-custom"
+                                   th:href="@{/books(categoryId=${selectedCategoryId}, page=${i}, sort=${currentSort}, order=${currentOrder})}"
+                                   th:text="${i + 1}">1</a>
                             </li>
 
-                            <!-- Last Page -->
-                            <li class="page-item" th:classappend="${currentPage + 1 >= totalPages ? 'disabled' : ''}">
-                                <a class="page-link"
+                            <li class="page-item-custom dots" th:if="${endPage < totalPages - 2}">
+                                <span class="page-link-custom">...</span>
+                            </li>
+
+                            <li class="page-item-custom" th:if="${endPage < totalPages - 1}">
+                                <a class="page-link-custom"
                                    th:href="@{/books(categoryId=${selectedCategoryId}, page=${totalPages - 1}, sort=${currentSort}, order=${currentOrder})}"
-                                   title="Trang cuối">
-                                    <i class="bi bi-chevron-double-right"></i>
-                                </a>
+                                   th:text="${totalPages}">10</a>
                             </li>
-                        </ul>
+                        </th:block>
 
-                        <!-- Jump to page (Tùy chọn - có thể bỏ nếu không cần) -->
-                        <div class="d-flex justify-content-center">
-                            <div class="input-group" style="max-width: 220px;">
-                <span class="input-group-text bg-white border-end-0 small">
-                    <i class="bi bi-arrow-right-circle me-2"></i>Đến trang
-                </span>
-                                <input type="number"
-                                       class="form-control form-control-sm border-start-0"
-                                       id="jumpToPage"
-                                       min="1"
-                                       th:max="${totalPages}"
-                                       th:placeholder="'1-' + ${totalPages}"
-                                       style="max-width: 60px;">
-                                <button class="btn btn-primary btn-sm" type="button" onclick="jumpToPage()">
-                                    <i class="bi bi-arrow-right"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </nav>
-                </div>
+                        <!-- Next -->
+                        <li class="page-item-custom" th:classappend="${currentPage + 1 >= totalPages ? 'disabled' : ''}">
+                            <a class="page-link-custom"
+                               th:href="@{/books(categoryId=${selectedCategoryId}, page=${currentPage + 1}, sort=${currentSort}, order=${currentOrder})}">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+
+                        <!-- Last -->
+                        <li class="page-item-custom" th:classappend="${currentPage + 1 >= totalPages ? 'disabled' : ''}">
+                            <a class="page-link-custom"
+                               th:href="@{/books(categoryId=${selectedCategoryId}, page=${totalPages - 1}, sort=${currentSort}, order=${currentOrder})}">
+                                <i class="bi bi-chevron-double-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
     </div>
 </section>
-
-
 
 <style>
     :root {
@@ -346,245 +342,707 @@
         --cream: #f1faee;
     }
 
-    .bg-primary {
-        background-color: var(--primary-green) !important;
+    /* Breadcrumb Enhanced */
+    .breadcrumb-section {
+        background: linear-gradient(135deg, var(--extra-light), white);
+        padding: 1rem 0;
+        border-bottom: 2px solid var(--pale-green);
     }
 
-    .text-primary {
-        color: var(--primary-green) !important;
+    .breadcrumb-custom {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        padding: 0;
     }
 
-    .btn-primary {
-        background-color: var(--primary-green);
-        border-color: var(--primary-green);
+    .breadcrumb-item-custom {
+        display: flex;
+        align-items: center;
     }
 
-    .btn-primary:hover {
-        background-color: var(--light-green);
-        border-color: var(--light-green);
-    }
-
-    .btn-outline-primary {
-        color: var(--primary-green);
-        border-color: var(--primary-green);
-    }
-
-    .btn-outline-primary:hover {
-        background-color: var(--primary-green);
-        color: white;
-    }
-
-    .breadcrumb-item a {
+    .breadcrumb-item-custom a {
         color: var(--primary-green);
         text-decoration: none;
-    }
-
-    .list-group-item.active {
-        background-color: var(--primary-green);
-        border-color: var(--primary-green);
-    }
-
-    .product-card {
-        transition: transform 0.3s ease;
-    }
-
-    .product-card:hover {
-        transform: translateY(-5px);
-    }
-
-    .product-image {
-        height: 350px;
-        overflow: hidden;
-        position: relative;
-        background: #f8f9fa;
-    }
-
-    .product-image img {
-        height: 100%;
-        width: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
-
-    .product-card:hover .product-image img {
-        transform: scale(1.05);
-    }
-
-    .product-actions {
-        position: absolute;
-        bottom: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 10px;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        z-index: 10;
-    }
-
-    .product-card:hover .product-actions {
-        opacity: 1;
-    }
-
-    .product-actions .btn {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        background: white;
-    }
-
-    .product-actions .btn:hover {
-        background: var(--primary-green) !important;
-        color: white !important;
-        transform: scale(1.1);
-    }
-
-    /* Modern Pagination Style */
-    .pagination-modern {
-        gap: 4px;
-        flex-wrap: wrap;
-    }
-
-    .pagination-modern .page-link {
-        border: 1px solid #dee2e6;
-        background: white;
-        color: var(--dark-text);
         font-weight: 500;
-        min-width: 40px;
-        height: 40px;
+        transition: all 0.3s ease;
+    }
+
+    .breadcrumb-item-custom a:hover {
+        color: var(--light-green);
+        transform: translateX(3px);
+    }
+
+    .breadcrumb-item-custom.active {
+        color: var(--dark-text);
+        font-weight: 600;
+    }
+
+    /* Books Section */
+    .books-section {
+        padding: 3rem 0;
+        background: linear-gradient(180deg, #f8f9fa 0%, white 100%);
+    }
+
+    /* Filter Sidebar Enhanced */
+    .filter-sidebar {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(64, 145, 108, 0.12);
+        overflow: hidden;
+        position: sticky;
+        top: 20px;
+    }
+
+    .filter-header {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .filter-icon-wrapper {
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-        padding: 0.5rem;
-    }
-
-    .pagination-modern .page-link:hover:not(.disabled) {
-        background: var(--extra-light);
-        color: var(--primary-green);
-        border-color: var(--primary-green);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(64, 145, 108, 0.15);
-    }
-
-    .pagination-modern .page-item.active .page-link {
-        background: var(--primary-green);
+        font-size: 1.5rem;
         color: white;
-        border-color: var(--primary-green);
-        box-shadow: 0 4px 12px rgba(64, 145, 108, 0.25);
     }
 
-    .pagination-modern .page-item.disabled .page-link {
-        opacity: 0.4;
-        pointer-events: none;
-        background: #f8f9fa;
+    .filter-header h5 {
+        color: white;
+        margin: 0;
+        font-weight: 600;
     }
 
-    /* Jump to page input */
-    #jumpToPage {
-        text-align: center;
+    .filter-section {
+        padding: 1.5rem;
     }
 
-    #jumpToPage:focus {
-        border-color: var(--primary-green);
-        box-shadow: 0 0 0 0.2rem rgba(64, 145, 108, 0.25);
-    }
-
-    .input-group-text {
-        border-color: #dee2e6;
-    }
-
-    /* Responsive */
-    @media (max-width: 576px) {
-        .pagination-modern .page-link {
-            min-width: 36px;
-            height: 36px;
-            font-size: 0.875rem;
-        }
-
-        /* Ẩn nút First/Last trên mobile */
-        .pagination-modern .page-item:first-child,
-        .pagination-modern .page-item:last-child {
-            display: none;
-        }
-    }
-
-    .rating i {
-        font-size: 0.75rem;
-    }
-
-    .card-title {
+    .filter-title {
         color: var(--dark-text);
-        transition: color 0.3s ease;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
     }
 
-    .card-title:hover {
-        color: var(--primary-green);
-    }
-    /* Giới hạn chiều cao và thêm scroll */
-    .category-scroll-container {
-        max-height: 400px; /* Tùy chỉnh chiều cao */
+    .category-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        max-height: 400px;
         overflow-y: auto;
         overflow-x: hidden;
-        padding-right: 5px; /* Tránh che scrollbar */
+        padding-right: 0.5rem;
     }
 
-    /* Custom scrollbar đẹp hơn */
-    .category-scroll-container::-webkit-scrollbar {
+    /* Custom Scrollbar */
+    .category-list::-webkit-scrollbar {
         width: 6px;
     }
 
-    .category-scroll-container::-webkit-scrollbar-track {
-        background: #f1f1f1;
+    .category-list::-webkit-scrollbar-track {
+        background: var(--extra-light);
         border-radius: 10px;
     }
 
-    .category-scroll-container::-webkit-scrollbar-thumb {
+    .category-list::-webkit-scrollbar-thumb {
         background: var(--primary-green);
         border-radius: 10px;
     }
 
-    .category-scroll-container::-webkit-scrollbar-thumb:hover {
+    .category-list::-webkit-scrollbar-thumb:hover {
         background: var(--dark-text);
     }
 
     /* Smooth scroll */
-    .category-scroll-container {
+    .category-list {
         scroll-behavior: smooth;
     }
 
-    /* Shadow khi scroll */
-    .category-scroll-container {
+    .category-item {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.8rem 1rem;
+        border-radius: 12px;
+        text-decoration: none;
+        color: var(--dark-text);
+        transition: all 0.3s ease;
         position: relative;
     }
 
-    .category-scroll-container::before {
+    .category-item:hover {
+        background: var(--extra-light);
+        transform: translateX(5px);
+    }
+
+    .category-item.active {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+        box-shadow: 0 4px 15px rgba(64, 145, 108, 0.3);
+    }
+
+    .category-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--extra-light);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: var(--primary-green);
+        transition: all 0.3s ease;
+    }
+
+    .category-item.active .category-icon {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    .category-icon.all-icon {
+        background: var(--pale-green);
+    }
+
+    .category-name {
+        flex: 1;
+        font-weight: 500;
+    }
+
+    .category-count {
+        background: var(--pale-green);
+        color: var(--primary-green);
+        padding: 0.2rem 0.6rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .category-item.active .category-count {
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
+    }
+
+    .filter-footer {
+        padding: 1rem 1.5rem;
+        border-top: 2px solid var(--pale-green);
+    }
+
+    .btn-reset-filter {
+        display: block;
+        width: 100%;
+        padding: 0.8rem;
+        background: var(--extra-light);
+        color: var(--primary-green);
+        text-align: center;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-reset-filter:hover {
+        background: var(--primary-green);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(64, 145, 108, 0.3);
+    }
+
+    /* Toolbar Enhanced */
+    .toolbar-wrapper {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .page-title {
+        color: var(--dark-text);
+        font-weight: 700;
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .result-count {
+        color: #6c757d;
+        margin: 0.3rem 0 0 0;
+        font-size: 0.9rem;
+    }
+
+    .result-count strong {
+        color: var(--primary-green);
+    }
+
+    .toolbar-right {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .form-select-custom {
+        padding: 0.6rem 2.5rem 0.6rem 1rem;
+        border: 2px solid var(--pale-green);
+        border-radius: 12px;
+        font-weight: 500;
+        color: var(--dark-text);
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .form-select-custom:focus {
+        outline: none;
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 4px rgba(64, 145, 108, 0.1);
+    }
+
+    .view-toggle {
+        display: flex;
+        gap: 0.5rem;
+        background: var(--extra-light);
+        padding: 0.3rem;
+        border-radius: 12px;
+    }
+
+    .view-btn {
+        width: 40px;
+        height: 40px;
+        border: none;
+        background: transparent;
+        color: var(--primary-green);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1.2rem;
+    }
+
+    .view-btn:hover {
+        background: var(--pale-green);
+    }
+
+    .view-btn.active {
+        background: var(--primary-green);
+        color: white;
+        box-shadow: 0 2px 8px rgba(64, 145, 108, 0.3);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .empty-icon {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 2rem;
+        background: var(--extra-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        color: var(--primary-green);
+    }
+
+    .empty-title {
+        color: var(--dark-text);
+        margin-bottom: 1rem;
+    }
+
+    .empty-text {
+        color: #6c757d;
+        margin-bottom: 2rem;
+    }
+
+    .btn-view-all {
+        display: inline-block;
+        padding: 0.8rem 2rem;
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-view-all:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(64, 145, 108, 0.3);
+    }
+
+    /* Books Grid Enhanced */
+    .books-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .book-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+    }
+
+    .book-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(64, 145, 108, 0.2);
+    }
+
+    .book-card::before {
         content: '';
-        position: sticky;
+        position: absolute;
         top: 0;
         left: 0;
         right: 0;
-        height: 10px;
-        background: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0));
-        pointer-events: none;
-        z-index: 1;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-green), var(--light-green));
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
     }
 
-    .category-scroll-container::after {
-        content: '';
-        position: sticky;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 10px;
-        background: linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0));
+    .book-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .book-image-container {
+        position: relative;
+        height: 350px;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+    }
+
+    .book-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .book-card:hover .book-image {
+        transform: scale(1.1);
+    }
+
+    .stock-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: linear-gradient(135deg, #52c41a, #73d13d);
+        color: white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+    }
+
+    .stock-badge.out-of-stock {
+        background: linear-gradient(135deg, #ff4d4f, #ff7875);
+    }
+
+    .quick-actions {
+        position: absolute;
+        bottom: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 0.5rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .book-card:hover .quick-actions {
+        opacity: 1;
+    }
+
+    .action-btn {
+        width: 45px;
+        height: 45px;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .view-btn {
+        background: white;
+        color: var(--primary-green);
+    }
+
+    .cart-btn {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+    }
+
+    .wishlist-btn {
+        background: white;
+        color: #ff4d4f;
+    }
+
+    .action-btn:hover {
+        transform: scale(1.15) rotate(5deg);
+    }
+
+    .book-info {
+        padding: 1.5rem;
+    }
+
+    .category-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        background: var(--extra-light);
+        color: var(--primary-green);
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+    }
+
+    .book-title-link {
+        text-decoration: none;
+    }
+
+    .book-title {
+        color: var(--dark-text);
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.4;
+        transition: color 0.3s ease;
+    }
+
+    .book-title-link:hover .book-title {
+        color: var(--primary-green);
+    }
+
+    .book-author {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .book-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.2rem;
+        margin-bottom: 0.8rem;
+        color: #faad14;
+        font-size: 0.85rem;
+    }
+
+    .rating-text {
+        color: #8c8c8c;
+        font-size: 0.85rem;
+        margin-left: 0.3rem;
+    }
+
+    .book-price {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .price-current {
+        color: var(--primary-green);
+        font-weight: 700;
+        font-size: 1.3rem;
+    }
+
+    /* Pagination Enhanced */
+    .pagination-wrapper {
+        margin-top: 3rem;
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .pagination-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--extra-light);
+    }
+
+    .page-status,
+    .total-items {
+        margin: 0;
+        color: #6c757d;
+    }
+
+    .page-status strong,
+    .total-items strong {
+        color: var(--primary-green);
+        font-size: 1.1rem;
+    }
+
+    .pagination-custom {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        flex-wrap: wrap;
+    }
+
+    .page-item-custom {
+        display: flex;
+    }
+
+    .page-item-custom.dots {
         pointer-events: none;
     }
+
+    .page-link-custom {
+        min-width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--pale-green);
+        background: white;
+        color: var(--dark-text);
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .page-link-custom:hover:not(.disabled) {
+        background: var(--extra-light);
+        border-color: var(--primary-green);
+        color: var(--primary-green);
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(64, 145, 108, 0.2);
+    }
+
+    .page-item-custom.active .page-link-custom {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        border-color: var(--primary-green);
+        color: white;
+        box-shadow: 0 4px 15px rgba(64, 145, 108, 0.3);
+    }
+
+    .page-item-custom.disabled .page-link-custom {
+        opacity: 0.3;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .toolbar-wrapper {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .toolbar-right {
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .form-select-custom {
+            flex: 1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .books-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .book-image-container {
+            height: 300px;
+        }
+
+        .page-title {
+            font-size: 1.3rem;
+        }
+
+        .pagination-info {
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: flex-start;
+        }
+
+        .page-link-custom {
+            min-width: 40px;
+            height: 40px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .books-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-sidebar {
+            position: static;
+        }
+    }
+
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .book-card-wrapper {
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .book-card-wrapper:nth-child(1) { animation-delay: 0.1s; }
+    .book-card-wrapper:nth-child(2) { animation-delay: 0.2s; }
+    .book-card-wrapper:nth-child(3) { animation-delay: 0.3s; }
+    .book-card-wrapper:nth-child(4) { animation-delay: 0.4s; }
+    .book-card-wrapper:nth-child(5) { animation-delay: 0.5s; }
+    .book-card-wrapper:nth-child(6) { animation-delay: 0.6s; }
 </style>
 
 <!-- Footer -->
@@ -593,42 +1051,31 @@
 
 <!-- Scripts -->
 <th:block th:replace="~{fragments/footer :: scripts}"></th:block>
-
-<!-- Books JavaScript -->
-<script th:src="@{/js/books.js}"></script>
-<!-- Cart JavaScript -->
 <script th:src="@{/js/cart.js}"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        if (typeof BooksAPI !== 'undefined') {
-            BooksAPI.attachEventListeners();
-            BooksAPI.attachBookActions();
+    // Sort dropdown handler
+    document.getElementById('sortSelect')?.addEventListener('change', function() {
+        if (this.value) {
+            window.location.href = this.value;
         }
     });
 
-    function jumpToPage() {
-        const pageInput = document.getElementById('jumpToPage');
-        const page = parseInt(pageInput.value);
-        const totalPages = parseInt(pageInput.max);
-
-        if (page && page >= 1 && page <= totalPages) {
-            const currentUrl = new URL(window.location.href);
-            currentUrl.searchParams.set('page', page - 1);
-            window.location.href = currentUrl.toString();
-        } else {
-            showToast('Vui lòng nhập số trang hợp lệ (1-' + totalPages + ')', 'warning');
-            pageInput.value = '';
-        }
-    }
-
-    document.getElementById('jumpToPage')?.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            jumpToPage();
-        }
+    // Wishlist button handler
+    document.querySelectorAll('.wishlist-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('bi-heart-fill')) {
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+            } else {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+            }
+        });
     });
 </script>
-
 
 </body>
 </html>

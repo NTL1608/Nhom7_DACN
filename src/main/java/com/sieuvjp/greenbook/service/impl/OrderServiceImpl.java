@@ -191,4 +191,12 @@ public class OrderServiceImpl implements OrderService {
         return discount != null ? discount : 0.0;
     }
 
+    // ✅ COPY ĐOẠN NÀY VÀO CUỐI CLASS OrderServiceImpl (trước dấu })
+    @Override
+    public Order getOrderWithDetails(Long orderId) {
+        return orderRepository.findByIdWithDetails(orderId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng #" + orderId));
+    }
+
+
 }

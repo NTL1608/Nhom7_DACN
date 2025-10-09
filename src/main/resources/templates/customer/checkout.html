@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/header :: header}"></head>
+<body>
+
+<!-- Header -->
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<!-- Breadcrumb -->
+<section class="py-3 bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/cart}">Giỏ hàng</a></li>
+                <li class="breadcrumb-item active">Thanh toán</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Checkout Steps -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="checkout-steps">
+            <div class="step completed">
+                <div class="step-icon">
+                    <i class="bi bi-cart-check"></i>
+                </div>
+                <span>Giỏ hàng</span>
+            </div>
+            <div class="step-line completed"></div>
+            <div class="step active">
+                <div class="step-icon">
+                    <i class="bi bi-credit-card"></i>
+                </div>
+                <span>Thanh toán</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step">
+                <div class="step-icon">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <span>Hoàn tất</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Checkout Content -->
+<section class="py-5">
+    <div class="container">
+        <!-- Flash Messages -->
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <form th:action="@{/checkout/place-order}" method="post" id="checkoutForm">
+            <div class="row g-4">
+                <!-- Left: Checkout Form -->
+                <div class="col-lg-8">
+                    <!-- Shipping Information -->
+                    <div class="checkout-card">
+                        <div class="card-header-checkout">
+                            <div class="header-icon">
+                                <i class="bi bi-geo-alt-fill"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0">Thông tin giao hàng</h5>
+                                <p class="text-muted small mb-0">Nhập địa chỉ nhận hàng của bạn</p>
+                            </div>
+                        </div>
+                        <div class="card-body-checkout">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">
+                                        <i class="bi bi-person-fill me-2"></i>Họ và tên
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text"
+                                           class="form-control-custom"
+                                           th:value="${user.fullName}"
+                                           readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">
+                                        <i class="bi bi-telephone-fill me-2"></i>Số điện thoại
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="tel"
+                                           class="form-control-custom"
+                                           th:value="${user.phone}"
+                                           readonly>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label-custom">
+                                        <i class="bi bi-envelope-fill me-2"></i>Email
+                                    </label>
+                                    <input type="email"
+                                           class="form-control-custom"
+                                           th:value="${user.email}"
+                                           readonly>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label-custom">
+                                        <i class="bi bi-geo-alt-fill me-2"></i>Địa chỉ giao hàng
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <textarea name="shippingAddress"
+                                              class="form-control-custom"
+                                              rows="3"
+                                              th:text="${user.address}"
+                                              placeholder="Nhập địa chỉ chi tiết (số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố)"
+                                              required></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label-custom">
+                                        <i class="bi bi-chat-left-text-fill me-2"></i>Ghi chú đơn hàng (tùy chọn)
+                                    </label>
+                                    <textarea name="note"
+                                              class="form-control-custom"
+                                              rows="2"
+                                              placeholder="Ghi chú về đơn hàng, ví dụ: thời gian giao hàng mong muốn..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div class="checkout-card mt-4">
+                        <div class="card-header-checkout">
+                            <div class="header-icon">
+                                <i class="bi bi-credit-card-fill"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0">Phương thức thanh toán</h5>
+                                <p class="text-muted small mb-0">Chọn phương thức thanh toán phù hợp</p>
+                            </div>
+                        </div>
+                        <div class="card-body-checkout">
+                            <div class="payment-methods">
+                                <!-- COD -->
+                                <label class="payment-method">
+                                    <input type="radio"
+                                           name="paymentMethod"
+                                           value="CASH_ON_DELIVERY"
+                                           checked>
+                                    <div class="method-card">
+                                        <div class="method-icon cod">
+                                            <i class="bi bi-cash-coin"></i>
+                                        </div>
+                                        <div class="method-info">
+                                            <h6>Thanh toán khi nhận hàng (COD)</h6>
+                                            <p class="small text-muted mb-0">Thanh toán bằng tiền mặt khi nhận hàng</p>
+                                        </div>
+                                        <div class="method-check">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <!-- Bank Transfer -->
+                                <label class="payment-method">
+                                    <input type="radio"
+                                           name="paymentMethod"
+                                           value="BANK_TRANSFER">
+                                    <div class="method-card">
+                                        <div class="method-icon bank">
+                                            <i class="bi bi-bank"></i>
+                                        </div>
+                                        <div class="method-info">
+                                            <h6>Chuyển khoản ngân hàng</h6>
+                                            <p class="small text-muted mb-0">Chuyển khoản qua số tài khoản</p>
+                                        </div>
+                                        <div class="method-check">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <!-- Credit Card -->
+                                <label class="payment-method">
+                                    <input type="radio"
+                                           name="paymentMethod"
+                                           value="CREDIT_CARD">
+                                    <div class="method-card">
+                                        <div class="method-icon card">
+                                            <i class="bi bi-credit-card-2-front"></i>
+                                        </div>
+                                        <div class="method-info">
+                                            <h6>Thẻ tín dụng/ghi nợ</h6>
+                                            <p class="small text-muted mb-0">Visa, Mastercard, JCB</p>
+                                        </div>
+                                        <div class="method-check">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <!-- E-Wallet -->
+                                <label class="payment-method">
+                                    <input type="radio"
+                                           name="paymentMethod"
+                                           value="E_WALLET">
+                                    <div class="method-card">
+                                        <div class="method-icon wallet">
+                                            <i class="bi bi-wallet2"></i>
+                                        </div>
+                                        <div class="method-info">
+                                            <h6>Ví điện tử</h6>
+                                            <p class="small text-muted mb-0">Momo, ZaloPay, VNPay</p>
+                                        </div>
+                                        <div class="method-check">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Order Summary -->
+                <div class="col-lg-4">
+                    <div class="order-summary-sticky">
+                        <div class="checkout-card">
+                            <div class="card-header-checkout">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-receipt me-2"></i>Thông tin đơn hàng
+                                </h5>
+                            </div>
+                            <div class="card-body-checkout">
+                                <!-- Cart Items -->
+                                <div class="order-items">
+                                    <div class="order-item" th:each="item : ${cartItems}">
+                                        <img th:src="${item.imageUrl != null ? item.imageUrl : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=100&h=150&fit=crop'}"
+                                             th:alt="${item.title}"
+                                             class="item-image">
+                                        <div class="item-details">
+                                            <h6 class="item-title" th:text="${item.title}">Tên sách</h6>
+                                            <p class="item-quantity">Số lượng: <strong th:text="${item.quantity}">1</strong></p>
+                                        </div>
+                                        <div class="item-price">
+                                            <span th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + 'đ'">120,000đ</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="summary-divider"></div>
+
+                                <!-- Summary Rows -->
+                                <div class="summary-row">
+                                    <span>Tạm tính:</span>
+                                    <span th:text="${#numbers.formatDecimal(totalAmount, 0, 'COMMA', 0, 'POINT')} + 'đ'">200,000đ</span>
+                                </div>
+
+                                <div class="summary-row">
+                                    <span>Phí vận chuyển:</span>
+                                    <span class="text-success" th:if="${shippingFee == 0}">Miễn phí</span>
+                                    <span th:if="${shippingFee > 0}" th:text="${#numbers.formatDecimal(shippingFee, 0, 'COMMA', 0, 'POINT')} + 'đ'">30,000đ</span>
+                                </div>
+
+                                <div class="summary-divider"></div>
+
+                                <div class="summary-row total-row">
+                                    <span>Tổng cộng:</span>
+                                    <span class="total-amount" th:text="${#numbers.formatDecimal(finalAmount, 0, 'COMMA', 0, 'POINT')} + 'đ'">230,000đ</span>
+                                </div>
+
+                                <!-- Place Order Button -->
+                                <button type="submit" class="btn-place-order">
+                                    <i class="bi bi-check-circle me-2"></i>Đặt hàng
+                                </button>
+
+                                <!-- Security Info -->
+                                <div class="security-info">
+                                    <i class="bi bi-shield-check me-2"></i>
+                                    <span>Thanh toán an toàn & bảo mật</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<style>
+    :root {
+        --primary-green: #40916c;
+        --light-green: #74c69d;
+        --pale-green: #b7e4c7;
+        --extra-light: #d8f3dc;
+        --dark-text: #2d6a4f;
+    }
+
+    .breadcrumb-item a {
+        color: var(--primary-green);
+        text-decoration: none;
+    }
+
+    /* Checkout Steps */
+    .checkout-steps {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .step-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: white;
+        border: 3px solid #dee2e6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: #6c757d;
+        transition: all 0.3s ease;
+    }
+
+    .step span {
+        font-size: 0.9rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    .step.completed .step-icon,
+    .step.active .step-icon {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        border-color: var(--primary-green);
+        color: white;
+    }
+
+    .step.completed span,
+    .step.active span {
+        color: var(--primary-green);
+        font-weight: 600;
+    }
+
+    .step-line {
+        width: 100px;
+        height: 3px;
+        background: #dee2e6;
+        margin: 0 1rem;
+    }
+
+    .step-line.completed {
+        background: var(--primary-green);
+    }
+
+    /* Checkout Card */
+    .checkout-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .card-header-checkout {
+        background: linear-gradient(135deg, var(--extra-light), white);
+        padding: 1.5rem;
+        border-bottom: 2px solid var(--pale-green);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .header-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        box-shadow: 0 4px 12px rgba(64, 145, 108, 0.3);
+    }
+
+    .card-body-checkout {
+        padding: 2rem;
+    }
+
+    /* Form Custom */
+    .form-label-custom {
+        color: var(--dark-text);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control-custom:focus {
+        outline: none;
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 4px rgba(64, 145, 108, 0.1);
+    }
+
+    .form-control-custom:read-only {
+        background: #f8f9fa;
+        cursor: not-allowed;
+    }
+
+    /* Payment Methods */
+    .payment-methods {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .payment-method {
+        cursor: pointer;
+    }
+
+    .payment-method input[type="radio"] {
+        display: none;
+    }
+
+    .method-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.2rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .payment-method input:checked + .method-card {
+        border-color: var(--primary-green);
+        background: var(--extra-light);
+    }
+
+    .method-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .method-icon.cod {
+        background: linear-gradient(135deg, #52c41a, #73d13d);
+    }
+
+    .method-icon.bank {
+        background: linear-gradient(135deg, #1890ff, #40a9ff);
+    }
+
+    .method-icon.card {
+        background: linear-gradient(135deg, #722ed1, #9254de);
+    }
+
+    .method-icon.wallet {
+        background: linear-gradient(135deg, #fa8c16, #ffa940);
+    }
+
+    .method-info {
+        flex: 1;
+    }
+
+    .method-info h6 {
+        margin: 0 0 0.3rem 0;
+        color: var(--dark-text);
+        font-weight: 600;
+    }
+
+    .method-check {
+        font-size: 1.5rem;
+        color: #e0e0e0;
+    }
+
+    .payment-method input:checked + .method-card .method-check {
+        color: var(--primary-green);
+    }
+
+    /* Order Summary */
+    .order-summary-sticky {
+        position: sticky;
+        top: 20px;
+    }
+
+    .order-items {
+        max-height: 300px;
+        overflow-y: auto;
+        margin-bottom: 1rem;
+    }
+
+    .order-item {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .order-item:last-child {
+        border-bottom: none;
+    }
+
+    .item-image {
+        width: 60px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .item-details {
+        flex: 1;
+    }
+
+    .item-title {
+        font-size: 0.9rem;
+        margin: 0 0 0.3rem 0;
+        color: var(--dark-text);
+    }
+
+    .item-quantity {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin: 0;
+    }
+
+    .item-price {
+        font-weight: 600;
+        color: var(--primary-green);
+    }
+
+    .summary-divider {
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--pale-green), transparent);
+        margin: 1rem 0;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.8rem;
+        font-size: 0.95rem;
+        color: #6c757d;
+    }
+
+    .summary-row.total-row {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--dark-text);
+    }
+
+    .total-amount {
+        color: var(--primary-green);
+        font-size: 1.5rem;
+    }
+
+    .btn-place-order {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+
+    .btn-place-order:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(64, 145, 108, 0.4);
+    }
+
+    .security-info {
+        text-align: center;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #f0f0f0;
+        color: var(--primary-green);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .checkout-steps {
+            transform: scale(0.8);
+        }
+
+        .step-line {
+            width: 60px;
+        }
+
+        .card-body-checkout {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: footer-bottom}"></div>
+
+<!-- Scripts -->
+<th:block th:replace="~{fragments/footer :: scripts}"></th:block>
+
+<script>
+    // Form validation
+    document.getElementById('checkoutForm')?.addEventListener('submit', function(e) {
+        const shippingAddress = document.querySelector('textarea[name="shippingAddress"]').value;
+
+        if (!shippingAddress || shippingAddress.trim().length < 10) {
+            e.preventDefault();
+            alert('Vui lòng nhập địa chỉ giao hàng chi tiết (tối thiểu 10 ký tự)!');
+            return false;
+        }
+    });
+</script>
+
+</body>
+</html>

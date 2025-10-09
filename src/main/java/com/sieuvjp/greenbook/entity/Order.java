@@ -52,17 +52,28 @@ public class Order extends BaseEntity {
     private LocalDateTime completedDate;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default  // ✅ THÊM ANNOTATION NÀY
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
     // Helper method to add order detail
     public void addOrderDetail(OrderDetail orderDetail) {
+        if (this.orderDetails == null) {  // ✅ THÊM KIỂM TRA NÀY
+            this.orderDetails = new ArrayList<>();
+        }
         orderDetails.add(orderDetail);
         orderDetail.setOrder(this);
     }
 
     // Helper method to remove order detail
     public void removeOrderDetail(OrderDetail orderDetail) {
-        orderDetails.remove(orderDetail);
-        orderDetail.setOrder(null);
+        if (this.orderDetails != null) {
+            orderDetails.remove(orderDetail);
+            orderDetail.setOrder(null);
+        }
+    }
+
+    // ✅ THÊM METHOD NÀY để đảm bảo discountAmount không null
+    public Double getDiscountAmount() {
+        return discountAmount != null ? discountAmount : 0.0;
     }
 }
