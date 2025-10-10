@@ -261,6 +261,75 @@
     </div>
 </section>
 
+<!-- Blog Section Enhanced -->
+<section id="blog-section" class="section-padding bg-light-gradient" th:if="${!#lists.isEmpty(recentBlogs)}">
+    <div class="container">
+        <div class="section-header-flex mb-5">
+            <div>
+                <span class="section-badge">BLOG & TIN TỨC</span>
+                <h2 class="section-title mb-2">Bài viết mới nhất</h2>
+                <p class="section-description">Cập nhật tin tức và kiến thức về sách</p>
+            </div>
+            <div>
+                <a th:href="@{/blogs}" class="btn-view-all-modern">
+                    <span>Xem tất cả</span>
+                    <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="blog-grid-home">
+            <div class="blog-card-home" th:each="blog : ${recentBlogs}">
+                <article class="blog-card-home-inner">
+                    <!-- Blog Image -->
+                    <a th:href="@{/blogs/{id}(id=${blog.id})}" class="blog-image-link-home">
+                        <div class="blog-image-home">
+                            <img th:src="${blog.imageUrl != null && !blog.imageUrl.isEmpty() ? blog.imageUrl : 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&h=400&fit=crop'}"
+                                 th:alt="${blog.title}"
+                                 class="blog-img-home">
+                            <div class="blog-overlay-home">
+                                <i class="bi bi-eye-fill"></i>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Blog Content -->
+                    <div class="blog-content-home">
+                        <!-- Meta -->
+                        <div class="blog-meta-home">
+                            <span class="meta-author">
+                                <i class="bi bi-person-circle"></i>
+                                <span th:text="${blog.authorName}">Tác giả</span>
+                            </span>
+                            <span class="meta-date">
+                                <i class="bi bi-calendar3"></i>
+                                <span th:text="${blog.publishedDateFormatted}">Ngày đăng</span>
+                            </span>
+                        </div>
+
+                        <!-- Title -->
+                        <a th:href="@{/blogs/{id}(id=${blog.id})}" class="blog-title-link-home">
+                            <h4 class="blog-title-home" th:text="${blog.title}">Tiêu đề blog</h4>
+                        </a>
+
+                        <!-- Excerpt -->
+                        <p class="blog-excerpt-home"
+                           th:text="${#strings.length(blog.content) > 120 ? #strings.substring(blog.content, 0, 120) + '...' : blog.content}">
+                            Nội dung tóm tắt...
+                        </p>
+
+                        <!-- Read More -->
+                        <a th:href="@{/blogs/{id}(id=${blog.id})}" class="btn-read-more-home">
+                            <span>Đọc tiếp</span>
+                            <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Quote Section Enhanced -->
 <section id="quotation" class="quote-section">
     <div class="container">
@@ -1314,6 +1383,180 @@
 
         .stat-info h3 {
             font-size: 1.6rem;
+        }
+    }
+    /* Blog Section Home */
+    .blog-grid-home {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+    }
+
+    .blog-card-home {
+        animation: fadeInUp 0.6s ease forwards;
+        opacity: 0;
+    }
+
+    .blog-card-home:nth-child(1) { animation-delay: 0.1s; }
+    .blog-card-home:nth-child(2) { animation-delay: 0.2s; }
+    .blog-card-home:nth-child(3) { animation-delay: 0.3s; }
+
+    .blog-card-home-inner {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .blog-card-home:hover .blog-card-home-inner {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 50px rgba(64, 145, 108, 0.2);
+    }
+
+    .blog-image-link-home {
+        display: block;
+        text-decoration: none;
+    }
+
+    .blog-image-home {
+        position: relative;
+        height: 250px;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+    }
+
+    .blog-img-home {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .blog-card-home:hover .blog-img-home {
+        transform: scale(1.1);
+    }
+
+    .blog-overlay-home {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(64, 145, 108, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        color: white;
+        font-size: 3rem;
+    }
+
+    .blog-card-home:hover .blog-overlay-home {
+        opacity: 1;
+    }
+
+    .blog-content-home {
+        padding: 1.8rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .blog-meta-home {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .meta-author,
+    .meta-date {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: #6c757d;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .meta-author i,
+    .meta-date i {
+        color: var(--primary-green);
+        font-size: 1rem;
+    }
+
+    .blog-title-link-home {
+        text-decoration: none;
+    }
+
+    .blog-title-home {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-bottom: 1rem;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        transition: color 0.3s ease;
+    }
+
+    .blog-title-link-home:hover .blog-title-home {
+        color: var(--primary-green);
+    }
+
+    .blog-excerpt-home {
+        color: #6c757d;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .btn-read-more-home {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.7rem 1.8rem;
+        background: var(--extra-light);
+        color: var(--primary-green);
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        margin-top: auto;
+        width: fit-content;
+        font-size: 0.95rem;
+    }
+
+    .btn-read-more-home:hover {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+        transform: translateX(5px);
+    }
+
+    /* Responsive cho blog home */
+    @media (max-width: 576px) {
+        .blog-grid-home {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .blog-image-home {
+            height: 220px;
+        }
+
+        .blog-meta-home {
+            flex-direction: column;
+            gap: 0.5rem;
         }
     }
 </style>

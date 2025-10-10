@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/header :: header}"></head>
+<body>
+
+<!-- Header -->
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<!-- Breadcrumb -->
+<section class="breadcrumb-section">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb-custom mb-0">
+                <li class="breadcrumb-item-custom">
+                    <a th:href="@{/}">
+                        <i class="bi bi-house-door me-1"></i>Trang chủ
+                    </a>
+                </li>
+                <li class="breadcrumb-item-custom">
+                    <i class="bi bi-chevron-right mx-2"></i>
+                </li>
+                <li class="breadcrumb-item-custom active">
+                    <i class="bi bi-info-circle me-1"></i>Giới thiệu
+                </li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Hero Section -->
+<section class="about-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="about-hero-content">
+                    <span class="hero-badge">VỀ CHÚNG TÔI</span>
+                    <h1 class="hero-title">Greenbook - Nơi kết nối <span class="gradient-text">tri thức</span></h1>
+                    <p class="hero-description">
+                        Chúng tôi là cầu nối giữa bạn và những cuốn sách hay, mang đến trải nghiệm đọc sách tuyệt vời và dịch vụ khách hàng hoàn hảo.
+                    </p>
+                    <div class="hero-stats">
+                        <div class="stat-box">
+                            <h3>5000+</h3>
+                            <p>Đầu sách</p>
+                        </div>
+                        <div class="stat-box">
+                            <h3>10K+</h3>
+                            <p>Khách hàng</p>
+                        </div>
+                        <div class="stat-box">
+                            <h3>4.9/5</h3>
+                            <p>Đánh giá</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="about-hero-image">
+                    <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800&h=600&fit=crop"
+                         alt="Greenbook Library"
+                         class="hero-img">
+                    <div class="floating-card card-1">
+                        <i class="bi bi-book-fill"></i>
+                        <span>Sách chất lượng</span>
+                    </div>
+                    <div class="floating-card card-2">
+                        <i class="bi bi-truck"></i>
+                        <span>Giao hàng nhanh</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Story Section -->
+<section class="story-section">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <span class="section-badge">CÂU CHUYỆN CỦA CHÚNG TÔI</span>
+            <h2 class="section-title">Hành trình lan tỏa văn hóa đọc</h2>
+            <p class="section-description">Từ một cửa hàng nhỏ đến nền tảng sách trực tuyến uy tín</p>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="bi bi-flag-fill"></i>
+                </div>
+                <div class="timeline-content">
+                    <h4>2020 - Khởi đầu</h4>
+                    <p>Greenbook ra đời với mục tiêu mang sách đến gần hơn với mọi người. Chúng tôi bắt đầu với một cửa hàng nhỏ và niềm đam mê sách.</p>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <div class="timeline-content">
+                    <h4>2021 - Phát triển</h4>
+                    <p>Mở rộng kho sách lên 3000+ đầu sách với đa dạng thể loại. Ra mắt website và ứng dụng di động để phục vụ khách hàng tốt hơn.</p>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="bi bi-trophy-fill"></i>
+                </div>
+                <div class="timeline-content">
+                    <h4>2023 - Thành công</h4>
+                    <p>Đạt 10,000 khách hàng tin tưởng và 5000+ đầu sách. Được vinh danh "Nền tảng sách trực tuyến tốt nhất" bởi độc giả Việt Nam.</p>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="bi bi-rocket-takeoff-fill"></i>
+                </div>
+                <div class="timeline-content">
+                    <h4>2025 - Tương lai</h4>
+                    <p>Tiếp tục mở rộng với mục tiêu trở thành nền tảng sách số 1 Việt Nam. Phát triển thêm nhiều dịch vụ và trải nghiệm mới cho độc giả.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission & Vision -->
+<section class="mission-vision-section">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="mission-card">
+                    <div class="card-icon">
+                        <i class="bi bi-bullseye"></i>
+                    </div>
+                    <h3 class="card-title">Sứ mệnh</h3>
+                    <p class="card-text">
+                        Lan tỏa văn hóa đọc đến mọi tầng lớp xã hội. Chúng tôi tin rằng sách là chìa khóa mở ra tri thức và phát triển bản thân. Greenbook cam kết mang đến những cuốn sách chất lượng với giá cả hợp lý, dịch vụ tận tâm và trải nghiệm mua sắm tuyệt vời.
+                    </p>
+                    <ul class="mission-list">
+                        <li><i class="bi bi-check-circle-fill"></i> Cung cấp sách chất lượng cao</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Giá cả cạnh tranh, minh bạch</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Dịch vụ khách hàng xuất sắc</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Giao hàng nhanh chóng, an toàn</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="vision-card">
+                    <div class="card-icon">
+                        <i class="bi bi-lightbulb-fill"></i>
+                    </div>
+                    <h3 class="card-title">Tầm nhìn</h3>
+                    <p class="card-text">
+                        Trở thành nền tảng sách trực tuyến số 1 tại Việt Nam, là điểm đến tin cậy của mọi độc giả. Chúng tôi hướng đến việc xây dựng một cộng đồng yêu sách, nơi mọi người có thể chia sẻ niềm đam mê đọc sách và cùng nhau phát triển.
+                    </p>
+                    <ul class="vision-list">
+                        <li><i class="bi bi-star-fill"></i> Nền tảng sách hàng đầu Việt Nam</li>
+                        <li><i class="bi bi-star-fill"></i> 50,000+ khách hàng đến 2027</li>
+                        <li><i class="bi bi-star-fill"></i> 10,000+ đầu sách đa dạng</li>
+                        <li><i class="bi bi-star-fill"></i> Cộng đồng yêu sách 100K+ thành viên</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Core Values -->
+<section class="values-section">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <span class="section-badge">GIÁ TRỊ CỐT LÕI</span>
+            <h2 class="section-title">Những giá trị chúng tôi tin tưởng</h2>
+            <p class="section-description">Định hình cách chúng tôi hoạt động và phục vụ khách hàng</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon passion">
+                        <i class="bi bi-heart-fill"></i>
+                    </div>
+                    <h4 class="value-title">Đam mê</h4>
+                    <p class="value-text">Yêu sách, yêu việc mang tri thức đến mọi người</p>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon quality">
+                        <i class="bi bi-gem"></i>
+                    </div>
+                    <h4 class="value-title">Chất lượng</h4>
+                    <p class="value-text">Cam kết chỉ bán những cuốn sách chất lượng cao</p>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon integrity">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h4 class="value-title">Chính trực</h4>
+                    <p class="value-text">Minh bạch, trung thực trong mọi giao dịch</p>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="value-card">
+                    <div class="value-icon innovation">
+                        <i class="bi bi-lightbulb"></i>
+                    </div>
+                    <h4 class="value-title">Đổi mới</h4>
+                    <p class="value-text">Không ngừng cải tiến trải nghiệm khách hàng</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="team-section">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <span class="section-badge">ĐỘI NGŨ</span>
+            <h2 class="section-title">Gặp gỡ đội ngũ của chúng tôi</h2>
+            <p class="section-description">Những con người tận tâm đằng sau Greenbook</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="team-card">
+                    <div class="team-image">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" alt="Team Member">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="#"><i class="bi bi-facebook"></i></a>
+                                <a href="#"><i class="bi bi-twitter"></i></a>
+                                <a href="#"><i class="bi bi-linkedin"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h5 class="team-name">Nguyễn Trung Quyết</h5>
+                        <p class="team-role">Sinh viên</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="team-card">
+                    <div class="team-image">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop" alt="Team Member">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="#"><i class="bi bi-facebook"></i></a>
+                                <a href="#"><i class="bi bi-twitter"></i></a>
+                                <a href="#"><i class="bi bi-linkedin"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h5 class="team-name">Vũ Anh Thùy</h5>
+                        <p class="team-role">Sinh viên</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="team-card">
+                    <div class="team-image">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop" alt="Team Member">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="#"><i class="bi bi-facebook"></i></a>
+                                <a href="#"><i class="bi bi-twitter"></i></a>
+                                <a href="#"><i class="bi bi-linkedin"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h5 class="team-name">Nguyễn Thành Luân</h5>
+                        <p class="team-role">Sinh viên</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="team-card">
+                    <div class="team-image">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop" alt="Team Member">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="#"><i class="bi bi-facebook"></i></a>
+                                <a href="#"><i class="bi bi-twitter"></i></a>
+                                <a href="#"><i class="bi bi-linkedin"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h5 class="team-name">Nguyễn Thị Thủy Ngân</h5>
+                        <p class="team-role">Sinh viên</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-card">
+            <div class="row align-items-center">
+                <div class="col-lg-8 mb-4 mb-lg-0">
+                    <h2 class="cta-title">Sẵn sàng khám phá thế giới sách?</h2>
+                    <p class="cta-text">Tham gia cùng hàng nghìn độc giả đã tin tưởng Greenbook</p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a th:href="@{/books}" class="btn-cta-main">
+                        <span>Khám phá ngay</span>
+                        <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: footer-bottom}"></div>
+
+<!-- Scripts -->
+<th:block th:replace="~{fragments/footer :: scripts}"></th:block>
+
+<style>
+    :root {
+        --primary-green: #40916c;
+        --light-green: #52b788;
+        --pale-green: #95d5b2;
+        --extra-light: #d8f3dc;
+        --dark-text: #1b4332;
+        --cream: #f8f9fa;
+    }
+
+    body {
+        font-family: 'Be Vietnam Pro', sans-serif;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb-section {
+        background: linear-gradient(135deg, var(--extra-light), white);
+        padding: 1rem 0;
+        border-bottom: 2px solid var(--pale-green);
+    }
+
+    .breadcrumb-custom {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .breadcrumb-item-custom {
+        display: flex;
+        align-items: center;
+    }
+
+    .breadcrumb-item-custom a {
+        color: var(--primary-green);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .breadcrumb-item-custom a:hover {
+        color: var(--light-green);
+    }
+
+    .breadcrumb-item-custom.active {
+        color: var(--dark-text);
+        font-weight: 700;
+    }
+
+    /* Hero Section */
+    .about-hero {
+        padding: 5rem 0;
+        background: linear-gradient(135deg, var(--extra-light) 0%, white 100%);
+    }
+
+    .hero-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+        color: var(--primary-green);
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 1.5px;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--dark-text);
+        line-height: 1.2;
+        margin-bottom: 1.5rem;
+    }
+
+    .gradient-text {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-description {
+        font-size: 1.2rem;
+        color: #6c757d;
+        line-height: 1.8;
+        margin-bottom: 2rem;
+    }
+
+    .hero-stats {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .stat-box {
+        background: white;
+        padding: 1.5rem 2rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        text-align: center;
+        min-width: 120px;
+    }
+
+    .stat-box h3 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--primary-green);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-box p {
+        color: #6c757d;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    /* Hero Image */
+    .about-hero-image {
+        position: relative;
+    }
+
+    .hero-img {
+        width: 100%;
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(64, 145, 108, 0.2);
+    }
+
+    .floating-card {
+        position: absolute;
+        background: white;
+        padding: 1rem 1.5rem;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        font-weight: 700;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .floating-card i {
+        font-size: 1.5rem;
+        color: var(--primary-green);
+    }
+
+    .card-1 {
+        top: 10%;
+        right: -5%;
+        animation-delay: 0s;
+    }
+
+    .card-2 {
+        bottom: 10%;
+        left: -5%;
+        animation-delay: 1s;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+    }
+
+    /* Section Styles */
+    .story-section,
+    .mission-vision-section,
+    .values-section,
+    .team-section {
+        padding: 5rem 0;
+    }
+
+    .section-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+        color: var(--primary-green);
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 1.5px;
+        margin-bottom: 1rem;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--dark-text);
+        margin-bottom: 1rem;
+    }
+
+    .section-description {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    /* Timeline */
+    .timeline {
+        position: relative;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--primary-green), var(--light-green));
+        border-radius: 10px;
+    }
+
+    .timeline-item {
+        display: flex;
+        margin-bottom: 3rem;
+        position: relative;
+    }
+
+    .timeline-item:nth-child(odd) {
+        flex-direction: row-reverse;
+        text-align: right;
+    }
+
+    .timeline-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2;
+        box-shadow: 0 4px 20px rgba(64, 145, 108, 0.3);
+    }
+
+    .timeline-content {
+        width: 45%;
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .timeline-item:nth-child(odd) .timeline-content {
+        margin-right: auto;
+        margin-left: 0;
+    }
+
+    .timeline-item:nth-child(even) .timeline-content {
+        margin-left: auto;
+        margin-right: 0;
+    }
+
+    .timeline-content h4 {
+        color: var(--primary-green);
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+    }
+
+    .timeline-content p {
+        color: #6c757d;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    /* Mission & Vision Cards */
+    .mission-card,
+    .vision-card {
+        background: white;
+        padding: 3rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        height: 100%;
+    }
+
+    .mission-card {
+        border-left: 4px solid var(--primary-green);
+    }
+
+    .vision-card {
+        border-left: 4px solid var(--light-green);
+    }
+
+    .card-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: var(--primary-green);
+        margin-bottom: 1.5rem;
+    }
+
+    .card-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-bottom: 1rem;
+    }
+
+    .card-text {
+        color: #6c757d;
+        line-height: 1.8;
+        margin-bottom: 1.5rem;
+    }
+
+    .mission-list,
+    .vision-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .mission-list li,
+    .vision-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        color: var(--dark-text);
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+    }
+
+    .mission-list i {
+        color: var(--primary-green);
+        font-size: 1.2rem;
+    }
+
+    .vision-list i {
+        color: #ffd700;
+        font-size: 1.2rem;
+    }
+
+    /* Values Cards */
+    .values-section {
+        background: linear-gradient(180deg, #f8f9fa 0%, white 100%);
+    }
+
+    .value-card {
+        background: white;
+        padding: 2.5rem 2rem;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        text-align: center;
+        transition: all 0.4s ease;
+        height: 100%;
+    }
+
+    .value-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 50px rgba(64, 145, 108, 0.15);
+    }
+
+    .value-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+    }
+
+    .value-icon.passion {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    }
+
+    .value-icon.quality {
+        background: linear-gradient(135deg, #4ecdc4, #44a3a0);
+    }
+
+    .value-icon.integrity {
+        background: linear-gradient(135deg, #5f27cd, #341f97);
+    }
+
+    .value-icon.innovation {
+        background: linear-gradient(135deg, #feca57, #ff9ff3);
+    }
+
+    .value-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-bottom: 0.8rem;
+    }
+
+    .value-text {
+        color: #6c757d;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* Team Cards */
+    .team-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.4s ease;
+    }
+
+    .team-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 50px rgba(64, 145, 108, 0.15);
+    }
+
+    .team-image {
+        position: relative;
+        overflow: hidden;
+        height: 300px;
+    }
+
+    .team-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .team-card:hover .team-image img {
+        transform: scale(1.1);
+    }
+
+    .team-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(64, 145, 108, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .team-card:hover .team-overlay {
+        opacity: 1;
+    }
+
+    .team-social {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .team-social a {
+        width: 45px;
+        height: 45px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-green);
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .team-social a:hover {
+        background: var(--primary-green);
+        color: white;
+        transform: translateY(-5px);
+    }
+
+    .team-info {
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .team-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-bottom: 0.3rem;
+    }
+
+    .team-role {
+        color: var(--primary-green);
+        font-weight: 600;
+        margin: 0;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        padding: 5rem 0;
+        background: linear-gradient(135deg, var(--extra-light) 0%, white 100%);
+    }
+
+    .cta-card {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        padding: 4rem 3rem;
+        border-radius: 30px;
+        box-shadow: 0 20px 60px rgba(64, 145, 108, 0.3);
+    }
+
+    .cta-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    .cta-text {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.95);
+        margin: 0;
+    }
+
+    .btn-cta-main {
+        display: inline-flex;
+        align-items: center;
+        padding: 1rem 3rem;
+        background: white;
+        color: var(--primary-green);
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-cta-main:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        color: var(--primary-green);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+
+        .timeline::before {
+            left: 30px;
+        }
+
+        .timeline-icon {
+            left: 30px;
+            transform: translateX(0);
+        }
+
+        .timeline-item {
+            flex-direction: row !important;
+            text-align: left !important;
+            padding-left: 80px;
+        }
+
+        .timeline-content {
+            width: 100%;
+            margin: 0 !important;
+        }
+
+        .cta-title {
+            font-size: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .about-hero {
+            padding: 3rem 0;
+        }
+
+        .hero-title {
+            font-size: 2rem;
+        }
+
+        .hero-stats {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .stat-box {
+            width: 100%;
+        }
+
+        .story-section,
+        .mission-vision-section,
+        .values-section,
+        .team-section {
+            padding: 3rem 0;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+        }
+
+        .mission-card,
+        .vision-card {
+            padding: 2rem;
+        }
+
+        .cta-card {
+            padding: 3rem 2rem;
+        }
+
+        .cta-title {
+            font-size: 1.6rem;
+        }
+
+        .btn-cta-main {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .floating-card {
+            font-size: 0.85rem;
+            padding: 0.8rem 1rem;
+        }
+
+        .card-1 {
+            top: 5%;
+            right: 0;
+        }
+
+        .card-2 {
+            bottom: 5%;
+            left: 0;
+        }
+    }
+</style>
+
+</body>
+</html>

@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/header :: header}"></head>
+<body>
+
+<!-- Header -->
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<!-- Breadcrumb -->
+<section class="breadcrumb-section">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb-custom mb-0">
+                <li class="breadcrumb-item-custom">
+                    <a th:href="@{/static}">
+                        <i class="bi bi-house-door me-1"></i>Trang chủ
+                    </a>
+                </li>
+                <li class="breadcrumb-item-custom">
+                    <i class="bi bi-chevron-right mx-2"></i>
+                </li>
+                <li class="breadcrumb-item-custom">
+                    <a th:href="@{/templates/customer/blogs}">
+                        <i class="bi bi-newspaper me-1"></i>Blog
+                    </a>
+                </li>
+                <li class="breadcrumb-item-custom">
+                    <i class="bi bi-chevron-right mx-2"></i>
+                </li>
+                <li class="breadcrumb-item-custom active">
+                    Chi tiết
+                </li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Blog Detail Section -->
+<section class="blog-detail-section">
+    <div class="container">
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <article class="blog-detail-card">
+                    <!-- Featured Image -->
+                    <div class="blog-featured-image">
+                        <img th:src="${blog.imageUrl != null && !blog.imageUrl.isEmpty() ? blog.imageUrl : 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=1200&h=600&fit=crop'}"
+                             th:alt="${blog.title}"
+                             class="featured-img">
+                    </div>
+
+                    <!-- Blog Header -->
+                    <div class="blog-header">
+                        <h1 class="blog-title-detail" th:text="${blog.title}">Tiêu đề bài viết</h1>
+
+                        <!-- Meta Info -->
+                        <div class="blog-meta-detail">
+                            <div class="meta-item-detail">
+                                <div class="author-avatar">
+                                    <i class="bi bi-person-circle"></i>
+                                </div>
+                                <div class="author-info">
+                                    <p class="author-name" th:text="${blog.authorName}">Tác giả</p>
+                                    <p class="author-role">Tác giả</p>
+                                </div>
+                            </div>
+                            <div class="meta-divider"></div>
+                            <div class="meta-date">
+                                <i class="bi bi-calendar3"></i>
+                                <span th:text="${blog.publishedDateFormatted}">Ngày đăng</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Blog Content -->
+                    <div class="blog-content-detail" th:utext="${blog.content}">
+                        <p>Nội dung bài viết sẽ hiển thị ở đây...</p>
+                    </div>
+
+                    <!-- Share Section -->
+                    <div class="blog-share">
+                        <h5 class="share-title">
+                            <i class="bi bi-share-fill me-2"></i>Chia sẻ bài viết
+                        </h5>
+                        <div class="share-buttons">
+                            <button class="share-btn facebook" onclick="shareOnFacebook()">
+                                <i class="bi bi-facebook"></i>
+                                <span>Facebook</span>
+                            </button>
+                            <button class="share-btn twitter" onclick="shareOnTwitter()">
+                                <i class="bi bi-twitter"></i>
+                                <span>Twitter</span>
+                            </button>
+                            <button class="share-btn copy" onclick="copyLink()">
+                                <i class="bi bi-link-45deg"></i>
+                                <span>Copy Link</span>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Back to List -->
+                <div class="sidebar-widget">
+                    <a th:href="@{/templates/customer/blogs}" class="btn-back-to-list">
+                        <i class="bi bi-arrow-left me-2"></i>
+                        <span>Quay lại danh sách</span>
+                    </a>
+                </div>
+
+                <!-- Recent Blogs -->
+                <div class="sidebar-widget" th:if="${!#lists.isEmpty(recentBlogs)}">
+                    <h4 class="widget-title">
+                        <i class="bi bi-fire me-2"></i>Bài viết khác
+                    </h4>
+                    <div class="recent-blogs">
+                        <a th:each="recent : ${recentBlogs}"
+                           th:href="@{/blogs/{id}(id=${recent.id})}"
+                           class="recent-blog-item">
+                            <div class="recent-blog-image">
+                                <img th:src="${recent.imageUrl != null && !recent.imageUrl.isEmpty() ? recent.imageUrl : 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=200&h=150&fit=crop'}"
+                                     th:alt="${recent.title}">
+                            </div>
+                            <div class="recent-blog-info">
+                                <h6 class="recent-blog-title" th:text="${recent.title}">Tiêu đề</h6>
+                                <p class="recent-blog-date">
+                                    <i class="bi bi-calendar3"></i>
+                                    <span th:text="${recent.publishedDateFormatted}">Ngày</span>
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Call to Action -->
+                <div class="sidebar-widget cta-widget">
+                    <div class="cta-content">
+                        <div class="cta-icon">
+                            <i class="bi bi-book-fill"></i>
+                        </div>
+                        <h5 class="cta-title">Khám phá kho sách</h5>
+                        <p class="cta-text">Hàng ngàn đầu sách đang chờ bạn</p>
+                        <a th:href="@{/books}" class="btn-cta">
+                            <span>Xem ngay</span>
+                            <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: footer-bottom}"></div>
+
+<!-- Scripts -->
+<th:block th:replace="~{fragments/footer :: scripts}"></th:block>
+
+<style>
+    :root {
+        --primary-green: #40916c;
+        --light-green: #52b788;
+        --pale-green: #95d5b2;
+        --extra-light: #d8f3dc;
+        --dark-text: #1b4332;
+        --cream: #f8f9fa;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb-section {
+        background: linear-gradient(135deg, var(--extra-light), white);
+        padding: 1rem 0;
+        border-bottom: 2px solid var(--pale-green);
+    }
+
+    .breadcrumb-custom {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .breadcrumb-item-custom {
+        display: flex;
+        align-items: center;
+    }
+
+    .breadcrumb-item-custom a {
+        color: var(--primary-green);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .breadcrumb-item-custom a:hover {
+        color: var(--light-green);
+    }
+
+    .breadcrumb-item-custom.active {
+        color: var(--dark-text);
+        font-weight: 700;
+    }
+
+    /* Blog Detail Section */
+    .blog-detail-section {
+        padding: 5rem 0;
+        background: linear-gradient(180deg, #f8f9fa 0%, white 100%);
+    }
+
+    /* Main Blog Card */
+    .blog-detail-card {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+    /* Featured Image */
+    .blog-featured-image {
+        width: 100%;
+        height: 450px;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+    }
+
+    .featured-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Blog Header */
+    .blog-header {
+        padding: 3rem;
+        border-bottom: 2px solid var(--extra-light);
+    }
+
+    .blog-title-detail {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--dark-text);
+        line-height: 1.3;
+        margin-bottom: 1.5rem;
+    }
+
+    .blog-meta-detail {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .meta-item-detail {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .author-avatar {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: var(--primary-green);
+    }
+
+    .author-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .author-name {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--dark-text);
+        margin: 0;
+    }
+
+    .author-role {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .meta-divider {
+        width: 2px;
+        height: 40px;
+        background: var(--pale-green);
+    }
+
+    .meta-date {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #6c757d;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .meta-date i {
+        font-size: 1.3rem;
+        color: var(--primary-green);
+    }
+
+    /* Blog Content */
+    .blog-content-detail {
+        padding: 3rem;
+        font-size: 1.1rem;
+        line-height: 1.9;
+        color: #333;
+    }
+
+    .blog-content-detail p {
+        margin-bottom: 1.5rem;
+    }
+
+    .blog-content-detail h2,
+    .blog-content-detail h3,
+    .blog-content-detail h4 {
+        color: var(--dark-text);
+        font-weight: 700;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .blog-content-detail h2 {
+        font-size: 2rem;
+    }
+
+    .blog-content-detail h3 {
+        font-size: 1.6rem;
+    }
+
+    .blog-content-detail ul,
+    .blog-content-detail ol {
+        margin-bottom: 1.5rem;
+        padding-left: 2rem;
+    }
+
+    .blog-content-detail li {
+        margin-bottom: 0.5rem;
+    }
+
+    .blog-content-detail img {
+        max-width: 100%;
+        border-radius: 16px;
+        margin: 2rem 0;
+    }
+
+    .blog-content-detail blockquote {
+        background: var(--extra-light);
+        border-left: 4px solid var(--primary-green);
+        padding: 1.5rem 2rem;
+        margin: 2rem 0;
+        border-radius: 12px;
+        font-style: italic;
+        color: var(--dark-text);
+    }
+
+    /* Share Section */
+    .blog-share {
+        padding: 2rem 3rem 3rem;
+        border-top: 2px solid var(--extra-light);
+    }
+
+    .share-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-bottom: 1.5rem;
+    }
+
+    .share-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .share-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: white;
+    }
+
+    .share-btn i {
+        font-size: 1.2rem;
+    }
+
+    .share-btn.facebook {
+        background: #1877f2;
+    }
+
+    .share-btn.twitter {
+        background: #1da1f2;
+    }
+
+    .share-btn.copy {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+    }
+
+    .share-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Sidebar */
+    .sidebar-widget {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+    .btn-back-to-list {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem 2rem;
+        background: var(--extra-light);
+        color: var(--primary-green);
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+
+    .btn-back-to-list:hover {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 20px rgba(64, 145, 108, 0.3);
+    }
+
+    .widget-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .widget-title i {
+        color: #ff6b6b;
+    }
+
+    /* Recent Blogs */
+    .recent-blogs {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .recent-blog-item {
+        display: flex;
+        gap: 1rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        padding: 0.8rem;
+        border-radius: 12px;
+    }
+
+    .recent-blog-item:hover {
+        background: var(--extra-light);
+        transform: translateX(5px);
+    }
+
+    .recent-blog-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 12px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .recent-blog-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .recent-blog-info {
+        flex: 1;
+    }
+
+    .recent-blog-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--dark-text);
+        margin-bottom: 0.5rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.4;
+    }
+
+    .recent-blog-date {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        color: #6c757d;
+        font-size: 0.85rem;
+        margin: 0;
+    }
+
+    .recent-blog-date i {
+        color: var(--primary-green);
+    }
+
+    /* CTA Widget */
+    .cta-widget {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+        text-align: center;
+    }
+
+    .cta-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+    }
+
+    .cta-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+    }
+
+    .cta-text {
+        margin-bottom: 1.5rem;
+        opacity: 0.95;
+    }
+
+    .btn-cta {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.8rem 2rem;
+        background: white;
+        color: var(--primary-green);
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cta:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        color: var(--primary-green);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .blog-detail-section {
+            padding: 3rem 0;
+        }
+
+        .blog-featured-image {
+            height: 350px;
+        }
+
+        .blog-title-detail {
+            font-size: 2rem;
+        }
+
+        .blog-header {
+            padding: 2rem;
+        }
+
+        .blog-content-detail {
+            padding: 2rem;
+        }
+
+        .blog-share {
+            padding: 1.5rem 2rem 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .blog-featured-image {
+            height: 280px;
+        }
+
+        .blog-title-detail {
+            font-size: 1.6rem;
+        }
+
+        .blog-meta-detail {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .meta-divider {
+            display: none;
+        }
+
+        .blog-content-detail {
+            font-size: 1rem;
+        }
+
+        .share-buttons {
+            flex-direction: column;
+        }
+
+        .share-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<script>
+    // Share on Facebook
+    function shareOnFacebook() {
+        const url = window.location.href;
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank', 'width=600,height=400');
+    }
+
+    // Share on Twitter
+    function shareOnTwitter() {
+        const url = window.location.href;
+        const title = document.querySelector('.blog-title-detail').textContent;
+        window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`, '_blank', 'width=600,height=400');
+    }
+
+    // Copy Link
+    function copyLink() {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+            const btn = document.querySelector('.share-btn.copy');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check-circle-fill"></i><span>Đã copy!</span>';
+            btn.style.background = '#52c41a';
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        });
+    }
+</script>
+
+</body>
+</html>

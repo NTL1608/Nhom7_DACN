@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/header :: header}"></head>
+<body>
+
+<!-- Header -->
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<!-- Breadcrumb -->
+<section class="breadcrumb-section">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb-custom mb-0">
+                <li class="breadcrumb-item-custom">
+                    <a th:href="@{/static}">
+                        <i class="bi bi-house-door me-1"></i>Trang chủ
+                    </a>
+                </li>
+                <li class="breadcrumb-item-custom">
+                    <i class="bi bi-chevron-right mx-2"></i>
+                </li>
+                <li class="breadcrumb-item-custom active">
+                    <i class="bi bi-newspaper me-1"></i>Blog
+                </li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Blog Section -->
+<section class="blog-section">
+    <div class="container">
+        <!-- Header -->
+        <div class="section-header text-center mb-5">
+            <span class="section-badge">BLOG & TIN TỨC</span>
+            <h2 class="section-title">Khám phá thế giới sách</h2>
+            <p class="section-description">Những bài viết hữu ích về sách, văn hóa đọc và nhiều hơn nữa</p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-box-wrapper mb-5">
+            <form th:action="@{/templates/customer/blogs}" method="get" class="search-form-modern">
+                <div class="search-input-group">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text"
+                           name="keyword"
+                           class="search-input-modern"
+                           placeholder="Tìm kiếm bài viết..."
+                           th:value="${keyword}">
+                    <button type="submit" class="btn-search-modern">
+                        <span>Tìm kiếm</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Result Info -->
+        <div class="result-info mb-4" th:if="${totalItems > 0}">
+            <p class="result-text">
+                Hiển thị <strong th:text="${#lists.size(blogs)}">0</strong> trong
+                <strong th:text="${totalItems}">0</strong> bài viết
+                <span th:if="${keyword}" class="keyword-badge">
+                    <i class="bi bi-search"></i> "<span th:text="${keyword}"></span>"
+                </span>
+            </p>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(blogs)}" class="empty-state">
+            <div class="empty-icon">
+                <i class="bi bi-inbox"></i>
+            </div>
+            <h4 class="empty-title">Không tìm thấy bài viết nào</h4>
+            <p class="empty-text">Vui lòng thử lại với từ khóa khác hoặc xem tất cả bài viết</p>
+            <a th:href="@{/templates/customer/blogs}" class="btn-view-all-modern">
+                <i class="bi bi-arrow-left me-2"></i>Xem tất cả bài viết
+            </a>
+        </div>
+
+        <!-- Blog Grid -->
+        <div class="blog-grid" th:if="${!#lists.isEmpty(blogs)}">
+            <div class="blog-card-wrapper" th:each="blog : ${blogs}">
+                <article class="blog-card-modern">
+                    <!-- Blog Image -->
+                    <a th:href="@{/blogs/{id}(id=${blog.id})}" class="blog-image-link">
+                        <div class="blog-image-modern">
+                            <img th:src="${blog.imageUrl != null && !blog.imageUrl.isEmpty() ? blog.imageUrl : 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800&h=500&fit=crop'}"
+                                 th:alt="${blog.title}"
+                                 class="blog-img">
+                            <div class="blog-overlay">
+                                <i class="bi bi-eye-fill"></i>
+                                <span>Đọc thêm</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Blog Content -->
+                    <div class="blog-content-modern">
+                        <!-- Meta Info -->
+                        <div class="blog-meta">
+                            <span class="meta-item">
+                                <i class="bi bi-person-circle"></i>
+                                <span th:text="${blog.authorName}">Tác giả</span>
+                            </span>
+                            <span class="meta-item">
+                                <i class="bi bi-calendar3"></i>
+                                <span th:text="${blog.publishedDateFormatted}">Ngày đăng</span>
+                            </span>
+                        </div>
+
+                        <!-- Title -->
+                        <a th:href="@{/blogs/{id}(id=${blog.id})}" class="blog-title-link">
+                            <h3 class="blog-title-modern" th:text="${blog.title}">Tiêu đề blog</h3>
+                        </a>
+
+                        <!-- Excerpt -->
+                        <p class="blog-excerpt"
+                           th:text="${#strings.length(blog.content) > 150 ? #strings.substring(blog.content, 0, 150) + '...' : blog.content}">
+                            Nội dung tóm tắt của bài viết...
+                        </p>
+
+                        <!-- Read More Button -->
+                        <a th:href="@{/blogs/{id}(id=${blog.id})}" class="btn-read-more">
+                            <span>Đọc tiếp</span>
+                            <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav th:if="${totalPages > 1}" class="pagination-wrapper mt-5" aria-label="Phân trang blog">
+            <div class="pagination-info">
+                <p class="page-status">
+                    Trang <strong th:text="${currentPage + 1}">1</strong> /
+                    <strong th:text="${totalPages}">10</strong>
+                </p>
+            </div>
+
+            <ul class="pagination-custom">
+                <!-- First -->
+                <li class="page-item-custom" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                    <a class="page-link-custom" th:href="@{/templates/customer/blogs(page=0, keyword=${keyword})}">
+                        <i class="bi bi-chevron-double-left"></i>
+                    </a>
+                </li>
+
+                <!-- Previous -->
+                <li class="page-item-custom" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                    <a class="page-link-custom" th:href="@{/templates/customer/blogs(page=${currentPage - 1}, keyword=${keyword})}">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+
+                <!-- Page Numbers -->
+                <th:block th:with="startPage=${currentPage > 2 ? currentPage - 2 : 0},
+                           endPage=${currentPage + 2 < totalPages - 1 ? currentPage + 2 : totalPages - 1}">
+
+                    <li class="page-item-custom" th:if="${startPage > 0}">
+                        <a class="page-link-custom" th:href="@{/templates/customer/blogs(page=0, keyword=${keyword})}">1</a>
+                    </li>
+
+                    <li class="page-item-custom dots" th:if="${startPage > 1}">
+                        <span class="page-link-custom">...</span>
+                    </li>
+
+                    <li th:each="i : ${#numbers.sequence(startPage, endPage)}"
+                        class="page-item-custom"
+                        th:classappend="${i == currentPage ? 'active' : ''}">
+                        <a class="page-link-custom"
+                           th:href="@{/templates/customer/blogs(page=${i}, keyword=${keyword})}"
+                           th:text="${i + 1}">1</a>
+                    </li>
+
+                    <li class="page-item-custom dots" th:if="${endPage < totalPages - 2}">
+                        <span class="page-link-custom">...</span>
+                    </li>
+
+                    <li class="page-item-custom" th:if="${endPage < totalPages - 1}">
+                        <a class="page-link-custom"
+                           th:href="@{/templates/customer/blogs(page=${totalPages - 1}, keyword=${keyword})}"
+                           th:text="${totalPages}">10</a>
+                    </li>
+                </th:block>
+
+                <!-- Next -->
+                <li class="page-item-custom" th:classappend="${currentPage + 1 >= totalPages ? 'disabled' : ''}">
+                    <a class="page-link-custom" th:href="@{/templates/customer/blogs(page=${currentPage + 1}, keyword=${keyword})}">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+
+                <!-- Last -->
+                <li class="page-item-custom" th:classappend="${currentPage + 1 >= totalPages ? 'disabled' : ''}">
+                    <a class="page-link-custom" th:href="@{/templates/customer/blogs(page=${totalPages - 1}, keyword=${keyword})}">
+                        <i class="bi bi-chevron-double-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: footer-bottom}"></div>
+
+<!-- Scripts -->
+<th:block th:replace="~{fragments/footer :: scripts}"></th:block>
+
+<style>
+    :root {
+        --primary-green: #40916c;
+        --light-green: #52b788;
+        --pale-green: #95d5b2;
+        --extra-light: #d8f3dc;
+        --dark-text: #1b4332;
+        --cream: #f8f9fa;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb-section {
+        background: linear-gradient(135deg, var(--extra-light), white);
+        padding: 1rem 0;
+        border-bottom: 2px solid var(--pale-green);
+    }
+
+    .breadcrumb-custom {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .breadcrumb-item-custom {
+        display: flex;
+        align-items: center;
+    }
+
+    .breadcrumb-item-custom a {
+        color: var(--primary-green);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .breadcrumb-item-custom a:hover {
+        color: var(--light-green);
+    }
+
+    .breadcrumb-item-custom.active {
+        color: var(--dark-text);
+        font-weight: 700;
+    }
+
+    /* Blog Section */
+    .blog-section {
+        padding: 5rem 0;
+        background: linear-gradient(180deg, #f8f9fa 0%, white 100%);
+    }
+
+    /* Section Header */
+    .section-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+        color: var(--primary-green);
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 1.5px;
+        margin-bottom: 1rem;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--dark-text);
+        margin-bottom: 1rem;
+    }
+
+    .section-description {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    /* Search Box */
+    .search-box-wrapper {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .search-form-modern {
+        background: white;
+        border-radius: 50px;
+        box-shadow: 0 10px 40px rgba(64, 145, 108, 0.15);
+        padding: 0.5rem;
+    }
+
+    .search-input-group {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .search-icon {
+        font-size: 1.5rem;
+        color: var(--primary-green);
+        margin-left: 1.5rem;
+    }
+
+    .search-input-modern {
+        flex: 1;
+        border: none;
+        padding: 1rem 0.5rem;
+        font-size: 1rem;
+        outline: none;
+    }
+
+    .btn-search-modern {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+        border: none;
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-search-modern:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 20px rgba(64, 145, 108, 0.3);
+    }
+
+    /* Result Info */
+    .result-info {
+        text-align: center;
+    }
+
+    .result-text {
+        color: #6c757d;
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .result-text strong {
+        color: var(--primary-green);
+        font-weight: 700;
+    }
+
+    .keyword-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--extra-light);
+        color: var(--primary-green);
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        margin-left: 0.5rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .empty-icon {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 2rem;
+        background: var(--extra-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        color: var(--primary-green);
+    }
+
+    .empty-title {
+        color: var(--dark-text);
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .empty-text {
+        color: #6c757d;
+        margin-bottom: 2rem;
+    }
+
+    /* Blog Grid */
+    .blog-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2.5rem;
+    }
+
+    .blog-card-wrapper {
+        animation: fadeInUp 0.6s ease forwards;
+        opacity: 0;
+    }
+
+    .blog-card-wrapper:nth-child(1) { animation-delay: 0.1s; }
+    .blog-card-wrapper:nth-child(2) { animation-delay: 0.2s; }
+    .blog-card-wrapper:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .blog-card-modern {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .blog-card-modern:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 50px rgba(64, 145, 108, 0.2);
+    }
+
+    /* Blog Image */
+    .blog-image-link {
+        display: block;
+        text-decoration: none;
+    }
+
+    .blog-image-modern {
+        position: relative;
+        height: 280px;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+    }
+
+    .blog-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .blog-card-modern:hover .blog-img {
+        transform: scale(1.1);
+    }
+
+    .blog-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(64, 145, 108, 0.9);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    .blog-overlay i {
+        font-size: 2.5rem;
+    }
+
+    .blog-card-modern:hover .blog-overlay {
+        opacity: 1;
+    }
+
+    /* Blog Content */
+    .blog-content-modern {
+        padding: 2rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .blog-meta {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #6c757d;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .meta-item i {
+        color: var(--primary-green);
+        font-size: 1.1rem;
+    }
+
+    .blog-title-link {
+        text-decoration: none;
+    }
+
+    .blog-title-modern {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-bottom: 1rem;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        transition: color 0.3s ease;
+    }
+
+    .blog-title-link:hover .blog-title-modern {
+        color: var(--primary-green);
+    }
+
+    .blog-excerpt {
+        color: #6c757d;
+        font-size: 1rem;
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .btn-read-more {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.8rem 2rem;
+        background: var(--extra-light);
+        color: var(--primary-green);
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        margin-top: auto;
+        width: fit-content;
+    }
+
+    .btn-read-more:hover {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+        transform: translateX(5px);
+    }
+
+    .btn-view-all-modern {
+        display: inline-flex;
+        align-items: center;
+        padding: 1rem 2.5rem;
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+
+    .btn-view-all-modern:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(64, 145, 108, 0.3);
+    }
+
+    /* Pagination */
+    .pagination-wrapper {
+        background: white;
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .pagination-info {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--extra-light);
+    }
+
+    .page-status {
+        margin: 0;
+        color: #6c757d;
+        font-size: 1rem;
+    }
+
+    .page-status strong {
+        color: var(--primary-green);
+        font-size: 1.2rem;
+    }
+
+    .pagination-custom {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        flex-wrap: wrap;
+    }
+
+    .page-item-custom {
+        display: flex;
+    }
+
+    .page-link-custom {
+        min-width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--pale-green);
+        background: white;
+        color: var(--dark-text);
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .page-link-custom:hover:not(.disabled) {
+        background: var(--extra-light);
+        border-color: var(--primary-green);
+        color: var(--primary-green);
+        transform: translateY(-3px);
+    }
+
+    .page-item-custom.active .page-link-custom {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        border-color: var(--primary-green);
+        color: white;
+        box-shadow: 0 4px 15px rgba(64, 145, 108, 0.3);
+    }
+
+    .page-item-custom.disabled .page-link-custom {
+        opacity: 0.3;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .blog-section {
+            padding: 3rem 0;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+
+        .blog-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .blog-image-modern {
+            height: 250px;
+        }
+
+        .search-input-group {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .search-icon {
+            display: none;
+        }
+
+        .btn-search-modern {
+            width: 100%;
+        }
+
+        .blog-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .page-link-custom {
+            min-width: 40px;
+            height: 40px;
+        }
+    }
+</style>
+
+</body>
+</html>
