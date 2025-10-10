@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/header :: header}"></head>
+<body>
+
+<!-- Header -->
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<!-- Breadcrumb -->
+<section class="breadcrumb-section">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb-custom mb-0">
+                <li class="breadcrumb-item-custom">
+                    <a th:href="@{/static}">
+                        <i class="bi bi-house-door me-1"></i>Trang chủ
+                    </a>
+                </li>
+                <li class="breadcrumb-item-custom">
+                    <i class="bi bi-chevron-right mx-2"></i>
+                </li>
+                <li class="breadcrumb-item-custom active">
+                    <i class="bi bi-telephone me-1"></i>Liên hệ
+                </li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Contact Hero -->
+<section class="contact-hero">
+    <div class="container">
+        <div class="text-center">
+            <span class="hero-badge">LIÊN HỆ VỚI CHÚNG TÔI</span>
+            <h1 class="hero-title">Chúng tôi sẵn sàng <span class="gradient-text">hỗ trợ bạn</span></h1>
+            <p class="hero-description">
+                Có câu hỏi, góp ý hoặc cần hỗ trợ? Đừng ngại liên hệ với chúng tôi.
+                Đội ngũ Greenbook luôn sẵn sàng lắng nghe và giúp đỡ bạn!
+            </p>
+        </div>
+    </div>
+</section>
+
+
+<!-- Contact Main Section -->
+<section class="contact-section">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Contact Form -->
+            <div class="col-lg-8">
+                <div class="contact-form-card">
+                    <h3 class="form-title">
+                        <i class="bi bi-envelope-fill me-2"></i>Gửi tin nhắn cho chúng tôi
+                    </h3>
+                    <p class="form-description">Điền thông tin và chúng tôi sẽ phản hồi trong vòng 24h</p>
+
+                    <form class="contact-form" th:action="@{/contact}" method="post">
+                        <div class="row g-3">
+                            <!-- Name -->
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="bi bi-person-fill"></i> Họ và tên
+                                    <span class="required">*</span>
+                                </label>
+                                <input type="text"
+                                       name="name"
+                                       class="form-control-modern"
+                                       placeholder="Nguyễn Văn A"
+                                       required>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="bi bi-envelope-fill"></i> Email
+                                    <span class="required">*</span>
+                                </label>
+                                <input type="email"
+                                       name="email"
+                                       class="form-control-modern"
+                                       placeholder="email@example.com"
+                                       required>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="bi bi-telephone-fill"></i> Số điện thoại
+                                </label>
+                                <input type="tel"
+                                       name="phone"
+                                       class="form-control-modern"
+                                       placeholder="0123456789">
+                            </div>
+
+                            <!-- Subject -->
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="bi bi-tag-fill"></i> Chủ đề
+                                    <span class="required">*</span>
+                                </label>
+                                <select name="subject" class="form-control-modern" required>
+                                    <option value="">Chọn chủ đề...</option>
+                                    <option value="order">Câu hỏi về đơn hàng</option>
+                                    <option value="product">Thông tin sản phẩm</option>
+                                    <option value="shipping">Vận chuyển & Giao hàng</option>
+                                    <option value="payment">Thanh toán</option>
+                                    <option value="return">Đổi trả & Hoàn tiền</option>
+                                    <option value="feedback">Góp ý & Phản hồi</option>
+                                    <option value="other">Khác</option>
+                                </select>
+                            </div>
+
+                            <!-- Message -->
+                            <div class="col-12">
+                                <label class="form-label">
+                                    <i class="bi bi-chat-dots-fill"></i> Nội dung tin nhắn
+                                    <span class="required">*</span>
+                                </label>
+                                <textarea name="message"
+                                          class="form-control-modern textarea-modern"
+                                          rows="6"
+                                          placeholder="Nhập nội dung tin nhắn của bạn..."
+                                          required></textarea>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="col-12">
+                                <button type="submit" class="btn-submit-modern">
+                                    <span>Gửi tin nhắn</span>
+                                    <i class="bi bi-send-fill ms-2"></i>
+                                </button>
+                                <p class="form-note">
+                                    <i class="bi bi-shield-check"></i>
+                                    Thông tin của bạn được bảo mật hoàn toàn
+                                </p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Contact Info Sidebar -->
+            <div class="col-lg-4">
+                <!-- Contact Info Card -->
+                <div class="info-card">
+                    <h4 class="info-title">
+                        <i class="bi bi-info-circle-fill me-2"></i>Thông tin liên hệ
+                    </h4>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <div class="info-content">
+                            <h5>Địa chỉ</h5>
+                            <p>Nhổn, Đại học Công nghiệp Hà Nội<br>Hà Nội, Việt Nam</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="bi bi-telephone-fill"></i>
+                        </div>
+                        <div class="info-content">
+                            <h5>Điện thoại</h5>
+                            <p><a href="tel:+84366483010">0366 483 010</a></p>
+                            <p><a href="tel:+84938169343">0938 169 343</a></p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="bi bi-envelope-fill"></i>
+                        </div>
+                        <div class="info-content">
+                            <h5>Email</h5>
+                            <p><a href="mailto:support@greenbook.vn">support@greenbook.vn</a></p>
+                            <p><a href="mailto:info@greenbook.vn">info@greenbook.vn</a></p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="bi bi-clock-fill"></i>
+                        </div>
+                        <div class="info-content">
+                            <h5>Giờ làm việc</h5>
+                            <p>Thứ 2 - Thứ 6: 8:00 - 18:00</p>
+                            <p>Thứ 7 - CN: 9:00 - 17:00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Card -->
+                <div class="social-card">
+                    <h4 class="social-title">
+                        <i class="bi bi-share-fill me-2"></i>Kết nối với chúng tôi
+                    </h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link facebook" title="Facebook">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="#" class="social-link instagram" title="Instagram">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link twitter" title="Twitter">
+                            <i class="bi bi-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link youtube" title="YouTube">
+                            <i class="bi bi-youtube"></i>
+                        </a>
+                        <a href="#" class="social-link tiktok" title="TikTok">
+                            <i class="bi bi-tiktok"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links Card -->
+                <div class="quick-links-card">
+                    <h4 class="quick-title">
+                        <i class="bi bi-lightning-fill me-2"></i>Liên kết nhanh
+                    </h4>
+                    <ul class="quick-list">
+                        <li>
+                            <a th:href="@{/books}">
+                                <i class="bi bi-book"></i> Kho sách
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/blogs}">
+                                <i class="bi bi-newspaper"></i> Blog
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/about}">
+                                <i class="bi bi-info-circle"></i> Giới thiệu
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="bi bi-question-circle"></i> Câu hỏi thường gặp
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="map-section">
+    <div class="container-custom-map">
+        <div class="map-card">
+            <h3 class="map-title">
+                <i class="bi bi-map-fill me-2"></i>Vị trí của chúng tôi
+            </h3>
+            <div class="map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3723.473663213108!2d105.732531875999!3d21.05373598691889!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31345457e292d5bf%3A0x20ac91c94d74439a!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBDw7RuZyBuZ2hp4buHcCBIw6AgTuG7mWk!5e0!3m2!1svi!2s!4v1760093305082!5m2!1svi!2s"
+                        width="100%"
+                        height="500"
+                        style="border:0;"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <span class="section-badge">CÂU HỎI THƯỜNG GẶP</span>
+            <h2 class="section-title">Có thể bạn muốn biết</h2>
+            <p class="section-description">Những câu hỏi phổ biến từ khách hàng</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="faq-accordion">
+                    <!-- FAQ Item 1 -->
+                    <div class="faq-item">
+                        <button class="faq-question" type="button" onclick="toggleFaq(this)">
+                            <span>Làm thế nào để đặt hàng trên Greenbook?</span>
+                            <i class="bi bi-chevron-down faq-icon"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Bạn chỉ cần chọn sách muốn mua, thêm vào giỏ hàng, điền thông tin giao hàng và chọn phương thức thanh toán. Chúng tôi sẽ xử lý đơn hàng trong vòng 24h.</p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 2 -->
+                    <div class="faq-item">
+                        <button class="faq-question" type="button" onclick="toggleFaq(this)">
+                            <span>Greenbook có giao hàng toàn quốc không?</span>
+                            <i class="bi bi-chevron-down faq-icon"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Có! Chúng tôi giao hàng toàn quốc. Thời gian giao hàng từ 2-5 ngày tùy theo khu vực. Miễn phí ship cho đơn hàng từ 200,000đ.</p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 3 -->
+                    <div class="faq-item">
+                        <button class="faq-question" type="button" onclick="toggleFaq(this)">
+                            <span>Chính sách đổi trả như thế nào?</span>
+                            <i class="bi bi-chevron-down faq-icon"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Bạn có thể đổi trả trong vòng 7 ngày nếu sách bị lỗi hoặc không đúng mô tả. Sách cần còn nguyên vẹn, chưa qua sử dụng.</p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 4 -->
+                    <div class="faq-item">
+                        <button class="faq-question" type="button" onclick="toggleFaq(this)">
+                            <span>Có những phương thức thanh toán nào?</span>
+                            <i class="bi bi-chevron-down faq-icon"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Chúng tôi hỗ trợ thanh toán qua COD (tiền mặt), chuyển khoản ngân hàng, ví điện tử (Momo, ZaloPay), và thẻ tín dụng/ghi nợ.</p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 5 -->
+                    <div class="faq-item">
+                        <button class="faq-question" type="button" onclick="toggleFaq(this)">
+                            <span>Làm thế nào để theo dõi đơn hàng?</span>
+                            <i class="bi bi-chevron-down faq-icon"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Sau khi đặt hàng, bạn sẽ nhận được email xác nhận và mã theo dõi đơn hàng. Bạn có thể kiểm tra tình trạng đơn hàng trong mục "Đơn hàng của tôi" sau khi đăng nhập.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/footer :: footer-bottom}"></div>
+
+<!-- Scripts -->
+<th:block th:replace="~{fragments/footer :: scripts}"></th:block>
+
+<style>
+    :root {
+        --primary-green: #40916c;
+        --light-green: #52b788;
+        --pale-green: #95d5b2;
+        --extra-light: #d8f3dc;
+        --dark-text: #1b4332;
+        --cream: #f8f9fa;
+    }
+
+    body {
+        font-family: 'Be Vietnam Pro', sans-serif;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb-section {
+        background: linear-gradient(135deg, var(--extra-light), white);
+        padding: 1rem 0;
+        border-bottom: 2px solid var(--pale-green);
+    }
+
+    .breadcrumb-custom {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .breadcrumb-item-custom {
+        display: flex;
+        align-items: center;
+    }
+
+    .breadcrumb-item-custom a {
+        color: var(--primary-green);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .breadcrumb-item-custom a:hover {
+        color: var(--light-green);
+    }
+
+    .breadcrumb-item-custom.active {
+        color: var(--dark-text);
+        font-weight: 700;
+    }
+
+    /* Contact Hero */
+    .contact-hero {
+        padding: 4rem 0 2rem;
+        background: linear-gradient(135deg, var(--extra-light) 0%, white 100%);
+    }
+
+    .hero-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+        color: var(--primary-green);
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 1.5px;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--dark-text);
+        margin-bottom: 1.5rem;
+    }
+
+    .gradient-text {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-description {
+        font-size: 1.2rem;
+        color: #6c757d;
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.8;
+    }
+
+    /* Contact Section */
+    .contact-section {
+        padding: 4rem 0;
+    }
+
+    /* Contact Form Card */
+    .contact-form-card {
+        background: white;
+        padding: 3rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-description {
+        color: #6c757d;
+        margin-bottom: 2rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--dark-text);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .form-label i {
+        color: var(--primary-green);
+    }
+
+    .required {
+        color: #ff4d4f;
+    }
+
+    .form-control-modern {
+        width: 100%;
+        padding: 0.9rem 1.2rem;
+        border: 2px solid var(--pale-green);
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control-modern:focus {
+        outline: none;
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 4px rgba(64, 145, 108, 0.1);
+    }
+
+    .textarea-modern {
+        resize: vertical;
+        min-height: 150px;
+    }
+
+    .btn-submit-modern {
+        background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+        color: white;
+        border: none;
+        padding: 1rem 3rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        box-shadow: 0 10px 30px rgba(64, 145, 108, 0.3);
+    }
+
+    .btn-submit-modern:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(64, 145, 108, 0.4);
+    }
+
+    .form-note {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-note i {
+        color: var(--primary-green);
+    }
+
+    /* Info Card */
+    .info-card,
+    .social-card,
+    .quick-links-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+    .info-title,
+    .social-title,
+    .quick-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .info-item {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 2px solid var(--extra-light);
+    }
+
+    .info-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .info-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: var(--primary-green);
+        flex-shrink: 0;
+    }
+
+    .info-content h5 {
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-bottom: 0.5rem;
+    }
+
+    .info-content p {
+        color: #6c757d;
+        margin-bottom: 0.3rem;
+        line-height: 1.6;
+    }
+
+    .info-content a {
+        color: var(--primary-green);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .info-content a:hover {
+        color: var(--light-green);
+    }
+
+    /* Social Links */
+    .social-links {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .social-link {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .social-link:hover {
+        transform: translateY(-5px) scale(1.1);
+    }
+
+    .social-link.facebook {
+        background: #1877f2;
+    }
+
+    .social-link.instagram {
+        background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    }
+
+    .social-link.twitter {
+        background: #1da1f2;
+    }
+
+    .social-link.youtube {
+        background: #ff0000;
+    }
+
+    .social-link.tiktok {
+        background: #000000;
+    }
+
+    /* Quick Links */
+    .quick-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .quick-list li {
+        margin-bottom: 1rem;
+    }
+
+    .quick-list a {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        color: var(--dark-text);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        padding: 0.5rem;
+        border-radius: 8px;
+    }
+
+    .quick-list a:hover {
+        background: var(--extra-light);
+        color: var(--primary-green);
+        transform: translateX(5px);
+    }
+
+    .quick-list i {
+        color: var(--primary-green);
+        font-size: 1.2rem;
+    }
+
+    /* Map Section - Rộng hơn */
+    .map-section {
+        padding: 4rem 0;
+        background: linear-gradient(180deg, #f8f9fa 0%, white 100%);
+    }
+
+    .container-custom-map {
+        max-width: 1400px; /* Rộng hơn container thường (1140px) */
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    .map-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .map-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .map-container {
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .map-container iframe {
+        display: block;
+        width: 100%;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .map-container iframe {
+            height: 350px;
+        }
+
+        .container-custom-map {
+            padding: 0 10px;
+        }
+    }
+
+    /* FAQ Section */
+    .faq-section {
+        padding: 5rem 0;
+    }
+
+    .section-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+        color: var(--primary-green);
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 1.5px;
+        margin-bottom: 1rem;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--dark-text);
+        margin-bottom: 1rem;
+    }
+
+    .section-description {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    /* FAQ Accordion */
+    .faq-accordion {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .faq-item {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .faq-question {
+        width: 100%;
+        padding: 1.5rem 2rem;
+        background: white;
+        border: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--dark-text);
+        text-align: left;
+        transition: all 0.3s ease;
+    }
+
+    .faq-question:hover {
+        background: var(--extra-light);
+        color: var(--primary-green);
+    }
+
+    .faq-icon {
+        font-size: 1.5rem;
+        color: var(--primary-green);
+        transition: transform 0.3s ease;
+    }
+
+    .faq-item.active .faq-icon {
+        transform: rotate(180deg);
+    }
+
+    .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .faq-item.active .faq-answer {
+        max-height: 300px;
+    }
+
+    .faq-answer p {
+        padding: 0 2rem 1.5rem;
+        color: #6c757d;
+        line-height: 1.8;
+        margin: 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .contact-hero {
+            padding: 3rem 0 2rem;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .contact-form-card {
+            padding: 2rem;
+        }
+
+        .info-card,
+        .social-card,
+        .quick-links-card {
+            padding: 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2rem;
+        }
+
+        .hero-description {
+            font-size: 1rem;
+        }
+
+        .contact-section {
+            padding: 3rem 0;
+        }
+
+        .contact-form-card {
+            padding: 1.5rem;
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+        }
+
+        .btn-submit-modern {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+
+        .faq-question {
+            font-size: 1rem;
+            padding: 1.2rem 1.5rem;
+        }
+
+        .faq-answer p {
+            padding: 0 1.5rem 1.2rem;
+        }
+
+        .map-container iframe {
+            height: 300px;
+        }
+    }
+</style>
+
+<script>
+    // Toggle FAQ
+    function toggleFaq(button) {
+        const faqItem = button.parentElement;
+        const isActive = faqItem.classList.contains('active');
+
+        // Close all other FAQs
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        // Toggle current FAQ
+        if (!isActive) {
+            faqItem.classList.add('active');
+        }
+    }
+
+    // Form submission handler
+    document.querySelector('.contact-form')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Show success message (you can customize this)
+        alert('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong vòng 24h.');
+
+        // Reset form
+        this.reset();
+
+        // In real application, you would send data to server here
+        // Example:
+        // fetch('/contact', {
+        //     method: 'POST',
+        //     body: new FormData(this)
+        // })
+    });
+</script>
+
+</body>
+</html>

@@ -52,7 +52,9 @@ public class SecurityConfig {
                                 "/register",
                                 "/books",
                                 "/books/**",
-                                "/api/customer/**",        // ← ĐÃ SỬA: Cho phép API customer
+                                "/blogs",
+                                "/blogs/**",
+                                "/api/customer/**",
                                 "/about",
                                 "/contact",
                                 "/subscribe"
