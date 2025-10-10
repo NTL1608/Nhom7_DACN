@@ -645,62 +645,15 @@
                     </div>
                 </div>
             </div>
+            <!-- Nút xuất báo cáo đơn giản -->
             <div class="export-report-wrapper mt-3 d-flex justify-content-center" style="z-index: 999;">
-                <div class="btn-group">
-                    <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-file-export"></i> Xuất báo cáo
-                    </button>
-                    <ul class="dropdown-menu text-center">
-                        <li>
-                            <a class="dropdown-item" href="/admin/report/export" target="_blank">
-                                <i class="fas fa-print"></i> In báo cáo
-                            </a>
-                        </li>
-                        <li>
-                            <button class="dropdown-item" onclick="showQrCode()">
-                                <i class="fas fa-qrcode"></i> Quét QR để tải
-                            </button>
-                        </li>
-                    </ul>
-                </div>
+                <a href="/admin/report/export" target="_blank" class="btn btn-success">
+                    <i class="fas fa-file-export"></i> Xuất báo cáo
+                </a>
             </div>
-
-            <div id="qrCodeContainer" style="width: 300px; margin: 1rem auto; display: none; text-align: center;">
-                <div id="qrCode" style="margin-bottom: 1rem;"></div>
-                <button class="btn btn-secondary" onclick="hideQrCode()">Đóng</button>
-            </div>
-
-            <script>
-                // Hàm tạo và hiển thị mã QR
-                function showQrCode() {
-                    const qrCodeContainer = document.getElementById('qrCodeContainer');
-                    const qrCodeElement = document.getElementById('qrCode');
-
-                    // Xóa mã QR cũ nếu có
-                    qrCodeElement.innerHTML = '';
-
-                    // Tạo mã QR với URL báo cáo
-                    const reportUrl = window.location.origin + "/admin/report/export";
-                    new QRCode(qrCodeElement, {
-                        text: reportUrl,
-                        width: 200,
-                        height: 200,
-                        colorDark: "#000000",
-                        colorLight: "#ffffff",
-                    });
-
-                    // Hiển thị container
-                    qrCodeContainer.style.display = "block";
-                }
-
-                // Hàm ẩn mã QR
-                function hideQrCode() {
-                    const qrCodeContainer = document.getElementById('qrCodeContainer');
-                    qrCodeContainer.style.display = "none";
-                }
-            </script>
         </div>
     </div>
+
 </th:block>
 
 <th:block layout:fragment="javascripts">
