@@ -40,11 +40,14 @@ public class CheckoutController {
      */
     @GetMapping
     public String showCheckout(
-                                 HttpSession session,
-                                 Model model,
-                                 Authentication authentication
+            @RequestParam(required = false) Long bookId,
+            @RequestParam(required = false, defaultValue = "1") Integer quantity,
+            @RequestParam(required = false, defaultValue = "false") Boolean buyNow,
+            HttpSession session,
+            Model model,
+            Authentication authentication
     ) {
-        log.info("=== CHECKOUT PAGE ===");
+        log.info("=== CHECKOUT PAGE - BuyNow: {}, BookId: {} ===", buyNow, bookId);
 
         // Kiểm tra đăng nhập
         if (authentication == null || !authentication.isAuthenticated()
@@ -52,26 +55,71 @@ public class CheckoutController {
             return "redirect:/login?redirect=/checkout";
         }
 
-        // Kiểm tra giỏ hàng
+        // ✨ XỬ LÝ MUA NGAY
+        if (buyNow != null && buyNow && bookId != null) {
+            log.info("Processing BUY NOW for book ID: {}", bookId);
+
+            try {
+                // Lấy sách
+                Book book = bookService.findById(bookId)
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy sách"));
+
+                // Kiểm tra tồn kho
+                if (book.getStockQuantity() < quantity) {
+                    return "redirect:/books?error=outofstock";
+                }
+
+                // Tạo CartItem tạm cho mua ngay
+                CartItem buyNowItem = CartItem.builder()
+                        .bookId(book.getId())
+                        .title(book.getTitle())
+                        .author(book.getAuthor())
+                        .price(book.getOriginalPrice())
+                        .quantity(quantity)
+                        .stockQuantity(book.getStockQuantity())
+                        .imageUrl(book.getImageUrls() != null && !book.getImageUrls().isEmpty()
+                                ? book.getImageUrls().get(0) : null)
+                        .build();
+
+                List<CartItem> buyNowItems = List.of(buyNowItem);
+
+                double totalAmount = book.getOriginalPrice() * quantity;
+                double shippingFee = totalAmount >= 200000 ? 0.0 : 30000.0;
+                double finalAmount = totalAmount + shippingFee;
+
+                // Lấy user
+                User currentUser = getUserFromAuthentication(authentication);
+                if (currentUser == null) {
+                    return "redirect:/login";
+                }
+
+                model.addAttribute("user", currentUser);
+                model.addAttribute("cartItems", buyNowItems);
+                model.addAttribute("totalAmount", totalAmount);
+                model.addAttribute("shippingFee", shippingFee);
+                model.addAttribute("finalAmount", finalAmount);
+                model.addAttribute("isBuyNow", true);
+                model.addAttribute("buyNowBookId", bookId);
+                model.addAttribute("buyNowQuantity", quantity);
+                model.addAttribute("title", "Thanh toán");
+
+                addAuthInfoToModel(model, authentication);
+
+                return "customer/checkout";
+
+            } catch (Exception e) {
+                log.error("Error in buy now checkout: ", e);
+                return "redirect:/books?error=checkout";
+            }
+        }
+
+        // ✅ XỬ LÝ CHECKOUT BÌNH THƯỜNG (TỪ GIỎ HÀNG)
         if (cartService.isEmpty(session)) {
             return "redirect:/cart";
         }
 
-        // ✅ LẤY USER TỪ DATABASE
-        User currentUser = null;
-
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof UserDetails) {
-            String username = ((UserDetails) principal).getUsername();
-            currentUser = userService.findByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy user"));
-        } else if (principal instanceof User) {
-            currentUser = (User) principal;
-        }
-
-        // Kiểm tra NULL
+        User currentUser = getUserFromAuthentication(authentication);
         if (currentUser == null) {
-            log.error("Cannot get current user!");
             return "redirect:/login";
         }
 
@@ -87,6 +135,7 @@ public class CheckoutController {
         model.addAttribute("totalAmount", totalAmount);
         model.addAttribute("shippingFee", shippingFee);
         model.addAttribute("finalAmount", finalAmount);
+        model.addAttribute("isBuyNow", false);
         model.addAttribute("title", "Thanh toán");
 
         addAuthInfoToModel(model, authentication);
@@ -102,46 +151,64 @@ public class CheckoutController {
             @RequestParam String shippingAddress,
             @RequestParam String paymentMethod,
             @RequestParam(required = false) String note,
+            @RequestParam(required = false, defaultValue = "false") Boolean isBuyNow,
+            @RequestParam(required = false) Long buyNowBookId,
+            @RequestParam(required = false, defaultValue = "1") Integer buyNowQuantity,
             HttpSession session,
             Authentication authentication,
             RedirectAttributes redirectAttributes
     ) {
-        log.info("=== PLACE ORDER ===");
+        log.info("=== PLACE ORDER - IsBuyNow: {} ===", isBuyNow);
 
         try {
-            // Kiểm tra đăng nhập
             if (authentication == null || !authentication.isAuthenticated()) {
                 return "redirect:/login";
             }
 
-            // Kiểm tra giỏ hàng
-            List<CartItem> cartItems = cartService.getCart(session);
-            if (cartItems.isEmpty()) {
-                redirectAttributes.addFlashAttribute("error", "Giỏ hàng trống!");
-                return "redirect:/cart";
-            }
-
-            // ✅ LẤY USER TỪ DATABASE
-            User currentUser = null;
-            Object principal = authentication.getPrincipal();
-            if (principal instanceof UserDetails) {
-                String username = ((UserDetails) principal).getUsername();
-                currentUser = userService.findByUsername(username)
-                        .orElseThrow(() -> new RuntimeException("Không tìm thấy user"));
-            } else if (principal instanceof User) {
-                currentUser = (User) principal;
-            }
-
+            User currentUser = getUserFromAuthentication(authentication);
             if (currentUser == null) {
                 return "redirect:/login";
             }
 
-            // Tính toán
-            double totalAmount = cartService.getTotalAmount(session);
+            List<CartItem> cartItems;
+            double totalAmount;
+
+            // ✨ XỬ LÝ MUA NGAY
+            if (isBuyNow != null && isBuyNow && buyNowBookId != null) {
+                log.info("Processing BUY NOW order for book: {}", buyNowBookId);
+
+                Book book = bookService.findById(buyNowBookId)
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy sách"));
+
+                if (book.getStockQuantity() < buyNowQuantity) {
+                    redirectAttributes.addFlashAttribute("error", "Sách không đủ số lượng!");
+                    return "redirect:/books";
+                }
+
+                CartItem buyNowItem = CartItem.builder()
+                        .bookId(book.getId())
+                        .title(book.getTitle())
+                        .author(book.getAuthor())
+                        .price(book.getOriginalPrice())
+                        .quantity(buyNowQuantity)
+                        .stockQuantity(book.getStockQuantity())
+                        .build();
+
+                cartItems = List.of(buyNowItem);
+                totalAmount = book.getOriginalPrice() * buyNowQuantity;
+
+            } else {
+                cartItems = cartService.getCart(session);
+                if (cartItems.isEmpty()) {
+                    redirectAttributes.addFlashAttribute("error", "Giỏ hàng trống!");
+                    return "redirect:/cart";
+                }
+                totalAmount = cartService.getTotalAmount(session);
+            }
+
             double shippingFee = totalAmount >= 200000 ? 0.0 : 30000.0;
             double finalAmount = totalAmount + shippingFee;
 
-            // Tạo Order
             Order order = Order.builder()
                     .user(currentUser)
                     .totalAmount(totalAmount)
@@ -154,12 +221,10 @@ public class CheckoutController {
                     .orderDate(LocalDateTime.now())
                     .build();
 
-            // Tạo OrderDetails từ CartItems
             for (CartItem cartItem : cartItems) {
                 Book book = bookService.findById(cartItem.getBookId())
                         .orElseThrow(() -> new RuntimeException("Sách không tồn tại!"));
 
-                // Kiểm tra tồn kho
                 if (book.getStockQuantity() < cartItem.getQuantity()) {
                     redirectAttributes.addFlashAttribute("error",
                             "Sách '" + book.getTitle() + "' không đủ số lượng!");
@@ -176,17 +241,17 @@ public class CheckoutController {
 
                 order.addOrderDetail(detail);
 
-                // Trừ tồn kho
                 book.setStockQuantity(book.getStockQuantity() - cartItem.getQuantity());
                 book.setSoldQuantity(book.getSoldQuantity() + cartItem.getQuantity());
                 bookService.save(book);
             }
 
-            // Lưu Order
             Order savedOrder = orderService.save(order);
 
-            // Xóa giỏ hàng
-            cartService.clearCart(session);
+            // CHỈ XÓA GIỎ HÀNG NẾU KHÔNG PHẢI MUA NGAY
+            if (isBuyNow == null || !isBuyNow) {
+                cartService.clearCart(session);
+            }
 
             log.info("Order created successfully: {}", savedOrder.getId());
             redirectAttributes.addFlashAttribute("orderId", savedOrder.getId());
@@ -216,7 +281,6 @@ public class CheckoutController {
             return "redirect:/";
         }
 
-        // ✅ KEY FIX: Dùng getOrderWithDetails()
         Order order = orderService.getOrderWithDetails(orderId);
 
         model.addAttribute("order", order);
@@ -230,6 +294,20 @@ public class CheckoutController {
     // ========================================
     // HELPER METHODS
     // ========================================
+
+    private User getUserFromAuthentication(Authentication authentication) {
+        User currentUser = null;
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof UserDetails) {
+            String username = ((UserDetails) principal).getUsername();
+            currentUser = userService.findByUsername(username).orElse(null);
+        } else if (principal instanceof User) {
+            currentUser = (User) principal;
+        }
+
+        return currentUser;
+    }
 
     private void addAuthInfoToModel(Model model, Authentication authentication) {
         boolean isLoggedIn = false;

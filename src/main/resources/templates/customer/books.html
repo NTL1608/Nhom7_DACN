@@ -7,7 +7,7 @@
 <!-- Header -->
 <div th:replace="~{fragments/header :: navbar}"></div>
 
-<!-- Breadcrumb Enhanced -->
+<!-- Breadcrumb -->
 <section class="breadcrumb-section">
     <div class="container">
         <nav aria-label="breadcrumb">
@@ -28,21 +28,86 @@
     </div>
 </section>
 
-<!-- Books List -->
+<!-- Hero Banner Section -->
+<section class="hero-banner">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    <i class="bi bi-book-half me-3"></i>Khám Phá Kho Sách
+                </h1>
+                <p class="hero-subtitle">
+<!--                    Hơn <strong th:text="${totalItems}">1,000</strong> cuốn sách đang chờ bạn khám phá-->
+                    Hơn 1000+ cuốn sách đang chờ bạn khám phá
+                </p>
+
+                <!-- Hero Search Bar -->
+                <div class="hero-search">
+                    <div class="search-wrapper">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text"
+                               class="search-input"
+                               id="heroSearchInput"
+                               placeholder="Tìm kiếm sách, tác giả, danh mục..."
+                               th:value="${searchKeyword}">
+                        <button class="btn-search" id="heroSearchBtn">
+                            <span>Tìm kiếm</span>
+                            <i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Books Slider -->
+            <div class="hero-featured" th:if="${featuredBooks != null && !#lists.isEmpty(featuredBooks)}">
+                <div class="featured-slider">
+                    <div class="featured-book" th:each="book, iterStat : ${featuredBooks}"
+                         th:classappend="${iterStat.index == 0 ? 'active' : ''}">
+                        <a th:href="@{/books/{id}(id=${book.id})}" class="featured-link">
+                            <div class="featured-image">
+                                <img th:src="${book.imageUrls != null && !book.imageUrls.isEmpty() ? book.imageUrls[0] : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=600&fit=crop'}"
+                                     th:alt="${book.title}">
+                                <div class="featured-badge">
+                                    <i class="bi bi-star-fill"></i>
+                                    <span>Nổi bật</span>
+                                </div>
+                            </div>
+                            <div class="featured-info">
+                                <h4 th:text="${book.title}">Tên sách nổi bật</h4>
+                                <p th:text="${book.author}">Tác giả</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="slider-controls">
+                    <button class="slider-btn prev-btn">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button class="slider-btn next-btn">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- Books List Section -->
 <section class="books-section">
     <div class="container">
         <div class="row g-4">
-            <!-- Sidebar Filter Enhanced -->
+            <!-- Sidebar Filter -->
             <div class="col-lg-3 mb-4">
                 <div class="filter-sidebar">
-                    <!-- Filter Header -->
                     <div class="filter-header">
                         <div class="filter-header-content">
                             <div class="filter-icon-wrapper">
                                 <i class="bi bi-sliders"></i>
                             </div>
                             <div>
-                                <h5 class="mb-0">Bộ lọc sách</h5>
+                                <h5 class="mb-0">Bộ lọc</h5>
                                 <p class="filter-subtitle mb-0">Tìm sách phù hợp</p>
                             </div>
                         </div>
@@ -53,9 +118,7 @@
                         <h6 class="filter-title">
                             <i class="bi bi-grid-3x3-gap-fill me-2"></i>Danh mục
                         </h6>
-
                         <div class="category-list">
-                            <!-- All Categories -->
                             <a th:href="@{/books(page=0)}"
                                class="category-item"
                                th:classappend="${selectedCategoryId == null ? 'active' : ''}">
@@ -65,44 +128,40 @@
                                     </div>
                                 </div>
                                 <div class="category-content">
-                                    <span class="category-name">Tất cả danh mục</span>
+                                    <span class="category-name">Tất cả</span>
                                     <span class="category-count" th:text="${totalItems}">34</span>
                                 </div>
-                                <i class="bi bi-chevron-right category-arrow"></i>
                             </a>
 
-                            <!-- Individual Categories -->
                             <a th:each="category : ${categories}"
                                th:href="@{/books(categoryId=${category.id}, page=0)}"
                                class="category-item"
                                th:classappend="${category.id == selectedCategoryId ? 'active' : ''}">
                                 <div class="category-icon-wrapper">
                                     <div class="category-icon">
-                                        <i class="bi bi-book-half"></i>
+                                        <i class="bi bi-bookmark"></i>
                                     </div>
                                 </div>
                                 <div class="category-content">
                                     <span class="category-name" th:text="${category.name}">Danh mục</span>
                                 </div>
-                                <i class="bi bi-chevron-right category-arrow"></i>
                             </a>
                         </div>
                     </div>
 
-                    <!-- Reset Filter -->
                     <div class="filter-footer">
                         <a th:href="@{/books}" class="btn-reset-filter">
-                            <i class="bi bi-arrow-counterclockwise me-2"></i>Đặt lại bộ lọc
+                            <i class="bi bi-arrow-counterclockwise me-2"></i>Đặt lại
                         </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Books Grid Enhanced -->
+            <!-- Books Grid/List -->
             <div class="col-lg-9">
-                <!-- Toolbar Enhanced -->
+                <!-- Toolbar -->
                 <div class="toolbar-wrapper">
-                    <div class="toolbar-header">
+                    <div class="toolbar-left">
                         <div class="page-info">
                             <h2 class="page-title">
                                 <span th:if="${selectedCategoryId == null}">Tất cả sách</span>
@@ -112,14 +171,13 @@
                             </h2>
                             <p class="result-count">
                                 <i class="bi bi-check-circle-fill me-1"></i>
-                                Hiển thị <strong th:text="${#lists.size(books)}">12</strong> trong
-                                <strong th:text="${totalItems}">34</strong> cuốn sách
+                                Hiển thị <strong th:text="${#lists.size(books)}">12</strong> /
+                                <strong th:text="${totalItems}">34</strong> sách
                             </p>
                         </div>
                     </div>
 
-                    <div class="toolbar-actions">
-                        <!-- Sort Dropdown Enhanced -->
+                    <div class="toolbar-right">
                         <div class="sort-wrapper">
                             <label class="sort-label">
                                 <i class="bi bi-sort-down me-1"></i>Sắp xếp
@@ -148,7 +206,6 @@
                             </select>
                         </div>
 
-                        <!-- View Toggle -->
                         <div class="view-toggle">
                             <button type="button" class="view-btn active" data-view="grid" title="Xem dạng lưới">
                                 <i class="bi bi-grid-3x3-gap-fill"></i>
@@ -160,23 +217,22 @@
                     </div>
                 </div>
 
-                <!-- Empty State Enhanced -->
+                <!-- Empty State -->
                 <div th:if="${#lists.isEmpty(books)}" class="empty-state">
                     <div class="empty-icon">
                         <i class="bi bi-inbox"></i>
                     </div>
                     <h4 class="empty-title">Không tìm thấy sách nào</h4>
-                    <p class="empty-text">Vui lòng thử lại với bộ lọc khác hoặc xem tất cả sách có sẵn</p>
+                    <p class="empty-text">Vui lòng thử lại với bộ lọc hoặc từ khóa khác</p>
                     <a th:href="@{/books}" class="btn-view-all">
-                        <i class="bi bi-arrow-left me-2"></i>Xem tất cả sách
+                        <i class="bi bi-arrow-left me-2"></i>Xem tất cả
                     </a>
                 </div>
 
-                <!-- Books Grid Enhanced -->
-                <div class="books-grid" th:if="${!#lists.isEmpty(books)}">
-                    <div class="book-card-wrapper" th:each="book : ${books}">
+                <!-- Books Grid View -->
+                <div class="books-container" id="booksContainer" th:if="${!#lists.isEmpty(books)}">
+                    <div class="book-item" th:each="book : ${books}">
                         <div class="book-card">
-                            <!-- Book Image -->
                             <div class="book-image-container">
                                 <a th:href="@{/books/{id}(id=${book.id})}" class="image-link">
                                     <img th:src="${book.imageUrls != null && !book.imageUrls.isEmpty() ? book.imageUrls[0] : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=600&fit=crop'}"
@@ -185,7 +241,6 @@
                                     <div class="image-overlay"></div>
                                 </a>
 
-                                <!-- Stock Badge -->
                                 <div class="stock-badge" th:if="${book.stockQuantity > 0}">
                                     <i class="bi bi-check-circle-fill"></i>
                                     <span>Còn hàng</span>
@@ -195,10 +250,9 @@
                                     <span>Hết hàng</span>
                                 </div>
 
-                                <!-- Quick Actions -->
                                 <div class="quick-actions">
                                     <a th:href="@{/books/{id}(id=${book.id})}"
-                                       class="action-btn view-btn"
+                                       class="action-btn"
                                        title="Xem chi tiết">
                                         <i class="bi bi-eye-fill"></i>
                                     </a>
@@ -221,28 +275,23 @@
                                 </div>
                             </div>
 
-                            <!-- Book Info -->
                             <div class="book-info">
-                                <!-- Category Badge -->
                                 <div class="category-badge" th:if="${book.category != null}">
                                     <i class="bi bi-tag-fill"></i>
                                     <span th:text="${book.category.name}">Danh mục</span>
                                 </div>
 
-                                <!-- Title -->
                                 <a th:href="@{/books/{id}(id=${book.id})}" class="book-title-link">
                                     <h3 class="book-title"
                                         th:text="${book.title}"
-                                        th:title="${book.title}">Cẩm Nang Du Lịch Châu Âu</h3>
+                                        th:title="${book.title}">Tên sách</h3>
                                 </a>
 
-                                <!-- Author -->
                                 <p class="book-author">
                                     <i class="bi bi-person-circle"></i>
-                                    <span th:text="${book.author}">John Smith</span>
+                                    <span th:text="${book.author}">Tác giả</span>
                                 </p>
 
-                                <!-- Rating -->
                                 <div class="book-rating">
                                     <div class="stars">
                                         <i class="bi bi-star-fill"></i>
@@ -252,71 +301,66 @@
                                         <i class="bi bi-star-half"></i>
                                     </div>
                                     <span class="rating-text">(4.5)</span>
-                                    <span class="review-count">120 đánh giá</span>
                                 </div>
-
-                                <!-- Price & Action -->
+                                <!-- THAY ĐỔI PHẦN NÀY -->
                                 <div class="book-footer">
                                     <div class="book-price">
-                                        <span class="price-current"
-                                              th:text="${book.originalPrice != null ? #numbers.formatDecimal(book.originalPrice, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">
-                                            120,000đ
-                                        </span>
+        <span class="price-current"
+              th:text="${book.originalPrice != null ? #numbers.formatDecimal(book.originalPrice, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">
+            120,000đ
+        </span>
                                     </div>
-                                    <form class="cart-form-footer" th:if="${book.stockQuantity > 0}">
-                                        <input type="hidden" name="bookId" th:value="${book.id}">
-                                        <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="btn-add-cart">
-                                            <i class="bi bi-cart-plus"></i>
-                                            Thêm
-                                        </button>
-                                    </form>
+                                    <!-- ✨ SỬA URL TỪ /checkout THÀNH /books/buy-now -->
+                                    <a th:href="@{/books/buy-now(bookId=${book.id}, quantity=1)}"
+                                       th:if="${book.stockQuantity > 0}"
+                                       class="btn-buy-now">
+                                        <i class="bi bi-lightning-fill"></i>
+                                        Mua ngay
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Pagination Enhanced -->
+                <!-- Pagination -->
                 <nav th:if="${totalPages > 1}" class="pagination-wrapper" aria-label="Phân trang">
                     <div class="pagination-info">
                         <div class="info-item">
-                            <span class="info-label">Trang hiện tại:</span>
+                            <span class="info-label">Trang:</span>
                             <span class="info-value" th:text="${currentPage + 1}">1</span>
                             <span class="info-separator">/</span>
                             <span class="info-total" th:text="${totalPages}">10</span>
                         </div>
                         <div class="info-item">
-                            <span class="info-label">Tổng số sách:</span>
+                            <span class="info-label">Tổng:</span>
                             <span class="info-value" th:text="${totalItems}">34</span>
+                            <span class="info-label">sách</span>
                         </div>
                     </div>
 
                     <ul class="pagination-custom">
-                        <!-- First -->
                         <li class="page-item-custom" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
-                            <a class="page-link-custom page-nav"
+                            <a class="page-link-custom"
                                th:href="@{/books(categoryId=${selectedCategoryId}, page=0, sort=${currentSort}, order=${currentOrder})}"
                                title="Trang đầu">
                                 <i class="bi bi-chevron-bar-left"></i>
                             </a>
                         </li>
 
-                        <!-- Previous -->
                         <li class="page-item-custom" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
-                            <a class="page-link-custom page-nav"
+                            <a class="page-link-custom"
                                th:href="@{/books(categoryId=${selectedCategoryId}, page=${currentPage - 1}, sort=${currentSort}, order=${currentOrder})}"
                                title="Trang trước">
                                 <i class="bi bi-chevron-left"></i>
                             </a>
                         </li>
 
-                        <!-- Page Numbers -->
                         <th:block th:with="startPage=${currentPage > 2 ? currentPage - 2 : 0},
                            endPage=${currentPage + 2 < totalPages - 1 ? currentPage + 2 : totalPages - 1}">
 
                             <li class="page-item-custom" th:if="${startPage > 0}">
-                                <a class="page-link-custom page-number"
+                                <a class="page-link-custom"
                                    th:href="@{/books(categoryId=${selectedCategoryId}, page=0, sort=${currentSort}, order=${currentOrder})}">
                                     1
                                 </a>
@@ -329,7 +373,7 @@
                             <li th:each="i : ${#numbers.sequence(startPage, endPage)}"
                                 class="page-item-custom"
                                 th:classappend="${i == currentPage ? 'active' : ''}">
-                                <a class="page-link-custom page-number"
+                                <a class="page-link-custom"
                                    th:href="@{/books(categoryId=${selectedCategoryId}, page=${i}, sort=${currentSort}, order=${currentOrder})}"
                                    th:text="${i + 1}">1</a>
                             </li>
@@ -339,24 +383,22 @@
                             </li>
 
                             <li class="page-item-custom" th:if="${endPage < totalPages - 1}">
-                                <a class="page-link-custom page-number"
+                                <a class="page-link-custom"
                                    th:href="@{/books(categoryId=${selectedCategoryId}, page=${totalPages - 1}, sort=${currentSort}, order=${currentOrder})}"
                                    th:text="${totalPages}">10</a>
                             </li>
                         </th:block>
 
-                        <!-- Next -->
                         <li class="page-item-custom" th:classappend="${currentPage + 1 >= totalPages ? 'disabled' : ''}">
-                            <a class="page-link-custom page-nav"
+                            <a class="page-link-custom"
                                th:href="@{/books(categoryId=${selectedCategoryId}, page=${currentPage + 1}, sort=${currentSort}, order=${currentOrder})}"
                                title="Trang sau">
                                 <i class="bi bi-chevron-right"></i>
                             </a>
                         </li>
 
-                        <!-- Last -->
                         <li class="page-item-custom" th:classappend="${currentPage + 1 >= totalPages ? 'disabled' : ''}">
-                            <a class="page-link-custom page-nav"
+                            <a class="page-link-custom"
                                th:href="@{/books(categoryId=${selectedCategoryId}, page=${totalPages - 1}, sort=${currentSort}, order=${currentOrder})}"
                                title="Trang cuối">
                                 <i class="bi bi-chevron-bar-right"></i>
@@ -395,10 +437,10 @@
         background: var(--cream);
     }
 
-    /* Breadcrumb Enhanced */
+    /* Breadcrumb */
     .breadcrumb-section {
         background: linear-gradient(135deg, var(--extra-light) 0%, var(--pale-green) 100%);
-        padding: 1.25rem 0;
+        padding: 1rem 0;
         border-bottom: 1px solid rgba(64, 145, 108, 0.1);
     }
 
@@ -443,13 +485,246 @@
         font-weight: 600;
     }
 
-    /* Books Section */
-    .books-section {
-        padding: 2.5rem 0 4rem;
-        min-height: 100vh;
+    /* Hero Banner */
+    .hero-banner {
+        background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+        padding: 4rem 0;
+        position: relative;
+        overflow: hidden;
     }
 
-    /* Filter Sidebar Enhanced */
+    .hero-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+        opacity: 0.3;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: center;
+    }
+
+    .hero-text {
+        color: var(--white);
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        color: var(--white);
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        opacity: 0.95;
+    }
+
+    .hero-subtitle strong {
+        color: var(--extra-light);
+        font-weight: 800;
+    }
+
+    /* Hero Search */
+    .hero-search {
+        max-width: 600px;
+    }
+
+    .search-wrapper {
+        display: flex;
+        background: var(--white);
+        border-radius: 50px;
+        padding: 0.5rem;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .search-wrapper:focus-within {
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .search-icon {
+        width: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        color: var(--primary-green);
+    }
+
+    .search-input {
+        flex: 1;
+        border: none;
+        padding: 0.8rem 1rem;
+        font-size: 1rem;
+        color: var(--dark-green);
+        outline: none;
+        background: transparent;
+    }
+
+    .search-input::placeholder {
+        color: #999;
+    }
+
+    .btn-search {
+        background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+        color: var(--white);
+        border: none;
+        padding: 0.8rem 2rem;
+        border-radius: 50px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+    }
+
+    .btn-search:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Featured Slider */
+    .hero-featured {
+        position: relative;
+        height: 400px;
+    }
+
+    .featured-slider {
+        position: relative;
+        height: 100%;
+    }
+
+    .featured-book {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        pointer-events: none;
+    }
+
+    .featured-book.active {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    .featured-link {
+        display: block;
+        height: 100%;
+        text-decoration: none;
+    }
+
+    .featured-image {
+        position: relative;
+        height: 100%;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .featured-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .featured-link:hover .featured-image img {
+        transform: scale(1.05);
+    }
+
+    .featured-badge {
+        position: absolute;
+        top: 1.5rem;
+        left: 1.5rem;
+        background: rgba(255, 215, 0, 0.95);
+        color: var(--dark-green);
+        padding: 0.6rem 1.2rem;
+        border-radius: 50px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .featured-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+        padding: 2rem 1.5rem 1.5rem;
+        color: var(--white);
+    }
+
+    .featured-info h4 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .featured-info p {
+        opacity: 0.9;
+        margin: 0;
+    }
+
+    .slider-controls {
+        position: absolute;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        display: flex;
+        gap: 0.5rem;
+        z-index: 10;
+    }
+
+    .slider-btn {
+        width: 45px;
+        height: 45px;
+        background: rgba(255, 255, 255, 0.95);
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: var(--primary-green);
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .slider-btn:hover {
+        background: var(--primary-green);
+        color: var(--white);
+        transform: scale(1.1);
+    }
+
+
+
+    /* Books Section */
+    .books-section {
+        padding: 3rem 0;
+    }
+
+    /* Filter Sidebar */
     .filter-sidebar {
         background: var(--white);
         border-radius: 16px;
@@ -457,16 +732,11 @@
         overflow: hidden;
         position: sticky;
         top: 20px;
-        transition: all 0.3s ease;
-    }
-
-    .filter-sidebar:hover {
-        box-shadow: var(--shadow-lg);
     }
 
     .filter-header {
-        background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
-        padding: 2rem 1.5rem;
+        background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+        padding: 1.5rem;
         position: relative;
         overflow: hidden;
     }
@@ -476,8 +746,8 @@
         position: absolute;
         top: -50%;
         right: -10%;
-        width: 200px;
-        height: 200px;
+        width: 150px;
+        height: 150px;
         background: rgba(255, 255, 255, 0.1);
         border-radius: 50%;
     }
@@ -491,40 +761,40 @@
     }
 
     .filter-icon-wrapper {
-        width: 50px;
-        height: 50px;
+        width: 45px;
+        height: 45px;
         background: rgba(255, 255, 255, 0.2);
         backdrop-filter: blur(10px);
-        border-radius: 12px;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         color: var(--white);
     }
 
     .filter-header h5 {
         color: var(--white);
         font-weight: 700;
-        font-size: 1.25rem;
+        font-size: 1.1rem;
         margin: 0;
     }
 
     .filter-subtitle {
         color: rgba(255, 255, 255, 0.9);
-        font-size: 0.85rem;
-        margin-top: 0.2rem;
+        font-size: 0.8rem;
     }
 
     .filter-section {
-        padding: 1.5rem;
+        padding: 1.25rem;
+        border-bottom: 1px solid var(--extra-light);
     }
 
     .filter-title {
         color: var(--dark-green);
         font-weight: 700;
         margin-bottom: 1rem;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         display: flex;
         align-items: center;
     }
@@ -532,20 +802,17 @@
     .category-list {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
-        max-height: 450px;
+        gap: 0.4rem;
+        max-height: 400px;
         overflow-y: auto;
-        padding-right: 0.5rem;
     }
 
-    /* Custom Scrollbar */
     .category-list::-webkit-scrollbar {
-        width: 5px;
+        width: 4px;
     }
 
     .category-list::-webkit-scrollbar-track {
         background: var(--extra-light);
-        border-radius: 10px;
     }
 
     .category-list::-webkit-scrollbar-thumb {
@@ -556,28 +823,23 @@
     .category-item {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        padding: 0.85rem 1rem;
-        border-radius: 10px;
+        gap: 0.7rem;
+        padding: 0.7rem;
+        border-radius: 8px;
         text-decoration: none;
         color: var(--dark-green);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
+        transition: all 0.3s ease;
         background: var(--white);
-        border: 1px solid transparent;
     }
 
     .category-item:hover {
         background: var(--extra-light);
-        transform: translateX(4px);
-        border-color: var(--pale-green);
+        transform: translateX(3px);
     }
 
     .category-item.active {
         background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
         color: var(--white);
-        box-shadow: 0 4px 12px rgba(64, 145, 108, 0.25);
-        border-color: transparent;
     }
 
     .category-icon-wrapper {
@@ -585,25 +847,25 @@
     }
 
     .category-icon {
-        width: 42px;
-        height: 42px;
+        width: 35px;
+        height: 35px;
         background: var(--extra-light);
-        border-radius: 10px;
+        border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.25rem;
+        font-size: 1.1rem;
         color: var(--primary-green);
         transition: all 0.3s ease;
     }
 
     .category-item.active .category-icon {
-        background: rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.2);
         color: var(--white);
     }
 
     .category-icon.all-icon {
-        background: linear-gradient(135deg, var(--pale-green), var(--light-green));
+        background: var(--pale-green);
         color: var(--white);
     }
 
@@ -612,23 +874,20 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 0.5rem;
     }
 
     .category-name {
         font-weight: 600;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
 
     .category-count {
         background: var(--pale-green);
         color: var(--primary-green);
-        padding: 0.25rem 0.65rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
         font-weight: 700;
-        min-width: 32px;
-        text-align: center;
     }
 
     .category-item.active .category-count {
@@ -636,22 +895,9 @@
         color: var(--white);
     }
 
-    .category-arrow {
-        color: var(--secondary-green);
-        opacity: 0;
-        transition: all 0.3s ease;
-    }
-
-    .category-item:hover .category-arrow,
-    .category-item.active .category-arrow {
-        opacity: 1;
-        color: var(--white);
-    }
-
     .filter-footer {
-        padding: 1.25rem 1.5rem;
-        border-top: 1px solid var(--extra-light);
-        background: linear-gradient(to bottom, transparent, rgba(64, 145, 108, 0.02));
+        padding: 1rem 1.25rem;
+        background: var(--extra-light);
     }
 
     .btn-reset-filter {
@@ -659,49 +905,46 @@
         align-items: center;
         justify-content: center;
         width: 100%;
-        padding: 0.85rem;
-        background: var(--extra-light);
+        padding: 0.7rem;
+        background: var(--white);
         color: var(--primary-green);
         text-decoration: none;
-        border-radius: 10px;
+        border-radius: 8px;
         font-weight: 600;
         transition: all 0.3s ease;
-        border: 1px solid transparent;
+        border: 2px solid var(--pale-green);
     }
 
     .btn-reset-filter:hover {
         background: var(--primary-green);
         color: var(--white);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(64, 145, 108, 0.3);
+        border-color: var(--primary-green);
     }
 
-    /* Toolbar Enhanced */
+    /* Toolbar */
     .toolbar-wrapper {
         background: var(--white);
-        padding: 1.75rem;
-        border-radius: 16px;
-        box-shadow: var(--shadow-md);
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow-sm);
         margin-bottom: 2rem;
-    }
-
-    .toolbar-header {
-        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
     .page-title {
         color: var(--dark-green);
         font-weight: 700;
-        font-size: 1.75rem;
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+        font-size: 1.5rem;
+        margin-bottom: 0.3rem;
     }
 
     .result-count {
         color: #6c757d;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         display: flex;
         align-items: center;
         gap: 0.3rem;
@@ -717,99 +960,95 @@
         font-weight: 700;
     }
 
-    .toolbar-actions {
+    .toolbar-right {
         display: flex;
         gap: 1rem;
         align-items: center;
-        flex-wrap: wrap;
     }
 
     .sort-wrapper {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        flex: 1;
-        min-width: 250px;
+        gap: 0.7rem;
     }
 
     .sort-label {
         color: var(--dark-green);
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         white-space: nowrap;
         margin: 0;
     }
 
     .form-select-custom {
-        flex: 1;
-        padding: 0.7rem 1rem;
+        padding: 0.6rem 1rem;
         border: 2px solid var(--extra-light);
-        border-radius: 10px;
+        border-radius: 8px;
         font-weight: 500;
         color: var(--dark-green);
         background: var(--white);
         cursor: pointer;
         transition: all 0.3s ease;
+        min-width: 180px;
     }
 
     .form-select-custom:focus {
         outline: none;
         border-color: var(--primary-green);
-        box-shadow: 0 0 0 4px rgba(64, 145, 108, 0.1);
+        box-shadow: 0 0 0 3px rgba(64, 145, 108, 0.1);
     }
 
     .view-toggle {
         display: flex;
-        gap: 0.4rem;
+        gap: 0.3rem;
         background: var(--extra-light);
-        padding: 0.35rem;
-        border-radius: 10px;
+        padding: 0.3rem;
+        border-radius: 8px;
     }
 
     .view-btn {
-        width: 42px;
-        height: 42px;
+        width: 38px;
+        height: 38px;
         border: none;
         background: transparent;
         color: var(--secondary-green);
-        border-radius: 8px;
+        border-radius: 6px;
         cursor: pointer;
         transition: all 0.3s ease;
-        font-size: 1.25rem;
+        font-size: 1.1rem;
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
     .view-btn:hover {
-        background: rgba(64, 145, 108, 0.15);
+        background: rgba(64, 145, 108, 0.1);
     }
 
     .view-btn.active {
         background: var(--primary-green);
         color: var(--white);
-        box-shadow: 0 2px 8px rgba(64, 145, 108, 0.3);
     }
 
     /* Empty State */
     .empty-state {
         text-align: center;
-        padding: 5rem 2rem;
+        padding: 4rem 2rem;
         background: var(--white);
-        border-radius: 20px;
-        box-shadow: var(--shadow-md);
+        border-radius: 16px;
+        box-shadow: var(--shadow-sm);
     }
 
     .empty-icon {
-        width: 140px;
-        height: 140px;
-        margin: 0 auto 2rem;
-        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 1.5rem;
+        background: var(--extra-light);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 4.5rem;
+        font-size: 4rem;
         color: var(--primary-green);
     }
 
@@ -817,71 +1056,103 @@
         color: var(--dark-green);
         font-size: 1.5rem;
         font-weight: 700;
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.5rem;
     }
 
     .empty-text {
         color: #6c757d;
-        font-size: 1rem;
-        margin-bottom: 2rem;
-        max-width: 400px;
-        margin-left: auto;
-        margin-right: auto;
+        margin-bottom: 1.5rem;
     }
 
     .btn-view-all {
         display: inline-flex;
         align-items: center;
-        padding: 0.9rem 2rem;
-        background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+        padding: 0.8rem 1.5rem;
+        background: var(--primary-green);
         color: var(--white);
         text-decoration: none;
-        border-radius: 10px;
+        border-radius: 8px;
         font-weight: 600;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(64, 145, 108, 0.25);
     }
 
     .btn-view-all:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(64, 145, 108, 0.35);
+        background: var(--dark-green);
+        transform: translateY(-2px);
     }
 
-    /* Books Grid Enhanced */
-    .books-grid {
+    /* Books Container */
+    .books-container {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 1.75rem;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1.5rem;
+        transition: all 0.3s ease;
     }
 
-    .book-card-wrapper {
+    .books-container.list-view {
+        grid-template-columns: 1fr;
+    }
+
+    .book-item {
         opacity: 0;
-        animation: fadeInUp 0.6s ease forwards;
+        animation: fadeIn 0.5s ease forwards;
     }
 
+    .book-item:nth-child(1) { animation-delay: 0.05s; }
+    .book-item:nth-child(2) { animation-delay: 0.1s; }
+    .book-item:nth-child(3) { animation-delay: 0.15s; }
+    .book-item:nth-child(4) { animation-delay: 0.2s; }
+    .book-item:nth-child(5) { animation-delay: 0.25s; }
+    .book-item:nth-child(6) { animation-delay: 0.3s; }
+    .book-item:nth-child(7) { animation-delay: 0.35s; }
+    .book-item:nth-child(8) { animation-delay: 0.4s; }
+    .book-item:nth-child(9) { animation-delay: 0.45s; }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Book Card */
     .book-card {
         background: var(--white);
-        border-radius: 16px;
+        border-radius: 12px;
         overflow: hidden;
         box-shadow: var(--shadow-sm);
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: all 0.3s ease;
         height: 100%;
         display: flex;
         flex-direction: column;
-        border: 1px solid transparent;
     }
 
     .book-card:hover {
-        transform: translateY(-8px);
+        transform: translateY(-5px);
         box-shadow: var(--shadow-lg);
-        border-color: var(--pale-green);
+    }
+
+    .books-container.list-view .book-card {
+        flex-direction: row;
+        height: auto;
     }
 
     .book-image-container {
         position: relative;
-        height: 380px;
+        height: 320px;
         overflow: hidden;
-        background: linear-gradient(135deg, var(--extra-light) 0%, var(--pale-green) 100%);
+        background: var(--extra-light);
+    }
+
+    .books-container.list-view .book-image-container {
+        width: 200px;
+        height: auto;
+        min-height: 280px;
+        flex-shrink: 0;
     }
 
     .image-link {
@@ -894,11 +1165,11 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.6s ease;
+        transition: transform 0.5s ease;
     }
 
     .book-card:hover .book-image {
-        transform: scale(1.08);
+        transform: scale(1.05);
     }
 
     .image-overlay {
@@ -907,9 +1178,9 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 100%);
+        background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.5));
         opacity: 0;
-        transition: opacity 0.4s ease;
+        transition: opacity 0.3s ease;
     }
 
     .book-card:hover .image-overlay {
@@ -922,32 +1193,31 @@
         right: 1rem;
         background: linear-gradient(135deg, #52c41a, #73d13d);
         color: var(--white);
-        padding: 0.45rem 0.9rem;
+        padding: 0.4rem 0.8rem;
         border-radius: 20px;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         font-weight: 700;
         display: flex;
         align-items: center;
-        gap: 0.4rem;
-        box-shadow: 0 4px 12px rgba(82, 196, 26, 0.4);
-        backdrop-filter: blur(10px);
+        gap: 0.3rem;
+        box-shadow: 0 2px 10px rgba(82, 196, 26, 0.4);
         z-index: 2;
     }
 
     .stock-badge.out-of-stock {
         background: linear-gradient(135deg, #ff4d4f, #ff7875);
-        box-shadow: 0 4px 12px rgba(255, 77, 79, 0.4);
+        box-shadow: 0 2px 10px rgba(255, 77, 79, 0.4);
     }
 
     .quick-actions {
         position: absolute;
-        bottom: 1.25rem;
+        bottom: 1rem;
         left: 50%;
-        transform: translateX(-50%) translateY(20px);
+        transform: translateX(-50%) translateY(10px);
         display: flex;
-        gap: 0.6rem;
+        gap: 0.5rem;
         opacity: 0;
-        transition: all 0.4s ease;
+        transition: all 0.3s ease;
         z-index: 3;
     }
 
@@ -957,38 +1227,28 @@
     }
 
     .action-btn {
-        width: 48px;
-        height: 48px;
+        width: 42px;
+        height: 42px;
         border: none;
-        border-radius: 12px;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.3rem;
+        font-size: 1.2rem;
         cursor: pointer;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-        backdrop-filter: blur(10px);
-    }
-
-    .view-btn {
         background: rgba(255, 255, 255, 0.95);
         color: var(--primary-green);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
-    .cart-btn {
-        background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+    .action-btn.cart-btn {
+        background: var(--primary-green);
         color: var(--white);
     }
 
-    .wishlist-btn {
-        background: rgba(255, 255, 255, 0.95);
-        color: #ff4d4f;
-    }
-
     .action-btn:hover {
-        transform: scale(1.15);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        transform: scale(1.1);
     }
 
     .wishlist-btn.active {
@@ -996,26 +1256,30 @@
         color: var(--white);
     }
 
+    /* Book Info */
     .book-info {
-        padding: 1.5rem;
+        padding: 1.25rem;
         flex: 1;
         display: flex;
         flex-direction: column;
     }
 
+    .books-container.list-view .book-info {
+        padding: 1.5rem;
+    }
+
     .category-badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
+        gap: 0.3rem;
         background: var(--extra-light);
         color: var(--primary-green);
-        padding: 0.35rem 0.85rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
+        padding: 0.3rem 0.7rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
         font-weight: 700;
-        margin-bottom: 0.85rem;
+        margin-bottom: 0.7rem;
         align-self: flex-start;
-        border: 1px solid var(--pale-green);
     }
 
     .book-title-link {
@@ -1026,15 +1290,20 @@
     .book-title {
         color: var(--dark-green);
         font-weight: 700;
-        font-size: 1.05rem;
+        font-size: 1rem;
         margin: 0;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        line-height: 1.5;
+        line-height: 1.4;
         transition: color 0.3s ease;
-        min-height: 3rem;
+    }
+
+    .books-container.list-view .book-title {
+        font-size: 1.25rem;
+        -webkit-line-clamp: 3;
+        margin-bottom: 0.5rem;
     }
 
     .book-title-link:hover .book-title {
@@ -1043,12 +1312,11 @@
 
     .book-author {
         color: #6c757d;
-        font-size: 0.9rem;
-        margin-bottom: 0.75rem;
+        font-size: 0.85rem;
+        margin-bottom: 0.7rem;
         display: flex;
         align-items: center;
-        gap: 0.4rem;
-        font-weight: 500;
+        gap: 0.3rem;
     }
 
     .book-author i {
@@ -1059,7 +1327,7 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        margin-bottom: 1rem;
+        margin-bottom: 0.8rem;
         flex-wrap: wrap;
     }
 
@@ -1067,18 +1335,13 @@
         display: flex;
         gap: 0.2rem;
         color: #faad14;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
 
     .rating-text {
         color: var(--dark-green);
-        font-size: 0.9rem;
-        font-weight: 700;
-    }
-
-    .review-count {
-        color: #8c8c8c;
         font-size: 0.85rem;
+        font-weight: 700;
     }
 
     .book-footer {
@@ -1099,50 +1362,44 @@
     .price-current {
         color: var(--primary-green);
         font-weight: 800;
-        font-size: 1.4rem;
-        line-height: 1;
+        font-size: 1.3rem;
     }
 
     .btn-add-cart {
-        padding: 0.7rem 1.25rem;
-        background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+        padding: 0.6rem 1rem;
+        background: var(--primary-green);
         color: var(--white);
         border: none;
-        border-radius: 10px;
+        border-radius: 8px;
         font-weight: 700;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         cursor: pointer;
         transition: all 0.3s ease;
         display: flex;
         align-items: center;
-        gap: 0.4rem;
-        box-shadow: 0 2px 8px rgba(64, 145, 108, 0.25);
+        gap: 0.3rem;
     }
 
     .btn-add-cart:hover {
+        background: var(--dark-green);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(64, 145, 108, 0.35);
     }
 
-    .btn-add-cart:active {
-        transform: translateY(0);
-    }
-
-    /* Pagination Enhanced */
+    /* Pagination */
     .pagination-wrapper {
-        margin-top: 3rem;
+        margin-top: 2.5rem;
         background: var(--white);
-        padding: 2rem;
-        border-radius: 16px;
-        box-shadow: var(--shadow-md);
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow-sm);
     }
 
     .pagination-info {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 1.5rem;
-        padding-bottom: 1.25rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
         border-bottom: 2px solid var(--extra-light);
         flex-wrap: wrap;
         gap: 1rem;
@@ -1151,8 +1408,8 @@
     .info-item {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        font-size: 0.95rem;
+        gap: 0.4rem;
+        font-size: 0.9rem;
     }
 
     .info-label {
@@ -1163,13 +1420,12 @@
     .info-value {
         color: var(--primary-green);
         font-weight: 800;
-        font-size: 1.15rem;
+        font-size: 1.1rem;
     }
 
     .info-separator {
         color: var(--pale-green);
         font-weight: 700;
-        margin: 0 0.2rem;
     }
 
     .info-total {
@@ -1181,7 +1437,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.4rem;
         list-style: none;
         padding: 0;
         margin: 0;
@@ -1197,8 +1453,8 @@
     }
 
     .page-link-custom {
-        min-width: 46px;
-        height: 46px;
+        min-width: 40px;
+        height: 40px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1206,30 +1462,22 @@
         background: var(--white);
         color: var(--dark-green);
         text-decoration: none;
-        border-radius: 10px;
+        border-radius: 8px;
         font-weight: 700;
         transition: all 0.3s ease;
-        font-size: 0.95rem;
-    }
-
-    .page-nav {
-        font-size: 1.1rem;
+        font-size: 0.9rem;
     }
 
     .page-link-custom:hover:not(.disabled) {
         background: var(--extra-light);
         border-color: var(--primary-green);
         color: var(--primary-green);
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(64, 145, 108, 0.2);
     }
 
     .page-item-custom.active .page-link-custom {
-        background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+        background: var(--primary-green);
         border-color: var(--primary-green);
         color: var(--white);
-        box-shadow: 0 4px 15px rgba(64, 145, 108, 0.3);
-        transform: scale(1.1);
     }
 
     .page-item-custom.disabled .page-link-custom {
@@ -1238,145 +1486,137 @@
         pointer-events: none;
     }
 
-    /* Animation */
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .book-card-wrapper:nth-child(1) { animation-delay: 0.05s; }
-    .book-card-wrapper:nth-child(2) { animation-delay: 0.1s; }
-    .book-card-wrapper:nth-child(3) { animation-delay: 0.15s; }
-    .book-card-wrapper:nth-child(4) { animation-delay: 0.2s; }
-    .book-card-wrapper:nth-child(5) { animation-delay: 0.25s; }
-    .book-card-wrapper:nth-child(6) { animation-delay: 0.3s; }
-    .book-card-wrapper:nth-child(7) { animation-delay: 0.35s; }
-    .book-card-wrapper:nth-child(8) { animation-delay: 0.4s; }
-    .book-card-wrapper:nth-child(9) { animation-delay: 0.45s; }
-    .book-card-wrapper:nth-child(10) { animation-delay: 0.5s; }
-    .book-card-wrapper:nth-child(11) { animation-delay: 0.55s; }
-    .book-card-wrapper:nth-child(12) { animation-delay: 0.6s; }
-
     /* Responsive */
     @media (max-width: 1200px) {
-        .books-grid {
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        .hero-content {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .hero-featured {
+            height: 350px;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
         }
     }
 
     @media (max-width: 992px) {
         .filter-sidebar {
             position: static;
-            margin-bottom: 2rem;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
         }
 
         .toolbar-wrapper {
-            padding: 1.5rem;
-        }
-
-        .toolbar-header {
-            margin-bottom: 1rem;
-        }
-
-        .toolbar-actions {
             flex-direction: column;
             align-items: stretch;
         }
 
-        .sort-wrapper {
+        .toolbar-right {
             width: 100%;
+            justify-content: space-between;
         }
 
-        .view-toggle {
-            align-self: flex-end;
-        }
-
-        .page-title {
-            font-size: 1.5rem;
+        .books-container {
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         }
     }
 
     @media (max-width: 768px) {
-        .books-section {
-            padding: 2rem 0 3rem;
+        .hero-banner {
+            padding: 3rem 0;
         }
 
-        .books-grid {
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 1.5rem;
+        .hero-title {
+            font-size: 2rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .books-container {
+            grid-template-columns: 1fr;
+        }
+
+        .books-container.list-view .book-card {
+            flex-direction: column;
+        }
+
+        .books-container.list-view .book-image-container {
+            width: 100%;
+            height: 300px;
         }
 
         .book-image-container {
-            height: 320px;
-        }
-
-        .page-title {
-            font-size: 1.35rem;
-        }
-
-        .pagination-info {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.75rem;
-        }
-
-        .page-link-custom {
-            min-width: 42px;
-            height: 42px;
-        }
-
-        .filter-header {
-            padding: 1.5rem;
-        }
-
-        .filter-section {
-            padding: 1.25rem;
+            height: 280px;
         }
     }
 
     @media (max-width: 576px) {
-        .books-grid {
-            grid-template-columns: 1fr;
+        .hero-title {
+            font-size: 1.75rem;
         }
 
-        .breadcrumb-item-custom {
-            font-size: 0.85rem;
+        .btn-search {
+            padding: 0.8rem 1.5rem;
         }
 
-        .book-card {
-            max-width: 400px;
-            margin: 0 auto;
+        .btn-search span {
+            display: none;
         }
 
-        .toolbar-wrapper {
-            padding: 1.25rem;
-        }
-
-        .pagination-wrapper {
-            padding: 1.5rem;
+        .search-wrapper {
+            padding: 0.4rem;
         }
     }
-
-    /* Loading State */
-    .book-card.loading {
-        pointer-events: none;
+    /* Nút Mua Ngay */
+    .btn-buy-now {
+        padding: 0.6rem 1rem;
+        background: linear-gradient(135deg, #ff6b35, #f7931e);
+        color: var(--white);
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        text-decoration: none;
+        box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
     }
 
-    .book-card.loading .book-image {
-        background: linear-gradient(90deg, var(--extra-light) 25%, var(--pale-green) 50%, var(--extra-light) 75%);
-        background-size: 200% 100%;
-        animation: loading 1.5s infinite;
+    .btn-buy-now:hover {
+        background: linear-gradient(135deg, #f7931e, #ff6b35);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+        color: var(--white);
     }
 
-    @keyframes loading {
-        0% { background-position: 200% 0; }
-        100% { background-position: -200% 0; }
+    .btn-buy-now i {
+        animation: flash 1.5s infinite;
+    }
+
+    @keyframes flash {
+        0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.6;
+            transform: scale(1.1);
+        }
     }
 </style>
 
@@ -1389,31 +1629,96 @@
 <script th:src="@{/js/cart.js}"></script>
 
 <script>
-    // Sort dropdown handler
+    // Hero Search
+    const heroSearchInput = document.getElementById('heroSearchInput');
+    const heroSearchBtn = document.getElementById('heroSearchBtn');
+
+    if (heroSearchBtn) {
+        heroSearchBtn.addEventListener('click', performSearch);
+    }
+
+    if (heroSearchInput) {
+        heroSearchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    }
+
+    function performSearch() {
+        const keyword = heroSearchInput.value.trim();
+        if (keyword) {
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('search', keyword);
+            currentUrl.searchParams.set('page', '0');
+            window.location.href = currentUrl.toString();
+        }
+    }
+
+    // Featured Slider
+    const featuredBooks = document.querySelectorAll('.featured-book');
+    const prevBtn = document.querySelector('.prev-btn');
+    const nextBtn = document.querySelector('.next-btn');
+    let currentSlide = 0;
+
+    function showSlide(index) {
+        featuredBooks.forEach((book, i) => {
+            book.classList.remove('active');
+            if (i === index) {
+                book.classList.add('active');
+            }
+        });
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            currentSlide = (currentSlide - 1 + featuredBooks.length) % featuredBooks.length;
+            showSlide(currentSlide);
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            currentSlide = (currentSlide + 1) % featuredBooks.length;
+            showSlide(currentSlide);
+        });
+    }
+
+    // Auto slide
+    if (featuredBooks.length > 0) {
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % featuredBooks.length;
+            showSlide(currentSlide);
+        }, 5000);
+    }
+
+    // Sort dropdown
     document.getElementById('sortSelect')?.addEventListener('change', function() {
         if (this.value) {
             window.location.href = this.value;
         }
     });
 
-    // View toggle handler
-    document.querySelectorAll('.view-btn').forEach(btn => {
+    // View toggle
+    const viewBtns = document.querySelectorAll('.view-btn');
+    const booksContainer = document.getElementById('booksContainer');
+
+    viewBtns.forEach(btn => {
         btn.addEventListener('click', function() {
-            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+            viewBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
 
             const view = this.dataset.view;
-            const booksGrid = document.querySelector('.books-grid');
 
             if (view === 'list') {
-                booksGrid.style.gridTemplateColumns = '1fr';
+                booksContainer.classList.add('list-view');
             } else {
-                booksGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
+                booksContainer.classList.remove('list-view');
             }
         });
     });
 
-    // Wishlist button handler
+    // Wishlist button
     document.querySelectorAll('.wishlist-btn').forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
@@ -1430,7 +1735,7 @@
         });
     });
 
-    // Smooth scroll to top when pagination clicked
+    // Smooth scroll on pagination
     document.querySelectorAll('.page-link-custom').forEach(link => {
         link.addEventListener('click', function(e) {
             if (!this.parentElement.classList.contains('disabled') &&
@@ -1439,16 +1744,6 @@
                     top: 0,
                     behavior: 'smooth'
                 });
-            }
-        });
-    });
-
-    // Add loading state to book cards when clicking
-    document.querySelectorAll('.book-card a, .book-card button').forEach(element => {
-        element.addEventListener('click', function() {
-            const card = this.closest('.book-card');
-            if (card && !this.classList.contains('wishlist-btn')) {
-                card.classList.add('loading');
             }
         });
     });
