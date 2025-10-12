@@ -40,11 +40,11 @@ public class CustomerHomeController {
             model.addAttribute("latestBooks", java.util.Collections.emptyList());
         }
 
-        // Lấy danh mục (giới hạn 8)
+        // Lấy danh mục (giới hạn 4)
         try {
             var categories = categoryService.findAll();
             var limitedCategories = categories.stream()
-                    .limit(8)
+                    .limit(4)
                     .toList();
             log.info("Found {} categories, showing {}", categories.size(), limitedCategories.size());
             model.addAttribute("categories", limitedCategories);

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head th:replace="~{fragments/header :: header}"></head>
-<!-- Toast CSS -->
 <link th:href="@{/css/toast.css}" rel="stylesheet">
 <body>
 
@@ -9,258 +8,261 @@
 <div th:replace="~{fragments/header :: navbar}"></div>
 
 <!-- Breadcrumb -->
-<section class="py-3 bg-light">
+<section class="breadcrumb-section">
     <div class="container">
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a th:href="@{/}">Trang chủ</a></li>
-                <li class="breadcrumb-item"><a th:href="@{/books}">Kho sách</a></li>
-                <li class="breadcrumb-item" th:if="${book.category != null}">
+            <ol class="breadcrumb-custom">
+                <li class="breadcrumb-item-custom">
+                    <a th:href="@{/}">
+                        <i class="bi bi-house-door-fill me-2"></i>Trang chủ
+                    </a>
+                </li>
+                <li class="breadcrumb-separator">
+                    <i class="bi bi-chevron-right"></i>
+                </li>
+                <li class="breadcrumb-item-custom">
+                    <a th:href="@{/books}">
+                        <i class="bi bi-book-fill me-2"></i>Kho sách
+                    </a>
+                </li>
+                <li class="breadcrumb-separator" th:if="${book.category != null}">
+                    <i class="bi bi-chevron-right"></i>
+                </li>
+                <li class="breadcrumb-item-custom" th:if="${book.category != null}">
                     <a th:href="@{/books(categoryId=${book.category.id})}"
                        th:text="${book.category.name}">Danh mục</a>
                 </li>
-                <li class="breadcrumb-item active" th:text="${book.title}">Tên sách</li>
+                <li class="breadcrumb-separator">
+                    <i class="bi bi-chevron-right"></i>
+                </li>
+                <li class="breadcrumb-item-custom active" th:text="${book.title}">Tên sách</li>
             </ol>
         </nav>
     </div>
 </section>
 
 <!-- Book Detail -->
-<section class="py-5">
+<section class="book-detail-section">
     <div class="container">
-        <div class="row g-4">
+        <div class="detail-wrapper">
             <!-- Left: Image Gallery -->
-            <div class="col-lg-5">
-                <div class="book-images sticky-top" style="top: 20px;">
-                    <!-- Main Image -->
-                    <div class="main-image-container mb-3">
-                        <img id="mainImage"
-                             th:src="${book.imageUrls != null && !book.imageUrls.isEmpty() ? book.imageUrls[0] : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=600&h=800&fit=crop'}"
-                             th:alt="${book.title}"
-                             class="img-fluid rounded shadow-lg">
+            <div class="image-gallery-section">
+                <div class="main-image-wrapper">
+                    <img id="mainImage"
+                         th:src="${book.imageUrls != null && !book.imageUrls.isEmpty() ? book.imageUrls[0] : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=600&h=800&fit=crop'}"
+                         th:alt="${book.title}"
+                         class="main-image">
 
-                        <!-- Stock Badge -->
-                        <div class="position-absolute top-0 end-0 m-3">
-                            <span th:if="${book.stockQuantity > 0}" class="badge badge-success-custom">
-                                <i class="bi bi-check-circle me-1"></i>Còn hàng
-                            </span>
-                            <span th:if="${book.stockQuantity == 0}" class="badge badge-danger-custom">
-                                <i class="bi bi-x-circle me-1"></i>Hết hàng
-                            </span>
-                        </div>
+                    <!-- Stock Badge -->
+                    <div class="stock-badge-overlay" th:if="${book.stockQuantity > 0}">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Còn hàng</span>
                     </div>
+                    <div class="stock-badge-overlay out-of-stock" th:if="${book.stockQuantity == 0}">
+                        <i class="bi bi-x-circle-fill"></i>
+                        <span>Hết hàng</span>
+                    </div>
+                </div>
 
-                    <!-- Thumbnail Gallery -->
-                    <div class="thumbnail-gallery" th:if="${book.imageUrls != null && book.imageUrls.size() > 1}">
-                        <div class="row g-2">
-                            <div class="col-3" th:each="imageUrl, iterStat : ${book.imageUrls}">
-                                <img th:src="${imageUrl}"
-                                     th:alt="${book.title + ' - Ảnh ' + (iterStat.index + 1)}"
-                                     class="thumbnail-image img-fluid rounded cursor-pointer"
-                                     th:classappend="${iterStat.index == 0 ? 'active' : ''}"
-                                     onclick="changeMainImage(this.src)">
-                            </div>
+                <!-- Thumbnail Gallery -->
+                <div class="thumbnail-gallery" th:if="${book.imageUrls != null && book.imageUrls.size() > 1}">
+                    <div class="thumbnail-scroll">
+                        <div class="thumbnail-item" th:each="imageUrl, iterStat : ${book.imageUrls}">
+                            <img th:src="${imageUrl}"
+                                 th:alt="${book.title + ' - Ảnh ' + (iterStat.index + 1)}"
+                                 th:class="${iterStat.index == 0 ? 'thumbnail-image active' : 'thumbnail-image'}"
+                                 onclick="changeMainImage(this.src, this)">
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Right: Book Info -->
-            <div class="col-lg-7">
-                <div class="book-info">
-                    <!-- Category Badge -->
-                    <div class="mb-2" th:if="${book.category != null}">
-                        <a th:href="@{/books(categoryId=${book.category.id})}"
-                           class="badge bg-light text-primary text-decoration-none">
-                            <i class="bi bi-tag me-1"></i>
-                            <span th:text="${book.category.name}">Danh mục</span>
-                        </a>
+            <div class="book-info-section">
+                <!-- Category Badge -->
+                <div class="category-tag" th:if="${book.category != null}">
+                    <a th:href="@{/books(categoryId=${book.category.id})}" class="category-link">
+                        <i class="bi bi-tag-fill"></i>
+                        <span th:text="${book.category.name}">Danh mục</span>
+                    </a>
+                </div>
+
+                <!-- Title -->
+                <h1 class="book-title" th:text="${book.title}">Tên sách</h1>
+
+                <!-- Rating & Reviews -->
+                <div class="rating-section">
+                    <div class="stars-wrapper">
+                        <div class="stars">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-half"></i>
+                        </div>
+                        <span class="rating-score">4.5</span>
                     </div>
+                    <span class="review-count">(128 đánh giá)</span>
+                </div>
 
-                    <!-- Title -->
-                    <h1 class="book-title mb-3" th:text="${book.title}">Tên sách</h1>
-
-                    <!-- Author & Publisher -->
-                    <div class="book-meta mb-3">
-                        <p class="mb-2" th:if="${book.author != null}">
-                            <i class="bi bi-person-fill text-primary me-2"></i>
-                            <strong>Tác giả:</strong>
-                            <span th:text="${book.author}">Tác giả</span>
-                        </p>
-                        <p class="mb-2" th:if="${book.publisher != null}">
-                            <i class="bi bi-building text-primary me-2"></i>
-                            <strong>Nhà xuất bản:</strong>
-                            <span th:text="${book.publisher}">NXB</span>
-                        </p>
-                        <p class="mb-2" th:if="${book.publishedDate != null}">
-                            <i class="bi bi-calendar-event text-primary me-2"></i>
-                            <strong>Năm xuất bản:</strong>
-                            <span th:text="${#temporals.format(book.publishedDate, 'dd/MM/yyyy')}">2024</span>
-                        </p>
-                    </div>
-
-                    <!-- Rating -->
-                    <div class="rating-section mb-3">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="stars">
-                                <i class="bi bi-star-fill text-warning"></i>
-                                <i class="bi bi-star-fill text-warning"></i>
-                                <i class="bi bi-star-fill text-warning"></i>
-                                <i class="bi bi-star-fill text-warning"></i>
-                                <i class="bi bi-star text-warning"></i>
-                            </div>
-                            <span class="text-muted small">(4.0 / 5.0)</span>
+                <!-- Meta Info -->
+                <div class="meta-info-grid">
+                    <div class="meta-item" th:if="${book.author != null}">
+                        <div class="meta-icon">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <div class="meta-content">
+                            <span class="meta-label">Tác giả</span>
+                            <span class="meta-value" th:text="${book.author}">Tác giả</span>
                         </div>
                     </div>
-
-                    <!-- Price -->
-                    <div class="price-section mb-4">
-                        <div class="d-flex align-items-center gap-3">
-                            <h2 class="price-main mb-0 text-primary fw-bold"
-                                th:text="${book.originalPrice != null ? #numbers.formatDecimal(book.originalPrice, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">
-                                120,000đ
-                            </h2>
+                    <div class="meta-item" th:if="${book.publisher != null}">
+                        <div class="meta-icon">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <div class="meta-content">
+                            <span class="meta-label">NXB</span>
+                            <span class="meta-value" th:text="${book.publisher}">Nhà xuất bản</span>
                         </div>
                     </div>
-
-                    <!-- Stock Info -->
-                    <div class="stock-info mb-4">
-                        <div class="alert alert-success-custom" th:if="${book.stockQuantity > 0}">
-                            <i class="bi bi-check-circle-fill me-2"></i>
-                            <strong>Còn <span th:text="${book.stockQuantity}">10</span> sản phẩm</strong>
+                    <div class="meta-item" th:if="${book.publishedDate != null}">
+                        <div class="meta-icon">
+                            <i class="bi bi-calendar-event"></i>
                         </div>
-                        <div class="alert alert-danger-custom" th:if="${book.stockQuantity == 0}">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                            <strong>Tạm hết hàng</strong>
+                        <div class="meta-content">
+                            <span class="meta-label">Năm XB</span>
+                            <span class="meta-value" th:text="${#temporals.format(book.publishedDate, 'dd/MM/yyyy')}">2024</span>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Quantity Selector & Add to Cart -->
-                    <div class="purchase-section mb-4" th:if="${book.stockQuantity > 0}">
-                        <form th:action="@{/cart/add}" method="post">
-                            <input type="hidden" name="bookId" th:value="${book.id}">
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label class="form-label fw-bold">Số lượng:</label>
-                                    <div class="quantity-selector">
-                                        <button type="button" class="btn-qty minus" onclick="decreaseQty()">
-                                            <i class="bi bi-dash"></i>
-                                        </button>
-                                        <input type="number"
-                                               id="quantity"
-                                               name="quantity"
-                                               value="1"
-                                               min="1"
-                                               th:max="${book.stockQuantity}"
-                                               class="qty-input">
-                                        <button type="button" class="btn-qty plus" onclick="increaseQty()">
-                                            <i class="bi bi-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="col-md-8">
-                                    <label class="form-label fw-bold opacity-0">Action</label>
-                                    <div class="d-grid gap-2">
-                                        <form class="cart-form">
-                                            <input type="hidden" name="bookId" th:value="${book.id}">
-                                            <div class="row g-3">
-                                                <!-- ... quantity selector ... -->
-                                                <div class="col-md-8">
-                                                    <label class="form-label fw-bold opacity-0">Action</label>
-                                                    <div class="d-grid gap-2">
-                                                        <button type="submit" class="btn btn-primary btn-lg">
-                                                            <i class="bi bi-cart-plus me-2"></i>Thêm vào giỏ hàng
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
+                <!-- Price Section -->
+                <div class="price-section">
+                    <div class="price-wrapper">
+                        <span class="price-label">Giá bán:</span>
+                        <span class="price-current"
+                              th:text="${book.originalPrice != null ? #numbers.formatDecimal(book.originalPrice, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">
+                            120,000đ
+                        </span>
                     </div>
+                    <div class="stock-info-inline">
+                        <i class="bi bi-box-seam"></i>
+                        <span th:if="${book.stockQuantity > 0}">
+                            Còn <strong th:text="${book.stockQuantity}">10</strong> sản phẩm
+                        </span>
+                        <span th:if="${book.stockQuantity == 0}" class="out-of-stock-text">
+                            Tạm hết hàng
+                        </span>
+                    </div>
+                </div>
 
-                    <!-- Quick Actions -->
-                    <div class="quick-actions mb-4">
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <button class="btn btn-outline-primary w-100" onclick="addToWishlist()">
-                                    <i class="bi bi-heart me-2"></i>Yêu thích
+                <!-- Purchase Actions -->
+                <div class="purchase-section" th:if="${book.stockQuantity > 0}">
+                    <form th:action="@{/cart/add}" method="post" class="purchase-form">
+                        <input type="hidden" name="bookId" th:value="${book.id}">
+
+                        <div class="quantity-wrapper">
+                            <label class="quantity-label">Số lượng:</label>
+                            <div class="quantity-control">
+                                <button type="button" class="qty-btn minus" onclick="decreaseQty()">
+                                    <i class="bi bi-dash-lg"></i>
                                 </button>
-                            </div>
-                            <div class="col-6">
-                                <button class="btn btn-outline-secondary w-100" onclick="shareBook()">
-                                    <i class="bi bi-share me-2"></i>Chia sẻ
+                                <input type="number"
+                                       id="quantity"
+                                       name="quantity"
+                                       value="1"
+                                       min="1"
+                                       th:max="${book.stockQuantity}"
+                                       class="qty-input">
+                                <button type="button" class="qty-btn plus" onclick="increaseQty()">
+                                    <i class="bi bi-plus-lg"></i>
                                 </button>
                             </div>
                         </div>
-                    </div>
+
+                        <div class="action-buttons">
+                            <button type="submit" class="btn-add-cart">
+                                <i class="bi bi-cart-plus"></i>
+                                <span>Thêm vào giỏ</span>
+                            </button>
+                            <a th:href="@{/books/buy-now(bookId=${book.id}, quantity=1)}"
+                               class="btn-buy-now"
+                               onclick="updateBuyNowQuantity(event)">
+                                <i class="bi bi-lightning-fill"></i>
+                                <span>Mua ngay</span>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions-row">
+                    <button class="quick-btn" onclick="addToWishlist()">
+                        <i class="bi bi-heart"></i>
+                        <span>Yêu thích</span>
+                    </button>
+                    <button class="quick-btn" onclick="shareBook()">
+                        <i class="bi bi-share"></i>
+                        <span>Chia sẻ</span>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Description & Info Tabs -->
-        <div class="row mt-5">
-            <div class="col-12">
-                <ul class="nav nav-tabs custom-tabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#description">
-                            <i class="bi bi-file-text me-2"></i>Mô tả sản phẩm
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#specs">
-                            <i class="bi bi-info-circle me-2"></i>Thông tin chi tiết
-                        </button>
-                    </li>
-                </ul>
+        <!-- Description & Specs Tabs -->
+        <div class="detail-tabs-section">
+            <div class="tabs-header">
+                <button class="tab-btn active" data-tab="description">
+                    <i class="bi bi-file-text"></i>
+                    Mô tả sản phẩm
+                </button>
+                <button class="tab-btn" data-tab="specs">
+                    <i class="bi bi-info-circle"></i>
+                    Thông tin chi tiết
+                </button>
+            </div>
 
-                <div class="tab-content custom-tab-content">
-                    <!-- Description Tab -->
-                    <div class="tab-pane fade show active" id="description">
-                        <div class="description-content" th:if="${book.description != null && !book.description.isEmpty()}">
-                            <p th:text="${book.description}">Mô tả sách...</p>
-                        </div>
-                        <div class="description-content" th:if="${book.description == null || book.description.isEmpty()}">
-                            <p class="text-muted">Chưa có mô tả chi tiết cho sản phẩm này.</p>
-                        </div>
+            <div class="tabs-content">
+                <!-- Description Tab -->
+                <div class="tab-panel active" id="description">
+                    <div class="description-wrapper" th:if="${book.description != null && !book.description.isEmpty()}">
+                        <p th:text="${book.description}">Mô tả sách...</p>
                     </div>
+                    <div class="description-wrapper empty" th:if="${book.description == null || book.description.isEmpty()}">
+                        <i class="bi bi-info-circle"></i>
+                        <p>Chưa có mô tả chi tiết cho sản phẩm này.</p>
+                    </div>
+                </div>
 
-                    <!-- Specifications Tab -->
-                    <div class="tab-pane fade" id="specs">
-                        <div class="specs-table">
-                            <table class="table table-bordered">
-                                <tbody>
-                                <tr>
-                                    <th width="30%">Tên sách</th>
-                                    <td th:text="${book.title}">-</td>
-                                </tr>
-                                <tr th:if="${book.author != null}">
-                                    <th>Tác giả</th>
-                                    <td th:text="${book.author}">-</td>
-                                </tr>
-                                <tr th:if="${book.publisher != null}">
-                                    <th>Nhà xuất bản</th>
-                                    <td th:text="${book.publisher}">-</td>
-                                </tr>
-                                <tr th:if="${book.publishedDate != null}">
-                                    <th>Năm xuất bản</th>
-                                    <td th:text="${#temporals.format(book.publishedDate, 'dd/MM/yyyy')}">-</td>
-                                </tr>
-                                <tr th:if="${book.category != null}">
-                                    <th>Danh mục</th>
-                                    <td th:text="${book.category.name}">-</td>
-                                </tr>
-                                <tr>
-                                    <th>Tình trạng</th>
-                                    <td>
-                                        <span class="badge bg-success" th:if="${book.stockQuantity > 0}">Còn hàng</span>
-                                        <span class="badge bg-danger" th:if="${book.stockQuantity == 0}">Hết hàng</span>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
+                <!-- Specifications Tab -->
+                <div class="tab-panel" id="specs">
+                    <div class="specs-grid">
+                        <div class="spec-item">
+                            <span class="spec-label">Tên sách</span>
+                            <span class="spec-value" th:text="${book.title}">-</span>
+                        </div>
+                        <div class="spec-item" th:if="${book.author != null}">
+                            <span class="spec-label">Tác giả</span>
+                            <span class="spec-value" th:text="${book.author}">-</span>
+                        </div>
+                        <div class="spec-item" th:if="${book.publisher != null}">
+                            <span class="spec-label">Nhà xuất bản</span>
+                            <span class="spec-value" th:text="${book.publisher}">-</span>
+                        </div>
+                        <div class="spec-item" th:if="${book.publishedDate != null}">
+                            <span class="spec-label">Năm xuất bản</span>
+                            <span class="spec-value" th:text="${#temporals.format(book.publishedDate, 'dd/MM/yyyy')}">-</span>
+                        </div>
+                        <div class="spec-item" th:if="${book.category != null}">
+                            <span class="spec-label">Danh mục</span>
+                            <span class="spec-value" th:text="${book.category.name}">-</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Tình trạng</span>
+                            <span class="spec-value">
+                                <span class="status-badge in-stock" th:if="${book.stockQuantity > 0}">Còn hàng</span>
+                                <span class="status-badge out-of-stock" th:if="${book.stockQuantity == 0}">Hết hàng</span>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -268,56 +270,96 @@
         </div>
 
         <!-- Related Books -->
-        <div class="row mt-5" th:if="${relatedBooks != null && !#lists.isEmpty(relatedBooks)}">
-            <div class="col-12">
-                <div class="section-header mb-4">
-                    <h3 class="fw-bold">Sách liên quan</h3>
-                    <a th:href="@{/books(categoryId=${book.category.id})}" class="btn btn-outline-primary">
-                        Xem tất cả <i class="bi bi-arrow-right ms-2"></i>
-                    </a>
+        <div class="related-section" th:if="${relatedBooks != null && !#lists.isEmpty(relatedBooks)}">
+            <div class="section-header">
+                <div class="header-left">
+                    <h2 class="section-title">
+                        <i class="bi bi-bookmark-star"></i>
+                        Sách liên quan
+                    </h2>
+                    <p class="section-subtitle">Những cuốn sách bạn có thể quan tâm</p>
                 </div>
+                <a th:href="@{/books(categoryId=${book.category.id})}" class="btn-view-all">
+                    Xem tất cả
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
 
-                <div class="row g-4">
-                    <div class="col-lg-3 col-md-4 col-sm-6" th:each="relatedBook : ${relatedBooks}">
-                        <div class="product-card">
-                            <div class="card border-0 shadow-sm h-100">
-                                <div class="product-image position-relative">
-                                    <a th:href="@{/books/{id}(id=${relatedBook.id})}">
-                                        <img th:src="${relatedBook.imageUrls != null && !relatedBook.imageUrls.isEmpty() ? relatedBook.imageUrls[0] : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=600&fit=crop'}"
-                                             th:alt="${relatedBook.title}"
-                                             class="card-img-top">
-                                    </a>
+            <div class="related-books-grid">
+                <div class="related-book-card" th:each="relatedBook : ${relatedBooks}">
+                    <div class="related-image-wrapper">
+                        <a th:href="@{/books/{id}(id=${relatedBook.id})}" class="image-link">
+                            <img th:src="${relatedBook.imageUrls != null && !relatedBook.imageUrls.isEmpty() ? relatedBook.imageUrls[0] : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=600&fit=crop'}"
+                                 th:alt="${relatedBook.title}"
+                                 class="related-image">
+                            <div class="image-overlay"></div>
+                        </a>
 
-                                    <div class="position-absolute top-0 end-0 m-2">
-                                        <span th:if="${relatedBook.stockQuantity > 0}" class="badge bg-success">
-                                            Còn hàng
-                                        </span>
-                                        <span th:if="${relatedBook.stockQuantity == 0}" class="badge bg-danger">
-                                            Hết hàng
-                                        </span>
-                                    </div>
+                        <div class="related-stock-badge" th:if="${relatedBook.stockQuantity > 0}">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                        <div class="related-stock-badge out" th:if="${relatedBook.stockQuantity == 0}">
+                            <i class="bi bi-x-circle-fill"></i>
+                        </div>
 
-                                    <div class="product-actions">
-                                        <a th:href="@{/books/{id}(id=${relatedBook.id})}"
-                                           class="btn btn-sm btn-light">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <button class="btn btn-sm btn-light"
-                                                th:if="${relatedBook.stockQuantity > 0}">
-                                            <i class="bi bi-cart-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
+                        <div class="related-quick-actions">
+                            <a th:href="@{/books/{id}(id=${relatedBook.id})}"
+                               class="related-action-btn"
+                               title="Xem chi tiết">
+                                <i class="bi bi-eye-fill"></i>
+                            </a>
 
-                                <div class="card-body">
-                                    <h6 class="card-title text-truncate mb-2"
-                                        th:text="${relatedBook.title}">Tên sách</h6>
-                                    <p class="text-muted small mb-2" th:text="${relatedBook.author}">Tác giả</p>
-                                    <span class="h6 mb-0 text-primary"
-                                          th:text="${relatedBook.originalPrice != null ? #numbers.formatDecimal(relatedBook.originalPrice, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">
-                                        120,000đ
-                                    </span>
-                                </div>
+                            <form class="cart-form" style="display: inline;">
+                                <input type="hidden" name="bookId" th:value="${relatedBook.id}">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit"
+                                        class="related-action-btn cart-action"
+                                        th:if="${relatedBook.stockQuantity > 0}"
+                                        title="Thêm vào giỏ">
+                                    <i class="bi bi-cart-plus-fill"></i>
+                                </button>
+                            </form>
+
+                            <button class="related-action-btn wishlist-btn"
+                                    title="Yêu thích">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="related-info">
+                        <a th:href="@{/books/{id}(id=${relatedBook.id})}" class="related-title-link">
+                            <h3 class="related-title" th:text="${relatedBook.title}">Tên sách</h3>
+                        </a>
+                        <p class="related-author">
+                            <i class="bi bi-person"></i>
+                            <span th:text="${relatedBook.author}">Tác giả</span>
+                        </p>
+
+                        <div class="related-rating">
+                            <div class="stars-small">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-half"></i>
+                            </div>
+                            <span class="rating-small">4.5</span>
+                        </div>
+
+                        <div class="related-footer">
+                            <span class="related-price"
+                                  th:text="${relatedBook.originalPrice != null ? #numbers.formatDecimal(relatedBook.originalPrice, 0, 'COMMA', 0, 'POINT') + 'đ' : 'Liên hệ'}">
+                                120,000đ
+                            </span>
+
+                            <div class="related-actions" th:if="${relatedBook.stockQuantity > 0}">
+                                <a th:href="@{/books/buy-now(bookId=${relatedBook.id}, quantity=1)}"
+                                   class="btn-buy-related"
+                                   title="Mua ngay">
+                                    <i class="bi bi-lightning-fill"></i>
+                                    <span>Mua ngay</span>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -333,321 +375,1065 @@
 
 <!-- Scripts -->
 <th:block th:replace="~{fragments/footer :: scripts}"></th:block>
-<!-- Cart JavaScript -->
 <script th:src="@{/js/cart.js}"></script>
 
 <style>
     :root {
         --primary-green: #40916c;
+        --secondary-green: #52b788;
         --light-green: #74c69d;
-        --pale-green: #b7e4c7;
+        --pale-green: #95d5b2;
         --extra-light: #d8f3dc;
-        --dark-text: #2d6a4f;
-        --cream: #f1faee;
+        --dark-green: #2d6a4f;
+        --cream: #f8f9fa;
+        --white: #ffffff;
+        --text-dark: #1a1a1a;
+        --text-gray: #6c757d;
+        --border-light: #e9ecef;
+        --shadow-sm: 0 2px 8px rgba(64, 145, 108, 0.08);
+        --shadow-md: 0 4px 16px rgba(64, 145, 108, 0.12);
+        --shadow-lg: 0 8px 32px rgba(64, 145, 108, 0.16);
     }
 
-    .bg-primary { background-color: var(--primary-green) !important; }
-    .text-primary { color: var(--primary-green) !important; }
-    .btn-primary {
-        background-color: var(--primary-green);
-        border-color: var(--primary-green);
-    }
-    .btn-primary:hover {
-        background-color: var(--light-green);
-        border-color: var(--light-green);
-    }
-    .btn-outline-primary {
-        color: var(--primary-green);
-        border-color: var(--primary-green);
-    }
-    .btn-outline-primary:hover {
-        background-color: var(--primary-green);
-        color: white;
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
 
-    .breadcrumb-item a {
-        color: var(--primary-green);
+    body {
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+        background: var(--cream);
+        color: var(--text-dark);
+    }
+
+    /* Breadcrumb */
+    .breadcrumb-section {
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(64, 145, 108, 0.1);
+    }
+
+    .breadcrumb-custom {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .breadcrumb-item-custom a {
+        color: var(--dark-green);
         text-decoration: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
     }
 
-    /* Book Images */
-    .main-image-container {
+    .breadcrumb-item-custom a:hover {
+        background: rgba(64, 145, 108, 0.1);
+        color: var(--primary-green);
+    }
+
+    .breadcrumb-item-custom.active {
+        color: var(--primary-green);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .breadcrumb-separator {
+        color: var(--secondary-green);
+        opacity: 0.6;
+    }
+
+    /* Book Detail Section */
+    .book-detail-section {
+        padding: 3rem 0;
+    }
+
+    .detail-wrapper {
+        display: grid;
+        grid-template-columns: 45% 55%;
+        gap: 3rem;
+        background: var(--white);
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: var(--shadow-md);
+        margin-bottom: 3rem;
+    }
+
+    /* Image Gallery */
+    .image-gallery-section {
+        position: sticky;
+        top: 20px;
+        align-self: flex-start;
+    }
+
+    .main-image-wrapper {
         position: relative;
-        background: #f8f9fa;
-        border-radius: 15px;
+        background: var(--cream);
+        border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow-md);
     }
 
-    .main-image-container img {
+    .main-image {
         width: 100%;
         height: auto;
         max-height: 600px;
         object-fit: contain;
-        transition: transform 0.3s ease;
+        display: block;
+        transition: transform 0.5s ease;
     }
 
-    .main-image-container:hover img {
+    .main-image-wrapper:hover .main-image {
         transform: scale(1.05);
     }
 
+    .stock-badge-overlay {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        background: linear-gradient(135deg, #52c41a, #73d13d);
+        color: var(--white);
+        padding: 0.6rem 1.2rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 15px rgba(82, 196, 26, 0.4);
+        z-index: 2;
+    }
+
+    .stock-badge-overlay.out-of-stock {
+        background: linear-gradient(135deg, #ff4d4f, #ff7875);
+        box-shadow: 0 4px 15px rgba(255, 77, 79, 0.4);
+    }
+
+    .thumbnail-gallery {
+        overflow: hidden;
+    }
+
+    .thumbnail-scroll {
+        display: flex;
+        gap: 0.8rem;
+        overflow-x: auto;
+        padding: 0.5rem 0;
+        scrollbar-width: thin;
+        scrollbar-color: var(--primary-green) var(--extra-light);
+    }
+
+    .thumbnail-scroll::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .thumbnail-scroll::-webkit-scrollbar-track {
+        background: var(--extra-light);
+        border-radius: 10px;
+    }
+
+    .thumbnail-scroll::-webkit-scrollbar-thumb {
+        background: var(--primary-green);
+        border-radius: 10px;
+    }
+
+    .thumbnail-item {
+        flex-shrink: 0;
+    }
+
     .thumbnail-image {
-        border: 2px solid transparent;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        height: 80px;
+        width: 90px;
+        height: 120px;
         object-fit: cover;
+        border-radius: 10px;
+        border: 3px solid transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
     }
 
     .thumbnail-image:hover,
     .thumbnail-image.active {
         border-color: var(--primary-green);
         transform: scale(1.05);
+        box-shadow: var(--shadow-md);
     }
 
-    /* Badges */
-    .badge-success-custom {
-        background: linear-gradient(135deg, #40916c, #74c69d);
-        color: white;
+    /* Book Info Section */
+    .book-info-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .category-tag {
+        display: flex;
+    }
+
+    .category-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--extra-light);
+        color: var(--primary-green);
         padding: 0.5rem 1rem;
-        font-size: 0.9rem;
         border-radius: 50px;
-        box-shadow: 0 4px 10px rgba(64, 145, 108, 0.3);
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
     }
 
-    .badge-danger-custom {
-        background: linear-gradient(135deg, #dc3545, #ff6b6b);
-        color: white;
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-        border-radius: 50px;
-        box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
+    .category-link:hover {
+        background: var(--primary-green);
+        color: var(--white);
+        transform: translateX(3px);
     }
 
-    /* Book Info */
     .book-title {
-        color: var(--dark-text);
-        font-size: 2rem;
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--dark-green);
         line-height: 1.3;
+        margin: 0;
     }
 
-    .book-meta p {
+    .rating-section {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .stars-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .stars {
+        display: flex;
+        gap: 0.2rem;
+        color: #faad14;
+        font-size: 1.1rem;
+    }
+
+    .rating-score {
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--dark-green);
+    }
+
+    .review-count {
+        color: var(--text-gray);
         font-size: 0.95rem;
-        color: #6c757d;
     }
 
-    .price-main {
-        font-size: 2.5rem;
+    /* Meta Info Grid */
+    .meta-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.2rem;
+        padding: 1.5rem;
+        background: var(--cream);
+        border-radius: 12px;
     }
 
-    /* Alerts */
-    .alert-success-custom {
-        background-color: var(--extra-light);
-        border-color: var(--pale-green);
-        color: var(--dark-text);
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .meta-icon {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .meta-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .meta-label {
+        font-size: 0.8rem;
+        color: var(--text-gray);
+        font-weight: 500;
+    }
+
+    .meta-value {
+        font-size: 1rem;
+        color: var(--text-dark);
+        font-weight: 700;
+    }
+
+    /* Price Section */
+    .price-section {
+        padding: 1.5rem;
+        background: linear-gradient(135deg, var(--extra-light), var(--pale-green));
+        border-radius: 12px;
         border-left: 4px solid var(--primary-green);
     }
 
-    .alert-danger-custom {
-        background-color: #ffe5e5;
-        border-color: #ffcccc;
-        color: #dc3545;
-        border-left: 4px solid #dc3545;
+    .price-wrapper {
+        display: flex;
+        align-items: baseline;
+        gap: 1rem;
+        margin-bottom: 0.8rem;
     }
 
-    /* Quantity Selector */
-    .quantity-selector {
+    .price-label {
+        font-size: 1rem;
+        color: var(--text-gray);
+        font-weight: 500;
+    }
+
+    .price-current {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--primary-green);
+    }
+
+    .stock-info-inline {
         display: flex;
         align-items: center;
-        gap: 0;
-        height: 46px;
+        gap: 0.5rem;
+        color: var(--secondary-green);
+        font-weight: 600;
+        font-size: 0.95rem;
     }
 
-    .btn-qty {
-        width: 46px;
-        height: 46px;
-        border: 1px solid #dee2e6;
-        background: white;
+    .out-of-stock-text {
+        color: #ff4d4f;
+    }
+
+    /* Purchase Section */
+    .purchase-section {
+        padding: 1.5rem;
+        background: var(--white);
+        border: 2px solid var(--extra-light);
+        border-radius: 12px;
+    }
+
+    .purchase-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+
+    .quantity-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .quantity-label {
+        font-weight: 700;
+        color: var(--dark-green);
+        font-size: 0.95rem;
+    }
+
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        background: var(--cream);
+        border-radius: 10px;
+        padding: 0.3rem;
+    }
+
+    .qty-btn {
+        width: 40px;
+        height: 40px;
+        border: none;
+        background: var(--white);
+        color: var(--primary-green);
+        border-radius: 8px;
         cursor: pointer;
         transition: all 0.3s ease;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.2rem;
+        font-size: 1rem;
+        font-weight: 700;
     }
 
-    .btn-qty.minus {
-        border-radius: 8px 0 0 8px;
-    }
-
-    .btn-qty.plus {
-        border-radius: 0 8px 8px 0;
-    }
-
-    .btn-qty:hover {
+    .qty-btn:hover {
         background: var(--primary-green);
-        color: white;
-        border-color: var(--primary-green);
+        color: var(--white);
+        transform: scale(1.05);
     }
 
     .qty-input {
-        width: 80px;
-        height: 46px;
+        width: 70px;
+        height: 40px;
+        border: none;
+        background: transparent;
         text-align: center;
-        border: 1px solid #dee2e6;
-        border-left: none;
-        border-right: none;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 1.1rem;
+        color: var(--dark-green);
     }
 
     .qty-input:focus {
         outline: none;
-        border-color: var(--primary-green);
     }
 
-    /* Tabs */
-    .custom-tabs {
-        border-bottom: 2px solid var(--pale-green);
+    /* Action Buttons */
+    .action-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
     }
 
-    .custom-tabs .nav-link {
-        color: var(--dark-text);
-        border: none;
-        border-bottom: 3px solid transparent;
+    .btn-add-cart {
         padding: 1rem 1.5rem;
-        font-weight: 500;
+        background: var(--primary-green);
+        color: var(--white);
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        box-shadow: 0 4px 15px rgba(64, 145, 108, 0.3);
+    }
+
+    .btn-add-cart:hover {
+        background: var(--dark-green);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(64, 145, 108, 0.4);
+    }
+
+    .btn-buy-now {
+        padding: 1rem 1.5rem;
+        background: linear-gradient(135deg, #ff6b35, #f7931e);
+        color: var(--white);
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+    }
+
+    .btn-buy-now:hover {
+        background: linear-gradient(135deg, #f7931e, #ff6b35);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+        color: var(--white);
+    }
+
+    .btn-buy-now i {
+        animation: flash 1.5s infinite;
+    }
+
+    @keyframes flash {
+        0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.7;
+            transform: scale(1.15);
+        }
+    }
+
+    /* Quick Actions */
+    .quick-actions-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .quick-btn {
+        padding: 0.8rem 1.2rem;
+        background: var(--white);
+        color: var(--primary-green);
+        border: 2px solid var(--extra-light);
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .quick-btn:hover {
+        background: var(--extra-light);
+        border-color: var(--primary-green);
+        transform: translateY(-2px);
+    }
+
+    /* Detail Tabs Section */
+    .detail-tabs-section {
+        background: var(--white);
+        border-radius: 20px;
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        margin-bottom: 3rem;
+    }
+
+    .tabs-header {
+        display: flex;
+        background: var(--cream);
+        border-bottom: 2px solid var(--extra-light);
+    }
+
+    .tab-btn {
+        flex: 1;
+        padding: 1.2rem 1.5rem;
+        background: transparent;
+        border: none;
+        color: var(--text-gray);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        position: relative;
+    }
+
+    .tab-btn::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--primary-green);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .tab-btn:hover {
+        color: var(--primary-green);
+        background: rgba(64, 145, 108, 0.05);
+    }
+
+    .tab-btn.active {
+        color: var(--primary-green);
+        background: var(--white);
+    }
+
+    .tab-btn.active::after {
+        transform: scaleX(1);
+    }
+
+    .tabs-content {
+        padding: 2.5rem;
+    }
+
+    .tab-panel {
+        display: none;
+    }
+
+    .tab-panel.active {
+        display: block;
+        animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .description-wrapper {
+        line-height: 1.8;
+        font-size: 1rem;
+        color: var(--text-dark);
+    }
+
+    .description-wrapper.empty {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-gray);
+    }
+
+    .description-wrapper.empty i {
+        font-size: 3rem;
+        color: var(--pale-green);
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    /* Specs Grid */
+    .specs-grid {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .spec-item {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        padding: 1rem 1.5rem;
+        background: var(--cream);
+        border-radius: 10px;
         transition: all 0.3s ease;
     }
 
-    .custom-tabs .nav-link:hover {
-        color: var(--primary-green);
-        border-bottom-color: var(--pale-green);
-    }
-
-    .custom-tabs .nav-link.active {
-        color: var(--primary-green);
-        border-bottom-color: var(--primary-green);
-        background: transparent;
-    }
-
-    .custom-tab-content {
-        padding: 2rem;
-        background: white;
-        border-radius: 0 0 10px 10px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    }
-
-    .description-content {
-        line-height: 1.8;
-        font-size: 1rem;
-    }
-
-    .specs-table table {
-        margin-bottom: 0;
-    }
-
-    .specs-table th {
+    .spec-item:hover {
         background: var(--extra-light);
-        color: var(--dark-text);
-        font-weight: 600;
+        transform: translateX(5px);
     }
 
-    /* Section Header */
+    .spec-label {
+        font-weight: 700;
+        color: var(--dark-green);
+    }
+
+    .spec-value {
+        color: var(--text-dark);
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
+
+    .status-badge.in-stock {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-badge.out-of-stock {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Related Section */
+    .related-section {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: var(--shadow-md);
+    }
+
     .section-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 2px solid var(--pale-green);
-        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--extra-light);
     }
 
-    /* Product Card (for related books) */
-    .product-card {
-        transition: transform 0.3s ease;
-    }
-
-    .product-card:hover {
-        transform: translateY(-5px);
-    }
-
-    .product-image {
-        height: 300px;
-        overflow: hidden;
-        position: relative;
-        background: #f8f9fa;
-    }
-
-    .product-image img {
-        height: 100%;
-        width: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
-
-    .product-card:hover .product-image img {
-        transform: scale(1.05);
-    }
-
-    .product-actions {
-        position: absolute;
-        bottom: 10px;
-        left: 50%;
-        transform: translateX(-50%);
+    .header-left {
         display: flex;
-        gap: 10px;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--dark-green);
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin: 0;
+    }
+
+    .section-title i {
+        color: var(--primary-green);
+    }
+
+    .section-subtitle {
+        color: var(--text-gray);
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    .btn-view-all {
+        padding: 0.8rem 1.5rem;
+        background: var(--primary-green);
+        color: var(--white);
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-view-all:hover {
+        background: var(--dark-green);
+        transform: translateX(5px);
+        color: var(--white);
+    }
+
+    /* Related Books Grid */
+    .related-books-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .related-book-card {
+        background: var(--cream);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .related-book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .related-image-wrapper {
+        position: relative;
+        height: 280px;
+        overflow: hidden;
+        background: var(--white);
+    }
+
+    .related-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .related-book-card:hover .related-image {
+        transform: scale(1.1);
+    }
+
+    .image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.6));
         opacity: 0;
         transition: opacity 0.3s ease;
     }
 
-    .product-card:hover .product-actions {
+    .related-book-card:hover .image-overlay {
         opacity: 1;
     }
 
-    .product-actions .btn {
-        width: 40px;
-        height: 40px;
+    .related-stock-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 35px;
+        height: 35px;
+        background: linear-gradient(135deg, #52c41a, #73d13d);
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 50%;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        background: white;
+        color: var(--white);
+        font-size: 1rem;
+        box-shadow: 0 2px 10px rgba(82, 196, 26, 0.4);
+        z-index: 2;
     }
 
-    .product-actions .btn:hover {
-        background: var(--primary-green) !important;
-        color: white !important;
+    .related-stock-badge.out {
+        background: linear-gradient(135deg, #ff4d4f, #ff7875);
+        box-shadow: 0 2px 10px rgba(255, 77, 79, 0.4);
+    }
+
+    .related-quick-actions {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) translateY(10px);
+        display: flex;
+        gap: 0.6rem;
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 3;
+    }
+
+    .related-book-card:hover .related-quick-actions {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+
+    .related-action-btn {
+        width: 45px;
+        height: 45px;
+        background: rgba(255, 255, 255, 0.95);
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-green);
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        text-decoration: none;
+    }
+
+    .related-action-btn:hover {
+        background: var(--primary-green);
+        color: var(--white);
+        transform: scale(1.15);
+    }
+
+    .related-action-btn.wishlist-btn.active {
+        background: #ff4d4f;
+        color: var(--white);
+    }
+
+    /* Related Info */
+    .related-info {
+        padding: 1.2rem;
+    }
+
+    .related-title-link {
+        text-decoration: none;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .related-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--dark-green);
+        margin: 0 0 0.5rem 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.4;
+        transition: color 0.3s ease;
+    }
+
+    .related-title-link:hover .related-title {
+        color: var(--primary-green);
+    }
+
+    .related-author {
+        color: var(--text-gray);
+        font-size: 0.85rem;
+        margin-bottom: 0.6rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .related-author i {
+        color: var(--secondary-green);
+        font-size: 0.9rem;
+    }
+
+    .related-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .stars-small {
+        display: flex;
+        gap: 0.15rem;
+        color: #faad14;
+        font-size: 0.8rem;
+    }
+
+    .rating-small {
+        font-weight: 700;
+        color: var(--dark-green);
+        font-size: 0.85rem;
+    }
+
+    .related-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 0.8rem;
+        border-top: 1px solid var(--border-light);
+    }
+
+    .related-price {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--primary-green);
+    }
+
+    .related-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        flex: 1;
+        justify-content: flex-end;
+    }
+
+    .btn-buy-related {
+        padding: 0.6rem 1.2rem;
+        background: linear-gradient(135deg, #ff6b35, #f7931e);
+        color: var(--white);
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        box-shadow: 0 2px 10px rgba(255, 107, 53, 0.3);
+        white-space: nowrap;
+    }
+
+    .btn-buy-related:hover {
+        background: linear-gradient(135deg, #f7931e, #ff6b35);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+        color: var(--white);
+    }
+
+    .btn-buy-related i {
+        animation: flash 1.5s infinite;
+        font-size: 1rem;
     }
 
     /* Responsive */
+    @media (max-width: 1200px) {
+        .detail-wrapper {
+            grid-template-columns: 40% 60%;
+            gap: 2rem;
+        }
+
+        .related-books-grid {
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        }
+    }
+
+    @media (max-width: 992px) {
+        .detail-wrapper {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .image-gallery-section {
+            position: static;
+        }
+
+        .book-title {
+            font-size: 1.8rem;
+        }
+
+        .price-current {
+            font-size: 2rem;
+        }
+
+        .related-books-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+    }
+
     @media (max-width: 768px) {
+        .detail-wrapper {
+            padding: 1.5rem;
+        }
+
         .book-title {
             font-size: 1.5rem;
         }
 
-        .price-main {
-            font-size: 2rem;
+        .price-current {
+            font-size: 1.8rem;
         }
 
-        .quantity-selector {
-            justify-content: center;
+        .meta-info-grid {
+            grid-template-columns: 1fr;
         }
 
-        .main-image-container img {
-            max-height: 400px;
+        .action-buttons {
+            grid-template-columns: 1fr;
+        }
+
+        .tabs-content {
+            padding: 1.5rem;
+        }
+
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .related-books-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .spec-item {
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
         }
     }
 
-    /* Cursor Pointer */
-    .cursor-pointer {
-        cursor: pointer;
+    @media (max-width: 576px) {
+        .breadcrumb-custom {
+            font-size: 0.85rem;
+        }
+
+        .book-title {
+            font-size: 1.3rem;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+        }
+
+        .quick-actions-row {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 
 <script>
-    // Change main image when clicking thumbnail
-    function changeMainImage(src) {
+    // Change main image
+    function changeMainImage(src, element) {
         const mainImage = document.getElementById('mainImage');
         mainImage.src = src;
 
@@ -655,7 +1441,7 @@
         document.querySelectorAll('.thumbnail-image').forEach(thumb => {
             thumb.classList.remove('active');
         });
-        event.target.classList.add('active');
+        element.classList.add('active');
     }
 
     // Quantity controls
@@ -678,53 +1464,12 @@
         }
     }
 
-    // Add to cart
-    function addToCart(button) {
-        const bookId = button.getAttribute('data-book-id');
+    // Update buy now quantity
+    function updateBuyNowQuantity(event) {
         const quantity = document.getElementById('quantity').value;
-
-        // TODO: Implement cart functionality
-        console.log('Adding to cart:', {bookId, quantity});
-
-        // Visual feedback
-        const originalText = button.innerHTML;
-        button.innerHTML = '<i class="bi bi-check2 me-2"></i>Đã thêm!';
-        button.classList.add('btn-success');
-        button.classList.remove('btn-primary');
-
-        setTimeout(() => {
-            button.innerHTML = originalText;
-            button.classList.remove('btn-success');
-            button.classList.add('btn-primary');
-        }, 2000);
-
-        if (typeof showToast === 'function') {
-            showToast('Đã thêm sách vào giỏ hàng!', 'success');
-        }
-    }
-
-    // Add to wishlist
-    function addToWishlist() {
-        // TODO: Implement wishlist functionality
-        if (typeof showToast === 'function') {
-            showToast('Đã thêm vào danh sách yêu thích!', 'success');
-        }
-    }
-
-    // Share book
-    function shareBook() {
-        if (navigator.share) {
-            navigator.share({
-                title: document.querySelector('.book-title').textContent,
-                url: window.location.href
-            });
-        } else {
-            // Fallback: Copy link to clipboard
-            navigator.clipboard.writeText(window.location.href);
-            if (typeof showToast === 'function') {
-                showToast('Đã sao chép link!', 'success');
-            }
-        }
+        const currentUrl = new URL(event.target.href);
+        currentUrl.searchParams.set('quantity', quantity);
+        event.target.href = currentUrl.toString();
     }
 
     // Prevent manual input exceeding stock
@@ -740,6 +1485,62 @@
         } else if (value < 1) {
             this.value = 1;
         }
+    });
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetTab = this.dataset.tab;
+
+            // Remove active class from all buttons and panels
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+            // Add active class to clicked button and corresponding panel
+            this.classList.add('active');
+            document.getElementById(targetTab).classList.add('active');
+        });
+    });
+
+    // Wishlist functionality
+    function addToWishlist() {
+        if (typeof showToast === 'function') {
+            showToast('Đã thêm vào danh sách yêu thích!', 'success');
+        }
+    }
+
+    // Share functionality
+    function shareBook() {
+        if (navigator.share) {
+            navigator.share({
+                title: document.querySelector('.book-title').textContent,
+                url: window.location.href
+            }).catch(err => console.log('Share failed:', err));
+        } else {
+            // Fallback: Copy to clipboard
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                if (typeof showToast === 'function') {
+                    showToast('Đã sao chép link!', 'success');
+                }
+            });
+        }
+    }
+
+    // Related books wishlist toggle
+    document.querySelectorAll('.related-action-btn.wishlist-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            this.classList.toggle('active');
+
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('bi-heart-fill')) {
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+            } else {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+            }
+        });
     });
 </script>
 
