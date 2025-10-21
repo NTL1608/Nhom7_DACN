@@ -169,4 +169,16 @@ public class BookServiceImpl implements BookService {
             }
         }
     }
+
+    // ⭐ THÊM MỚI - ADMIN: Tìm kiếm TẤT CẢ sách (bao gồm inactive)
+    @Override
+    public Page<Book> searchAllBooksForAdmin(String keyword, Pageable pageable) {
+        return bookRepository.searchAllBooksForAdmin(keyword, pageable);
+    }
+
+    // ⭐ THÊM MỚI - ADMIN: Lấy tất cả sách theo category (bao gồm inactive)
+    @Override
+    public Page<Book> findAllByCategoryIdForAdmin(Long categoryId, Pageable pageable) {
+        return bookRepository.findAllByCategoryIdForAdmin(categoryId, pageable);
+    }
 }

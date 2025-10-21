@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
       xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{components/layouts/main}">
 <head>
@@ -71,7 +72,10 @@
                 <div class="card">
                     <div class="card-header pb-0">
                         <i class="fas fa-blog me-1"></i> Danh sách blog
-                        <a th:href="@{/admin/blogs/create}" class="btn btn-sm btn-primary float-end">
+                        <!-- ⭐ Cả ADMIN và LIBRARIAN đều thấy nút thêm -->
+                        <a th:href="@{/admin/blogs/create}"
+                           class="btn btn-sm btn-primary float-end"
+                           sec:authorize="hasAnyRole('ADMIN', 'LIBRARIAN')">
                             <i class="fas fa-plus-circle"></i> Thêm bài viết mới
                         </a>
                     </div>
@@ -140,30 +144,51 @@
                                         <span th:unless="${blog.publishedDateFormatted != null}" class="text-muted">-</span>
                                     </td>
                                     <td>
+
                                         <div class="btn-group" role="group">
+                                            <!-- ⭐ Sửa - ADMIN và LIBRARIAN -->
                                             <a th:href="@{/admin/blogs/edit/{id}(id=${blog.id})}"
-                                               class="btn btn-sm btn-primary" title="Edit">
+                                               class="btn btn-sm btn-primary"
+                                               title="Edit"
+                                               sec:authorize="hasAnyRole('ADMIN', 'LIBRARIAN')">
                                                 <i class="fas fa-edit"></i>
                                             </a>
+
+                                            <!-- ⭐ Publish - CHỈ ADMIN -->
                                             <a th:if="${blog.status.name() == 'DRAFT'}"
                                                th:href="@{/admin/blogs/change-status/{id}/{status}(id=${blog.id}, status='PUBLISHED')}"
-                                               class="btn btn-sm btn-success btn-publish" title="Publish">
+                                               class="btn btn-sm btn-success btn-publish"
+                                               title="Publish"
+                                               sec:authorize="hasRole('ADMIN')">
                                                 <i class="fas fa-rocket"></i>
                                             </a>
+
+                                            <!-- ⭐ Unpublish - CHỈ ADMIN -->
                                             <a th:if="${blog.status.name() == 'PUBLISHED'}"
                                                th:href="@{/admin/blogs/change-status/{id}/{status}(id=${blog.id}, status='DRAFT')}"
-                                               class="btn btn-sm btn-warning btn-unpublish" title="Unpublish">
+                                               class="btn btn-sm btn-warning btn-unpublish"
+                                               title="Unpublish"
+                                               sec:authorize="hasRole('ADMIN')">
                                                 <i class="fas fa-pause"></i>
                                             </a>
+
+                                            <!-- ⭐ Upload Image - ADMIN và LIBRARIAN -->
                                             <a th:href="@{/admin/blogs/upload-image/{id}(id=${blog.id})}"
-                                               class="btn btn-sm btn-info" title="Upload Image">
+                                               class="btn btn-sm btn-info"
+                                               title="Upload Image"
+                                               sec:authorize="hasAnyRole('ADMIN', 'LIBRARIAN')">
                                                 <i class="fas fa-camera"></i>
                                             </a>
+
+                                            <!-- ⭐ Xóa - CHỈ ADMIN -->
                                             <a th:href="@{/admin/blogs/delete/{id}(id=${blog.id})}"
-                                               class="btn btn-sm btn-danger btn-delete" title="Delete">
+                                               class="btn btn-sm btn-danger btn-delete"
+                                               title="Delete"
+                                               sec:authorize="hasRole('ADMIN')">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                         </div>
+
                                     </td>
                                 </tr>
                                 </tbody>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
       xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{components/layouts/main}">
 <head>
@@ -607,20 +608,42 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-floating-label status-selector">
-                                        <select id="status" th:field="*{status}" required>
+                                        <!-- ⭐ ADMIN có thể đổi -->
+                                        <select id="statusAdmin"
+                                                th:field="*{status}"
+                                                required
+                                                sec:authorize="hasRole('ADMIN')">
                                             <option th:each="blogStatus : ${blogStatuses}"
                                                     th:value="${blogStatus}"
                                                     th:text="${blogStatus}">
                                                 Bản nháp
                                             </option>
                                         </select>
-                                        <label for="status" class="required-field">Trạng thái bài viết</label>
+
+                                        <!-- ⭐ LIBRARIAN chỉ xem (disabled) -->
+                                        <select id="statusLibrarian"
+                                                th:field="*{status}"
+                                                required
+                                                disabled
+                                                sec:authorize="hasRole('LIBRARIAN')">
+                                            <option th:each="blogStatus : ${blogStatuses}"
+                                                    th:value="${blogStatus}"
+                                                    th:text="${blogStatus}">
+                                                Bản nháp
+                                            </option>
+                                        </select>
+
+                                        <label for="statusAdmin" class="required-field">Trạng thái bài viết</label>
                                     </div>
                                     <div class="status-help" id="statusHelp">
                                         <i class="fas fa-info-circle me-1"></i>
                                         <span th:if="${blog.id == null}">Lưu dưới dạng bản nháp để chỉnh sửa sau hoặc xuất bản ngay.</span>
                                         <span th:if="${blog.id != null && blog.status?.name() == 'DRAFT'}">Sau khi xuất bản, blog này sẽ được công khai.</span>
                                         <span th:if="${blog.id != null && blog.status?.name() == 'PUBLISHED'}">Chuyển sang bản nháp sẽ ẩn bài viết này khỏi người dùng.</span>
+                                    </div>
+                                    <!-- ⭐ Cảnh báo cho LIBRARIAN -->
+                                    <div class="form-text text-warning fw-bold mt-2" sec:authorize="hasRole('LIBRARIAN')">
+                                        <i class="fas fa-lock me-1"></i>Bạn không có quyền thay đổi trạng thái xuất bản
                                     </div>
                                 </div>
                             </div>
@@ -753,16 +776,21 @@
                 </a>
             </div>
             <div class="d-flex gap-2 flex-wrap" th:if="${blog.id != null}">
+                <!-- ⭐ Publish - CHỈ ADMIN -->
                 <a th:if="${blog.status?.name() == 'DRAFT'}"
                    th:href="@{/admin/blogs/change-status/{id}/{status}(id=${blog.id}, status='PUBLISHED')}"
                    class="btn btn-publish"
-                   onclick="return confirm('Bạn có chắc chắn muốn xuất bản bài viết này không? Nó sẽ hiển thị cho tất cả người dùng.')">
+                   onclick="return confirm('Bạn có chắc chắn muốn xuất bản bài viết này không? Nó sẽ hiển thị cho tất cả người dùng.')"
+                   sec:authorize="hasRole('ADMIN')">
                     <i class="fas fa-rocket me-2"></i>Xuất bản bài viết
                 </a>
+
+                <!-- ⭐ Unpublish - CHỈ ADMIN -->
                 <a th:if="${blog.status?.name() == 'PUBLISHED'}"
                    th:href="@{/admin/blogs/change-status/{id}/{status}(id=${blog.id}, status='DRAFT')}"
                    class="btn btn-unpublish"
-                   onclick="return confirm('Bạn có chắc chắn muốn huỷ xuất bản bài viết này không? Nó sẽ không còn hiển thị với người dùng.')">
+                   onclick="return confirm('Bạn có chắc chắn muốn huỷ xuất bản bài viết này không? Nó sẽ không còn hiển thị với người dùng.')"
+                   sec:authorize="hasRole('ADMIN')">
                     <i class="fas fa-pause me-2"></i>Huỷ xuất bản bài viết
                 </a>
             </div>
@@ -774,7 +802,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const titleInput = document.getElementById('title');
-            const statusSelect = document.getElementById('status');
+            const statusSelect = document.getElementById('statusAdmin') || document.getElementById('statusLibrarian');
             const contentTextarea = document.getElementById('content');
             const statusHelp = document.getElementById('statusHelp');
             const form = document.getElementById('blogForm');

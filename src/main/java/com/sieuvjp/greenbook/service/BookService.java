@@ -24,4 +24,8 @@ public interface BookService {
     void updateStock(Long bookId, int quantity);
     void addBookImage(Long bookId, MultipartFile imageFile);
     void removeBookImage(Long bookId, String imageUrl);
+
+    // ⭐ THÊM MỚI - Admin methods (bao gồm inactive books)
+    Page<Book> searchAllBooksForAdmin(String keyword, Pageable pageable);
+    Page<Book> findAllByCategoryIdForAdmin(Long categoryId, Pageable pageable);
 }

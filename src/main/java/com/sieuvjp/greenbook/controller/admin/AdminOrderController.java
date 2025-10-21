@@ -14,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.security.access.prepost.PreAuthorize;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/admin/orders")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
 public class AdminOrderController {
 
     private final OrderService orderService;
@@ -104,5 +107,34 @@ public class AdminOrderController {
         model.addAttribute("status", status);
         model.addAttribute("orderStatuses", OrderStatus.values());
         return "pages/order/index";
+    }
+    // ⭐ DUYỆT YÊU CẦU HỦY ĐƠN
+    @PostMapping("/{id}/approve-cancellation")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')") // Cả 2 role
+    public String approveCancellation(@PathVariable Long id,
+                                      RedirectAttributes redirectAttributes) {
+        try {
+            orderService.approveCancellation(id);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Đã duyệt hủy đơn hàng và hoàn kho thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/admin/orders/" + id;
+    }
+
+    // ⭐ TỪ CHỐI YÊU CẦU HỦY (OPTIONAL)
+    @PostMapping("/{id}/reject-cancellation")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
+    public String rejectCancellation(@PathVariable Long id,
+                                     RedirectAttributes redirectAttributes) {
+        try {
+            orderService.rejectCancellation(id);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Đã từ chối yêu cầu hủy đơn hàng!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/admin/orders/" + id;
     }
 }

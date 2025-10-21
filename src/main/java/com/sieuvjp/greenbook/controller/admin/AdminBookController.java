@@ -8,6 +8,8 @@ import com.sieuvjp.greenbook.service.CategoryService;
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,6 +36,7 @@ public class AdminBookController {
     private final CategoryService categoryService;
 
     @GetMapping("/suggest-description")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')") // ⭐ Cả 2 role
     public ResponseEntity<Map<String, String>> suggestBookDescription(@RequestParam String title) {
         try {
             Client client = new Client();
@@ -48,21 +51,22 @@ public class AdminBookController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')") // ⭐ Cả 2 role
     public String listBooks(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "100") int size,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Long categoryId,
             Model model) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         Page<Book> bookPage;
 
         if (keyword != null && !keyword.isEmpty()) {
-            bookPage = bookService.searchBooks(keyword, pageable);
+            bookPage = bookService.searchAllBooksForAdmin(keyword, pageable);
             model.addAttribute("keyword", keyword);
         } else if (categoryId != null) {
-            bookPage = bookService.findByCategoryId(categoryId, pageable);
+            bookPage = bookService.findAllByCategoryIdForAdmin(categoryId, pageable);
             model.addAttribute("categoryId", categoryId);
         } else {
             bookPage = bookService.findAllPaginated(pageable);
@@ -77,7 +81,6 @@ public class AdminBookController {
         model.addAttribute("totalPages", bookPage.getTotalPages());
         model.addAttribute("totalItems", bookPage.getTotalElements());
 
-        // For category filter
         List<Category> categories = categoryService.findAllActive();
         model.addAttribute("categories", categories);
 
@@ -85,6 +88,7 @@ public class AdminBookController {
     }
 
     @GetMapping("/create")
+    @PreAuthorize("hasRole('ADMIN')") // ⭐ CHỈ ADMIN
     public String showCreateForm(Model model) {
         model.addAttribute("book", new BookDTO());
         model.addAttribute("categories", categoryService.findAllActive());
@@ -92,6 +96,7 @@ public class AdminBookController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('ADMIN')") // ⭐ CHỈ ADMIN
     public String createBook(@Valid @ModelAttribute("book") BookDTO bookDTO,
                              BindingResult result,
                              Model model,
@@ -99,21 +104,17 @@ public class AdminBookController {
 
         model.addAttribute("categories", categoryService.findAllActive());
 
-        // Check for validation errors
         if (result.hasErrors()) {
             return "pages/book/form";
         }
 
-        // Get category
         Category category = categoryService.findById(bookDTO.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid category ID: " + bookDTO.getCategoryId()));
 
-        // Prepare book for save
         Book book = bookDTO.toEntity();
         book.setCategory(category);
         book.setActive(true);
 
-        // Save book
         bookService.save(book);
 
         redirectAttributes.addFlashAttribute("successMessage", "Book created successfully");
@@ -121,6 +122,7 @@ public class AdminBookController {
     }
 
     @GetMapping("/edit/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')") // ⭐ Cả 2 role
     public String showEditForm(@PathVariable Long id, Model model) {
         Book book = bookService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid book ID: " + id));
@@ -131,39 +133,44 @@ public class AdminBookController {
     }
 
     @PostMapping("/edit/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')") // ⭐ Cả 2 role
     public String updateBook(@PathVariable Long id,
                              @Valid @ModelAttribute("book") BookDTO bookDTO,
                              BindingResult result,
                              Model model,
-                             RedirectAttributes redirectAttributes) {
+                             RedirectAttributes redirectAttributes,
+                             Authentication authentication) { // ⭐ THÊM Authentication
 
         model.addAttribute("categories", categoryService.findAllActive());
 
-        // Check for validation errors
         if (result.hasErrors()) {
             return "pages/book/form";
         }
 
-        // Get existing book
         Book existingBook = bookService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid book ID: " + id));
 
-        // Get category
         Category category = categoryService.findById(bookDTO.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid category ID: " + bookDTO.getCategoryId()));
 
-        // Prepare book for update
         Book book = bookDTO.toEntity();
         book.setId(id);
         book.setCategory(category);
         book.setActive(existingBook.isActive());
 
-        // If no images are set in the DTO, keep the existing ones
+        // ⭐ NẾU LÀ LIBRARIAN → GIỮ NGUYÊN GIÁ CŨ
+        boolean isLibrarian = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_LIBRARIAN"));
+
+        if (isLibrarian) {
+            book.setOriginalPrice(existingBook.getOriginalPrice()); // Giữ giá cũ
+            System.out.println("🔒 LIBRARIAN không được đổi giá - Giữ nguyên giá cũ");
+        }
+
         if (book.getImageUrls() == null || book.getImageUrls().isEmpty()) {
             book.setImageUrls(existingBook.getImageUrls());
         }
 
-        // Save book
         bookService.save(book);
 
         redirectAttributes.addFlashAttribute("successMessage", "Book updated successfully");
@@ -171,6 +178,7 @@ public class AdminBookController {
     }
 
     @GetMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')") // ⭐ CHỈ ADMIN
     public String deleteBook(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         bookService.deleteById(id);
         redirectAttributes.addFlashAttribute("successMessage", "Book deleted successfully");
@@ -178,6 +186,7 @@ public class AdminBookController {
     }
 
     @GetMapping("/toggle-status/{id}")
+    @PreAuthorize("hasRole('ADMIN')") // ⭐ CHỈ ADMIN
     public String toggleBookStatus(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         bookService.toggleActiveStatus(id);
         redirectAttributes.addFlashAttribute("successMessage", "Book status updated successfully");
@@ -185,6 +194,7 @@ public class AdminBookController {
     }
 
     @GetMapping("/images/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')") // ⭐ Cả 2 role
     public String manageBookImages(@PathVariable Long id, Model model) {
         Book book = bookService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid book ID: " + id));
@@ -194,6 +204,7 @@ public class AdminBookController {
     }
 
     @PostMapping("/images/{id}/upload")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')") // ⭐ Cả 2 role
     public String uploadBookImage(@PathVariable Long id,
                                   @RequestParam("imageFile") MultipartFile imageFile,
                                   RedirectAttributes redirectAttributes) {
@@ -209,6 +220,7 @@ public class AdminBookController {
     }
 
     @GetMapping("/images/{id}/delete/{imageUrl}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')") // ⭐ Cả 2 role
     public String deleteBookImage(@PathVariable Long id,
                                   @PathVariable String imageUrl,
                                   RedirectAttributes redirectAttributes) {
@@ -219,6 +231,7 @@ public class AdminBookController {
     }
 
     @GetMapping("/update-stock/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')") // ⭐ Cả 2 role
     public String showUpdateStockForm(@PathVariable Long id, Model model) {
         Book book = bookService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid book ID: " + id));
@@ -228,6 +241,7 @@ public class AdminBookController {
     }
 
     @PostMapping("/update-stock/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')") // ⭐ Cả 2 role
     public String updateBookStock(@PathVariable Long id,
                                   @RequestParam("stockQuantity") int stockQuantity,
                                   RedirectAttributes redirectAttributes) {

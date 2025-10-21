@@ -20,29 +20,91 @@
     <link th:href="@{/css/icons.min.css}" rel="stylesheet" type="text/css"/>
     <link th:href="@{/css/app.min.css}" rel="stylesheet" type="text/css"/>
 
-
-
+    <!-- ⭐ THÊM SWEETALERT2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 
 <body>
 <div id="x-wrapper" data-controller="init">
+    <!-- ⭐ GIỮ NGUYÊN ALERT CŨ (dự phòng nếu JS không load) -->
     <div class="container-fluid px-4 mt-3">
-        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}">
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}" id="oldSuccessAlert">
             <span th:text="${successMessage}">Thông báo thành công</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}" id="oldErrorAlert">
             <span th:text="${errorMessage}">Thông báo lỗi</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
 
     <th:block layout:fragment="body"></th:block>
-
-
 </div>
 
 <th:block layout:fragment="scripts"></th:block>
+
+<!-- ⭐ THÊM SWEETALERT2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- ⭐ THÔNG BÁO TOÀN CỤC - ÁP DỤNG CHO TẤT CẢ TRANG -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', function() {
+        const successMessage = /*[[${successMessage}]]*/ null;
+        const errorMessage = /*[[${errorMessage}]]*/ null;
+
+        if (successMessage) {
+            // Ẩn alert Bootstrap cũ
+            const oldAlert = document.getElementById('oldSuccessAlert');
+            if (oldAlert) {
+                oldAlert.style.display = 'none';
+            }
+
+            // Hiển thị SweetAlert2 đẹp
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công!',
+                text: successMessage,
+                showConfirmButton: false,
+                timer: 2500,
+                toast: true,
+                position: 'top-end',
+                timerProgressBar: true,
+                showClass: {
+                    popup: 'animate__animated animate__fadeInRight'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutRight'
+                },
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            });
+        }
+
+        if (errorMessage) {
+            // Ẩn alert Bootstrap cũ
+            const oldAlert = document.getElementById('oldErrorAlert');
+            if (oldAlert) {
+                oldAlert.style.display = 'none';
+            }
+
+            // Hiển thị SweetAlert2 đẹp
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: errorMessage,
+                confirmButtonText: 'Đóng',
+                confirmButtonColor: '#dc3545',
+                showClass: {
+                    popup: 'animate__animated animate__shakeX'
+                }
+            });
+        }
+    });
+    /*]]>*/
+</script>
 
 </body>
 
