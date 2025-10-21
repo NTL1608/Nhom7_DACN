@@ -63,4 +63,15 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             @Param("excludeId") Long excludeId,
             Pageable pageable
     );
+    // ⭐ ADMIN: Tìm kiếm TẤT CẢ sách (bao gồm inactive) - KHÔNG ẢNH HƯỞNG FRONTEND
+    @Query("SELECT b FROM Book b WHERE " +
+            "b.title LIKE %:keyword% OR " +
+            "b.author LIKE %:keyword% OR " +
+            "b.description LIKE %:keyword% OR " +
+            "b.publisher LIKE %:keyword%")
+    Page<Book> searchAllBooksForAdmin(@Param("keyword") String keyword, Pageable pageable);
+
+    // ⭐ ADMIN: Lấy tất cả sách theo category (bao gồm inactive)
+    @Query("SELECT b FROM Book b WHERE b.category.id = :categoryId")
+    Page<Book> findAllByCategoryIdForAdmin(@Param("categoryId") Long categoryId, Pageable pageable);
 }

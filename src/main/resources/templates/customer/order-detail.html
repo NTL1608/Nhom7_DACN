@@ -19,6 +19,22 @@
     </div>
 </section>
 
+<!-- Flash Messages -->
+<section class="py-3" th:if="${success != null || error != null}">
+    <div class="container">
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success}">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${error}">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+</section>
+
 <!-- Order Detail Content -->
 <section class="order-detail-section">
     <div class="container">
@@ -188,6 +204,29 @@
                         <a th:href="@{/profile(tab='orders')}" class="btn-back">
                             <i class="bi bi-arrow-left me-2"></i>Quay lại danh sách
                         </a>
+
+                        <!-- ✅ NÚT HỦY ĐƠN HÀNG -->
+                        <form th:if="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).PENDING ||
+              order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).PROCESSING}"
+                              th:action="@{/orders/{id}/cancel(id=${order.id})}"
+                              method="post"
+                              onsubmit="return confirm('Bạn có chắc chắn muốn YÊU CẦU HỦY đơn hàng này? Thủ thư sẽ xem xét và duyệt.');">
+                            <button type="submit" class="btn-cancel">
+                                <i class="bi bi-x-circle me-2"></i>Yêu cầu hủy đơn hàng
+                            </button>
+                        </form>
+
+                        <!-- ⭐ THÊM BADGE CHỜ DUYỆT -->
+                        <div th:if="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).CANCELLATION_REQUESTED}"
+                             class="alert alert-warning mt-3">
+                            <i class="bi bi-hourglass-split me-2"></i>
+                            <strong>Đang chờ duyệt hủy:</strong> Yêu cầu hủy đơn hàng của bạn đang được xem xét.
+                        </div>
+                        <span class="status-badge cancellation-requested"
+                              th:if="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).CANCELLATION_REQUESTED}">
+                         <i class="bi bi-hourglass-split me-1"></i>Chờ duyệt hủy
+                        </span>
+
                         <a href="#" class="btn-help">
                             <i class="bi bi-headset me-2"></i>Hỗ trợ
                         </a>
@@ -210,43 +249,39 @@
                                     <p th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:30</p>
                                 </div>
                             </div>
-                            <div class="timeline-item"
-                                 th:classappend="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).PROCESSING ||
-                                                   order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).SHIPPED ||
-                                                   order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).DELIVERED ||
-                                                   order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).COMPLETED} ? 'active' : ''">
-                                <div class="timeline-icon">
-                                    <i class="bi bi-box-seam-fill"></i>
-                                </div>
-                                <div class="timeline-content-text">
-                                    <h6>Đang xử lý</h6>
-                                    <p>Đơn hàng đang được chuẩn bị</p>
-                                </div>
+
                             </div>
-                            <div class="timeline-item"
-                                 th:classappend="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).SHIPPED ||
-                                                   order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).DELIVERED ||
-                                                   order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).COMPLETED} ? 'active' : ''">
-                                <div class="timeline-icon">
-                                    <i class="bi bi-truck"></i>
-                                </div>
-                                <div class="timeline-content-text">
-                                    <h6>Đang giao hàng</h6>
-                                    <p>Đơn hàng đang được vận chuyển</p>
-                                </div>
+                        <!-- Timeline Item 2 - Đang xử lý -->
+                        <div class="timeline-item" th:classappend="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).PROCESSING || order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).SHIPPED || order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).DELIVERED || order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).COMPLETED} ? 'active' : ''">
+                            <div class="timeline-icon">
+                                <i class="bi bi-box-seam-fill"></i>
                             </div>
-                            <div class="timeline-item"
-                                 th:classappend="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).DELIVERED ||
-                                                   order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).COMPLETED} ? 'active' : ''">
-                                <div class="timeline-icon">
-                                    <i class="bi bi-check-all"></i>
-                                </div>
-                                <div class="timeline-content-text">
-                                    <h6>Đã giao hàng</h6>
-                                    <p th:if="${order.completedDate != null}"
-                                       th:text="${#temporals.format(order.completedDate, 'dd/MM/yyyy HH:mm')}">02/01/2024 15:00</p>
-                                    <p th:if="${order.completedDate == null}">Đơn hàng sẽ được giao sớm</p>
-                                </div>
+                            <div class="timeline-content-text">
+                                <h6>Đang xử lý</h6>
+                                <p>Đơn hàng đang được chuẩn bị</p>
+                            </div>
+                        </div>
+
+                        <!-- Timeline Item 3 - Đang giao hàng -->
+                        <div class="timeline-item" th:classappend="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).SHIPPED || order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).DELIVERED || order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).COMPLETED} ? 'active' : ''">
+                            <div class="timeline-icon">
+                                <i class="bi bi-truck"></i>
+                            </div>
+                            <div class="timeline-content-text">
+                                <h6>Đang giao hàng</h6>
+                                <p>Đơn hàng đang được vận chuyển</p>
+                            </div>
+                        </div>
+
+                        <!-- Timeline Item 4 - Đã giao hàng -->
+                        <div class="timeline-item" th:classappend="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).DELIVERED || order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).COMPLETED} ? 'active' : ''">
+                            <div class="timeline-icon">
+                                <i class="bi bi-check-all"></i>
+                            </div>
+                            <div class="timeline-content-text">
+                                <h6>Đã giao hàng</h6>
+                                <p th:if="${order.completedDate != null}" th:text="${#temporals.format(order.completedDate, 'dd/MM/yyyy HH:mm')}">02/01/2024 15:00</p>
+                                <p th:if="${order.completedDate == null}">Đơn hàng sẽ được giao sớm</p>
                             </div>
                         </div>
                     </div>
@@ -553,7 +588,26 @@
     .btn-help:hover {
         background: var(--extra-light);
     }
+    .btn-cancel {
+        padding: 0.8rem 1.5rem;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.3s ease;
+        display: block;
+        background: #dc3545;
+        color: white;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+    }
 
+    .btn-cancel:hover {
+        background: #c82333;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    }
     /* Timeline */
     .timeline-content {
         padding: 2rem;
@@ -641,6 +695,10 @@
         .qty-value {
             display: inline;
         }
+    }
+    .status-badge.cancellation-requested {
+        background: linear-gradient(135deg, #ff9800, #ffb74d);
+        color: white;
     }
 </style>
 

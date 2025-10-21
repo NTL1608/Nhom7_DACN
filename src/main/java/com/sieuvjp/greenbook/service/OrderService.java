@@ -30,4 +30,7 @@ public interface OrderService {
 
     // ✅ THÊM 2 METHOD MỚI ĐÂY
     Order getOrderWithDetails(Long orderId);
+    void cancelOrder(Long orderId, Long userId);
+    void approveCancellation(Long orderId);
+    void rejectCancellation(Long orderId);
 }

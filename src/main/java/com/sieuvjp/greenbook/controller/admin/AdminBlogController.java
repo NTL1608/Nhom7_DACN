@@ -8,6 +8,8 @@ import com.sieuvjp.greenbook.service.BlogService;
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import com.sieuvjp.greenbook.service.UserService;
 import jakarta.validation.Valid;
@@ -16,12 +18,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -38,6 +38,7 @@ public class AdminBlogController {
     private final UserService userService;
 
     @GetMapping("/suggest-content")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')") // ⭐ Cả 2 role
     public ResponseEntity<Map<String, String>> suggestContent(@RequestParam String title) {
         Client client = new Client();
         try {
@@ -52,6 +53,7 @@ public class AdminBlogController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')") // ⭐ Cả 2 role
     public String listBlogs(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -86,11 +88,11 @@ public class AdminBlogController {
     }
 
     @GetMapping("/create")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')") // ⭐ Cả 2 role
     public String showCreateForm(Model model) {
         BlogDTO blog = new BlogDTO();
         blog.setStatus(BlogStatus.DRAFT);
 
-        // Get current user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
         User currentUser = userService.findByUsername(currentUsername)
@@ -104,6 +106,7 @@ public class AdminBlogController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')") // ⭐ Cả 2 role
     public String createBlog(@Valid @ModelAttribute("blog") BlogDTO blogDTO,
                              BindingResult result,
                              Model model,
@@ -111,20 +114,16 @@ public class AdminBlogController {
 
         model.addAttribute("blogStatuses", BlogStatus.values());
 
-        // Check for validation errors
         if (result.hasErrors()) {
             return "pages/blog/form";
         }
 
-        // Get user
         User user = userService.findById(blogDTO.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + blogDTO.getUserId()));
 
-        // Prepare blog for save
         Blog blog = blogDTO.toEntity();
         blog.setUser(user);
 
-        // Save blog
         blogService.save(blog);
 
         redirectAttributes.addFlashAttribute("successMessage", "Blog created successfully");
@@ -132,6 +131,7 @@ public class AdminBlogController {
     }
 
     @GetMapping("/edit/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')") // ⭐ Cả 2 role
     public String showEditForm(@PathVariable Long id, Model model) {
         Blog blog = blogService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid blog ID: " + id));
@@ -142,38 +142,44 @@ public class AdminBlogController {
     }
 
     @PostMapping("/edit/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')") // ⭐ Cả 2 role
     public String updateBlog(@PathVariable Long id,
                              @Valid @ModelAttribute("blog") BlogDTO blogDTO,
                              BindingResult result,
                              Model model,
-                             RedirectAttributes redirectAttributes) {
+                             RedirectAttributes redirectAttributes,
+                             Authentication authentication) { // ⭐ THÊM Authentication
 
         model.addAttribute("blogStatuses", BlogStatus.values());
 
-        // Check for validation errors
         if (result.hasErrors()) {
             return "pages/blog/form";
         }
 
-        // Get existing blog
         Blog existingBlog = blogService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid blog ID: " + id));
 
-        // Get user
         User user = userService.findById(blogDTO.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + blogDTO.getUserId()));
 
-        // Prepare blog for update
         Blog blog = blogDTO.toEntity();
         blog.setId(id);
         blog.setUser(user);
 
-        // Keep existing image if not changed
+        // ⭐ LIBRARIAN KHÔNG ĐƯỢC PUBLISH/UNPUBLISH
+        boolean isLibrarian = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_LIBRARIAN"));
+
+        if (isLibrarian) {
+            // Giữ nguyên trạng thái cũ
+            blog.setStatus(existingBlog.getStatus());
+            System.out.println("🔒 LIBRARIAN không được đổi trạng thái publish - Giữ nguyên");
+        }
+
         if (blog.getImageUrl() == null || blog.getImageUrl().isEmpty()) {
             blog.setImageUrl(existingBlog.getImageUrl());
         }
 
-        // Save blog
         blogService.save(blog);
 
         redirectAttributes.addFlashAttribute("successMessage", "Blog updated successfully");
@@ -181,6 +187,7 @@ public class AdminBlogController {
     }
 
     @GetMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')") // ⭐ CHỈ ADMIN
     public String deleteBlog(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         blogService.deleteById(id);
         redirectAttributes.addFlashAttribute("successMessage", "Blog deleted successfully");
@@ -188,6 +195,7 @@ public class AdminBlogController {
     }
 
     @GetMapping("/change-status/{id}/{status}")
+    @PreAuthorize("hasRole('ADMIN')") // ⭐ CHỈ ADMIN
     public String changeBlogStatus(@PathVariable Long id,
                                    @PathVariable BlogStatus status,
                                    RedirectAttributes redirectAttributes) {
@@ -198,6 +206,7 @@ public class AdminBlogController {
     }
 
     @GetMapping("/upload-image/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')") // ⭐ Cả 2 role
     public String showUploadImageForm(@PathVariable Long id, Model model) {
         Blog blog = blogService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid blog ID: " + id));
@@ -207,6 +216,7 @@ public class AdminBlogController {
     }
 
     @PostMapping("/upload-image/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')") // ⭐ Cả 2 role
     public String uploadBlogImage(@PathVariable Long id,
                                   @RequestParam("imageFile") MultipartFile imageFile,
                                   RedirectAttributes redirectAttributes) {

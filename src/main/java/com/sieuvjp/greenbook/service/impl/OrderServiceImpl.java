@@ -11,6 +11,7 @@ import com.sieuvjp.greenbook.repository.OrderDetailRepository;
 import com.sieuvjp.greenbook.repository.OrderRepository;
 import com.sieuvjp.greenbook.repository.UserRepository;
 import com.sieuvjp.greenbook.service.OrderService;
+import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -75,14 +76,33 @@ public class OrderServiceImpl implements OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        // Update book stock and sold quantities
+// ⭐ Update book stock and sold quantities - FIX BUG
+        log.info("=== CẬP NHẬT KHO ===");
         for (OrderDetail detail : savedOrder.getOrderDetails()) {
-            Book book = detail.getBook();
-            book.setStockQuantity(book.getStockQuantity() - detail.getQuantity());
-            book.setSoldQuantity(book.getSoldQuantity() + detail.getQuantity());
-            bookRepository.save(book);
-        }
+            Long bookId = detail.getBook().getId();
+            int quantityOrdered = detail.getQuantity();
 
+            // ⭐ RELOAD book từ database để có giá trị chính xác
+            Book book = bookRepository.findById(bookId)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy sách ID: " + bookId));
+
+            int stockBefore = book.getStockQuantity();
+
+            log.info("📚 Sách: {} | Kho trước: {} | Đặt: {} | Kho sau: {}",
+                    book.getTitle(), stockBefore, quantityOrdered, stockBefore - quantityOrdered);
+
+            // Kiểm tra đủ hàng
+            if (stockBefore < quantityOrdered) {
+                throw new RuntimeException("Sách '" + book.getTitle() +
+                        "' không đủ hàng! Còn " + stockBefore + ", cần " + quantityOrdered);
+            }
+
+            book.setStockQuantity(stockBefore - quantityOrdered);
+            book.setSoldQuantity(book.getSoldQuantity() + quantityOrdered);
+            bookRepository.save(book);
+            bookRepository.flush();
+        }
+        log.info("=== CẬP NHẬT KHO HOÀN TẤT ===");
         return savedOrder;
     }
 
@@ -197,6 +217,99 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findByIdWithDetails(orderId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng #" + orderId));
     }
+    @Override
+    @Transactional
+    public void cancelOrder(Long orderId, Long userId) {
+        Order order = orderRepository.findByIdWithDetails(orderId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+
+        // Kiểm tra quyền
+        if (!order.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Bạn không có quyền hủy đơn hàng này!");
+        }
+
+        // Chỉ cho phép yêu cầu hủy ở trạng thái PENDING hoặc PROCESSING
+        if (order.getStatus() != OrderStatus.PENDING && order.getStatus() != OrderStatus.PROCESSING) {
+            throw new RuntimeException("Không thể hủy đơn hàng ở trạng thái hiện tại!");
+        }
+
+        // ⭐ THAY ĐỔI: Không trừ kho ngay, chỉ chuyển sang CANCELLATION_REQUESTED
+        order.setStatus(OrderStatus.CANCELLATION_REQUESTED);
+        orderRepository.save(order);
+
+    }
+    // ⭐ THÊM METHOD MỚI - DUYỆT HỦY ĐỠN (CHO ADMIN/LIBRARIAN)
+    @Override
+    @Transactional
+    public void approveCancellation(Long orderId) {
+        log.info("========================================");
+        log.info("⭐ DUYỆT HỦY ĐƠN HÀNG #{}", orderId);
+        log.info("========================================");
+
+        Order order = orderRepository.findByIdWithDetails(orderId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+
+        log.info("📦 Trạng thái hiện tại: {}", order.getStatus());
+
+        if (order.getStatus() != OrderStatus.CANCELLATION_REQUESTED) {
+            throw new RuntimeException("Đơn hàng này không yêu cầu hủy!");
+        }
+
+        // HOÀN KHO TRƯỚC KHI ĐỔI TRẠNG THÁI
+        log.info("=== BẮT ĐẦU HOÀN KHO ===");
+        for (OrderDetail detail : order.getOrderDetails()) {
+            Long bookId = detail.getBook().getId();
+            int quantityToReturn = detail.getQuantity();
+
+            // ⭐ RELOAD book từ database để có giá trị chính xác
+            Book book = bookRepository.findById(bookId)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy sách ID: " + bookId));
+
+            int stockBefore = book.getStockQuantity();
+            int soldBefore = book.getSoldQuantity();
+
+            log.info("📚 Sách: {} (ID: {})", book.getTitle(), bookId);
+            log.info("   Kho TRƯỚC: {} | Hoàn: {} | Kho SAU: {}",
+                    stockBefore, quantityToReturn, stockBefore + quantityToReturn);
+
+            // Cập nhật kho
+            book.setStockQuantity(stockBefore + quantityToReturn);
+            book.setSoldQuantity(Math.max(0, soldBefore - quantityToReturn));
+
+            bookRepository.save(book);
+            bookRepository.flush();
+
+            // Xác nhận lại
+            Book verifyBook = bookRepository.findById(bookId).orElseThrow();
+            log.info("   ✅ Đã lưu! Kho thực tế trong DB: {}", verifyBook.getStockQuantity());
+        }
+
+        // Đổi trạng thái SAU KHI hoàn kho
+        order.setStatus(OrderStatus.CANCELLED);
+        orderRepository.save(order);
+
+        log.info("✅ Đã chuyển trạng thái sang CANCELLED");
+        log.info("========================================");
+        log.info("🎉 DUYỆT HỦY HOÀN TẤT!");
+        log.info("========================================");
+    }
+
+    // ⭐ THÊM METHOD TỪ CHỐI HỦY (OPTIONAL)
+    @Override
+    @Transactional
+    public void rejectCancellation(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+
+        if (order.getStatus() != OrderStatus.CANCELLATION_REQUESTED) {
+            throw new RuntimeException("Đơn hàng này không yêu cầu hủy!");
+        }
+
+        // Trả về trạng thái trước đó (PROCESSING)
+        order.setStatus(OrderStatus.PROCESSING);
+        orderRepository.save(order);
+    }
+
 
 
 }

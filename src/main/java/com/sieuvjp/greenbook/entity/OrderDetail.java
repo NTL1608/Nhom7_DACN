@@ -38,4 +38,6 @@ public class OrderDetail extends BaseEntity {
     public Double getSubtotal() {
         return discountedPrice != null ? discountedPrice * quantity : originalPrice * quantity;
     }
+
+
 }

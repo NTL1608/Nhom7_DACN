@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
       xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{components/layouts/main}">
 <head>
@@ -62,7 +63,10 @@
                 <div class="card">
                     <div class="card-header">
                         <i class="fas fa-table me-1"></i> Danh sách sách
-                        <a th:href="@{/admin/books/create}" class="btn btn-sm btn-primary float-end">
+                        <!-- ⭐ CHỈ ADMIN mới thấy nút thêm -->
+                        <a th:href="@{/admin/books/create}"
+                           class="btn btn-sm btn-primary float-end"
+                           sec:authorize="hasRole('ADMIN')">
                             <i class="fas fa-plus-circle"></i> Thêm sách mới
                         </a>
                     </div>
@@ -107,19 +111,45 @@
                                     </td>
                                     <td>
                                         <div class="btn-group">
+                                            <!-- ⭐ Sửa - ADMIN và LIBRARIAN -->
                                             <a th:href="@{/admin/books/edit/{id}(id=${book.id})}"
-                                               class="btn btn-sm btn-primary" title="Chỉnh sửa"><i
-                                                    class="fas fa-edit"></i></a>
+                                               class="btn btn-sm btn-primary"
+                                               title="Chỉnh sửa"
+                                               sec:authorize="hasAnyRole('ADMIN', 'LIBRARIAN')">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+
+                                            <!-- ⭐ Hình ảnh - ADMIN và LIBRARIAN -->
                                             <a th:href="@{/admin/books/images/{id}(id=${book.id})}"
-                                               class="btn btn-sm btn-info" title="Hình ảnh"><i class="fas fa-images"></i></a>
+                                               class="btn btn-sm btn-info"
+                                               title="Hình ảnh"
+                                               sec:authorize="hasAnyRole('ADMIN', 'LIBRARIAN')">
+                                                <i class="fas fa-images"></i>
+                                            </a>
+
+                                            <!-- ⭐ Tồn kho - ADMIN và LIBRARIAN -->
                                             <a th:href="@{/admin/books/update-stock/{id}(id=${book.id})}"
-                                               class="btn btn-sm btn-success" title="Tồn kho"><i class="fas fa-boxes"></i></a>
+                                               class="btn btn-sm btn-success"
+                                               title="Tồn kho"
+                                               sec:authorize="hasAnyRole('ADMIN', 'LIBRARIAN')">
+                                                <i class="fas fa-boxes"></i>
+                                            </a>
+
+                                            <!-- ⭐ Toggle status - CHỈ ADMIN -->
                                             <a th:href="@{/admin/books/toggle-status/{id}(id=${book.id})}"
-                                               class="btn btn-sm btn-warning" title="Chuyển đổi"><i
-                                                    class="fas fa-sync-alt"></i></a>
+                                               class="btn btn-sm btn-warning"
+                                               title="Chuyển đổi"
+                                               sec:authorize="hasRole('ADMIN')">
+                                                <i class="fas fa-sync-alt"></i>
+                                            </a>
+
+                                            <!-- ⭐ Xóa - CHỈ ADMIN -->
                                             <a th:href="@{/admin/books/delete/{id}(id=${book.id})}"
-                                               class="btn btn-sm btn-danger btn-delete" title="Xóa"><i
-                                                    class="fas fa-trash"></i></a>
+                                               class="btn btn-sm btn-danger btn-delete"
+                                               title="Xóa"
+                                               sec:authorize="hasRole('ADMIN')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>
@@ -144,30 +174,39 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             try {
-                new simpleDatatables.DataTable("#booksTable", {
+                const table = new simpleDatatables.DataTable("#booksTable", {
                     searchable: true,
                     fixedHeight: false,
                     perPage: 10,
                     perPageSelect: [5, 10, 15, 20, 25],
                     labels: {
-                        placeholder: "Search...",
-                        perPage: "{select} entries per page",
-                        noRows: "No books found",
-                        info: "Showing {start} to {end} of {rows} entries"
+                        placeholder: "Tìm kiếm sách...",
+                        perPage: "Hiển thị {select} mục trên mỗi trang",
+                        noRows: "Không tìm thấy sách nào",
+                        info: "Hiển thị từ {start} đến {end} trong tổng số {rows} mục"
                     },
                     columns: [
-                        { select: 0, sort: "asc" },
-                        { select: 1, sortable: false, searchable: false },
-                        { select: 8, sortable: false, searchable: false }
-                    ],
-                    tableRender: function(data) {
-                        return `<div class="table-responsive">
-                  <table class="table datatable">${data}</table>
-                </div>`;
-                    }
+                        { select: 0, sort: "asc" }, // Sort by ID ascending
+                        { select: 1, sortable: false, searchable: false }, // Image column
+                        { select: 8, sortable: false, searchable: false } // Actions column
+                    ]
                 });
+
+                console.log("✅ DataTable initialized successfully!");
+                console.log("Total rows:", table.data.data.length);
             } catch (e) {
-                console.error("Error initializing DataTable:", e);
+                console.error("❌ Error initializing DataTable:", e);
+            }
+        });
+
+        // Delete confirmation
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-delete')) {
+                e.preventDefault();
+                const link = e.target.closest('.btn-delete');
+                if (confirm('Bạn có chắc chắn muốn xóa sách này không?')) {
+                    window.location.href = link.href;
+                }
             }
         });
     </script>

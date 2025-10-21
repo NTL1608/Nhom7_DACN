@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
       xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{components/layouts/main}">
 <head>
@@ -165,13 +166,25 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="mb-3">
-                                        <label for="originalPrice" class="form-label required-field">Original
-                                            Price</label>
+                                        <label for="originalPrice" class="form-label required-field">Giá gốc (VND)</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-tag"></i></span>
-                                            <input type="text" class="form-control currency-input" id="originalPrice"
-                                                   th:field="*{originalPrice}" required
+                                            <input type="text"
+                                                   class="form-control currency-input"
+                                                   id="originalPrice"
+                                                   th:field="*{originalPrice}"
+                                                   required
                                                    placeholder="0"
+                                                   sec:authorize="hasRole('LIBRARIAN')"
+                                                   readonly
+                                                   th:classappend="${#fields.hasErrors('originalPrice')} ? 'is-invalid' : ''">
+                                            <input type="text"
+                                                   class="form-control currency-input"
+                                                   id="originalPriceAdmin"
+                                                   th:field="*{originalPrice}"
+                                                   required
+                                                   placeholder="0"
+                                                   sec:authorize="hasRole('ADMIN')"
                                                    th:classappend="${#fields.hasErrors('originalPrice')} ? 'is-invalid' : ''">
                                             <span class="input-group-text fw-bold">VND</span>
                                             <div class="invalid-feedback" th:if="${#fields.hasErrors('originalPrice')}"
@@ -179,7 +192,11 @@
                                                 Thông báo lỗi giá
                                             </div>
                                         </div>
-                                        <div class="form-text">
+                                        <!-- ⭐ Cảnh báo cho LIBRARIAN -->
+                                        <div class="form-text text-warning fw-bold" sec:authorize="hasRole('LIBRARIAN')">
+                                            <i class="fas fa-lock me-1"></i>Bạn không có quyền thay đổi giá sách
+                                        </div>
+                                        <div class="form-text" sec:authorize="hasRole('ADMIN')">
                                             <i class="fas fa-info-circle me-1"></i>Nhập giá bán gốc
                                         </div>
                                     </div>

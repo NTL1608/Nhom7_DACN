@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" data-startbar="light" data-bs-theme="light"
       xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{components/layouts/main}">
 <head>
@@ -20,7 +21,10 @@
                 <div class="card">
                     <div class="card-header">
                         <i class="fas fa-table me-1"></i> Danh sách danh mục
-                        <a th:href="@{/admin/categories/create}" class="btn btn-sm btn-primary float-end">
+                        <!-- ⭐ CHỈ ADMIN mới thấy nút thêm -->
+                        <a th:href="@{/admin/categories/create}"
+                           class="btn btn-sm btn-primary float-end"
+                           sec:authorize="hasRole('ADMIN')">
                             <i class="fas fa-plus-circle"></i> Thêm danh mục mới
                         </a>
                     </div>
@@ -49,18 +53,36 @@
                                     </td>
                                     <td>
                                         <div class="btn-group">
+                                            <!-- ⭐ Sửa - ADMIN và LIBRARIAN -->
                                             <a th:href="@{/admin/categories/edit/{id}(id=${category.id})}"
-                                               class="btn btn-sm btn-primary" title="Sửa"><i
-                                                    class="fas fa-edit"></i></a>
+                                               class="btn btn-sm btn-primary"
+                                               title="Sửa"
+                                               sec:authorize="hasAnyRole('ADMIN', 'LIBRARIAN')">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+
+                                            <!-- ⭐ Toggle - CHỈ ADMIN -->
                                             <a th:href="@{/admin/categories/toggle-status/{id}(id=${category.id})}"
-                                               class="btn btn-sm btn-warning" title="Chuyển đổi"><i
-                                                    class="fas fa-sync-alt"></i></a>
-                                            <a th:if="${category.bookCount == 0}" th:href="@{/admin/categories/delete/{id}(id=${category.id})}"
-                                               class="btn btn-sm btn-danger btn-delete" title="Xóa"><i
-                                                    class="fas fa-trash"></i></a>
+                                               class="btn btn-sm btn-warning"
+                                               title="Chuyển đổi"
+                                               sec:authorize="hasRole('ADMIN')">
+                                                <i class="fas fa-sync-alt"></i>
+                                            </a>
+
+                                            <!-- ⭐ Xóa - CHỈ ADMIN -->
+                                            <a th:if="${category.bookCount == 0}"
+                                               th:href="@{/admin/categories/delete/{id}(id=${category.id})}"
+                                               class="btn btn-sm btn-danger btn-delete"
+                                               title="Xóa"
+                                               sec:authorize="hasRole('ADMIN')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+
                                             <button th:if="${category.bookCount > 0}"
                                                     class="btn btn-sm btn-secondary"
-                                                    disabled title="Không thể xóa danh mục có sách">
+                                                    disabled
+                                                    title="Không thể xóa danh mục có sách"
+                                                    sec:authorize="hasRole('ADMIN')">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
@@ -88,23 +110,29 @@
                     perPage: 10,
                     perPageSelect: [5, 10, 15, 20, 25],
                     labels: {
-                        placeholder: "Search...",
-                        perPage: "{select} entries per page",
-                        noRows: "No categories found",
-                        info: "Showing {start} to {end} of {rows} entries"
+                        placeholder: "Tìm kiếm...",
+                        perPage: "Hiển thị {select} mục trên mỗi trang",
+                        noRows: "Không tìm thấy danh mục",
+                        info: "Hiển thị từ {start} đến {end} trong tổng số {rows} mục"
                     },
                     columns: [
                         { select: 0, sort: "asc" },
                         { select: 5, sortable: false, searchable: false }
-                    ],
-                    tableRender: function(data) {
-                        return `<div class="table-responsive">
-                                  <table class="table datatable">${data}</table>
-                                </div>`;
-                    }
+                    ]
                 });
             } catch (e) {
                 console.error("Error initializing DataTable:", e);
+            }
+        });
+
+        // Delete confirmation
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-delete')) {
+                e.preventDefault();
+                const link = e.target.closest('.btn-delete');
+                if (confirm('Bạn có chắc chắn muốn xóa danh mục này không?')) {
+                    window.location.href = link.href;
+                }
             }
         });
     </script>
