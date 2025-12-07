@@ -43,16 +43,20 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Page<Order> findByOrderDateBetween(LocalDateTime start, LocalDateTime end, Pageable pageable);
 
-    @Query("SELECT SUM(o.finalAmount) FROM Order o WHERE o.status = 'COMPLETED'")
+    @Query("SELECT SUM(o.finalAmount) FROM Order o WHERE o.status = :#{T(com.sieuvjp.greenbook.enums.OrderStatus).COMPLETED}")
     Double getTotalRevenue();
 
-    @Query("SELECT SUM(o.finalAmount) FROM Order o WHERE o.status = 'COMPLETED' AND o.orderDate BETWEEN ?1 AND ?2")
+    @Query("SELECT SUM(o.finalAmount) FROM Order o WHERE o.status = :#{T(com.sieuvjp.greenbook.enums.OrderStatus).COMPLETED} AND o.orderDate BETWEEN ?1 AND ?2")
     Double getRevenueBetween(LocalDateTime start, LocalDateTime end);
 
     @Query("SELECT COUNT(o) FROM Order o WHERE o.orderDate BETWEEN ?1 AND ?2")
     Long getOrderCountBetween(LocalDateTime start, LocalDateTime end);
 
-    @Query("SELECT MONTH(o.orderDate), YEAR(o.orderDate), SUM(o.finalAmount) FROM Order o WHERE o.status = 'COMPLETED' GROUP BY MONTH(o.orderDate), YEAR(o.orderDate) ORDER BY YEAR(o.orderDate), MONTH(o.orderDate)")
+    @Query("SELECT MONTH(o.orderDate), YEAR(o.orderDate), SUM(o.finalAmount) " +
+           "FROM Order o " +
+           "WHERE o.status = 'COMPLETED' " +
+           "GROUP BY YEAR(o.orderDate), MONTH(o.orderDate) " +
+           "ORDER BY YEAR(o.orderDate) DESC, MONTH(o.orderDate) DESC")
     List<Object[]> getMonthlySales();
 
     @Query("SELECT MAX(o.orderDate) FROM Order o")

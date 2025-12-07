@@ -80,20 +80,38 @@ public class AdminOrderController {
         return "pages/order/view";
     }
 
+    @GetMapping("/{id}/edit")
+    public String editOrder(@PathVariable Long id, Model model) {
+        // Redirect to view page because orders are managed through status updates
+        Order order = orderService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid order ID: " + id));
+
+        model.addAttribute("order", OrderDTO.fromEntity(order));
+        model.addAttribute("orderStatuses", OrderStatus.values());
+        return "pages/order/view";
+    }
+
     @PostMapping("/{id}/update-status")
     public String updateOrderStatus(@PathVariable Long id,
                                     @RequestParam OrderStatus status,
                                     RedirectAttributes redirectAttributes) {
-
-        orderService.updateOrderStatus(id, status);
-        redirectAttributes.addFlashAttribute("successMessage", "Order status updated successfully");
+        try {
+            orderService.updateOrderStatus(id, status);
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái đơn hàng thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi cập nhật trạng thái: " + e.getMessage());
+        }
         return "redirect:/admin/orders/" + id;
     }
 
     @GetMapping("/{id}/delete")
     public String deleteOrder(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        orderService.deleteById(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Order deleted successfully");
+        try {
+            orderService.deleteById(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Xóa đơn hàng thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa đơn hàng: " + e.getMessage());
+        }
         return "redirect:/admin/orders";
     }
 

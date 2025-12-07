@@ -29,12 +29,12 @@
                             <div class="col-md-4">
                                 <label for="keyword" class="form-label">Tìm kiếm</label>
                                 <input type="text" class="form-control" id="keyword" name="keyword"
-                                       placeholder="Search by title..." th:value="${keyword}">
+                                       placeholder="Tìm kiếm theo tiêu đề..." th:value="${keyword}">
                             </div>
                             <div class="col-md-4">
                                 <label for="categoryId" class="form-label">Danh mục</label>
                                 <select class="form-select" id="categoryId" name="categoryId">
-                                    <option value="">All Categories</option>
+                                    <option value="">Tất cả danh mục</option>
                                     <option th:each="category : ${categories}"
                                             th:value="${category.id}"
                                             th:text="${category.name}"

@@ -19,20 +19,24 @@ public class UserDTO {
 
     private Long id;
 
-    @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
+    @NotBlank(message = "Tên đăng nhập không được để trống")
+    @Size(min = 3, max = 50, message = "Tên đăng nhập phải từ 3 đến 50 ký tự")
+    @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "Tên đăng nhập chỉ được chứa chữ cái, số và dấu gạch dưới")
     private String username;
 
     private String password;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email should be valid")
+    @NotBlank(message = "Email không được để trống")
+    @Email(message = "Email không hợp lệ. Vui lòng nhập đúng định dạng (ví dụ: example@email.com)")
+    @Size(max = 100, message = "Email không được vượt quá 100 ký tự")
     private String email;
 
-    @NotBlank(message = "Full name is required")
+    @NotBlank(message = "Họ tên không được để trống")
+    @Size(min = 2, max = 100, message = "Họ tên phải từ 2 đến 100 ký tự")
     private String fullName;
 
-    @Pattern(regexp = "^[0-9\\s\\-]{10,15}$", message = "Phone number should be valid")
+    @Pattern(regexp = "^(0|\\+84)(\\s|\\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\\d)(\\s|\\.)?(\\d{3})(\\s|\\.)?(\\d{3})$", 
+             message = "Số điện thoại không hợp lệ. Vui lòng nhập số điện thoại Việt Nam (ví dụ: 0912345678 hoặc +84912345678)")
     private String phone;
 
     private String address;

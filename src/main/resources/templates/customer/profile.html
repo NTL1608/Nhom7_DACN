@@ -139,10 +139,15 @@
                                             </label>
                                             <input type="email"
                                                    class="form-control-custom"
+                                                   id="profileEmail"
                                                    name="email"
                                                    th:value="${user.email}"
-                                                   placeholder="email@example.com"
+                                                   placeholder="example@email.com"
+                                                   maxlength="100"
+                                                   pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                                                   title="Vui lòng nhập địa chỉ email hợp lệ"
                                                    required>
+                                            <div class="invalid-feedback">Email không hợp lệ</div>
                                         </div>
                                     </div>
 
@@ -154,9 +159,14 @@
                                             </label>
                                             <input type="tel"
                                                    class="form-control-custom"
+                                                   id="profilePhone"
                                                    name="phone"
                                                    th:value="${user.phone}"
-                                                   placeholder="0123456789">
+                                                   placeholder="0912345678"
+                                                   pattern="^(0|\+84)(\s|\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\d)(\s|\.)?(\d{3})(\s|\.)?(\d{3})$"
+                                                   title="Vui lòng nhập số điện thoại Việt Nam hợp lệ">
+                                            <div class="invalid-feedback">Số điện thoại không hợp lệ</div>
+                                            <small class="text-muted">Ví dụ: 0912345678 hoặc +84912345678</small>
                                         </div>
                                     </div>
 
@@ -238,19 +248,25 @@
                                             <i class="bi bi-receipt me-2"></i>
                                             Đơn hàng <strong th:text="'#' + ${order.id}">#001</strong>
                                         </div>
-                                        <span class="order-status badge-warning" th:if="${order.status == 'PENDING'}">
+                                        <span class="order-status badge-warning" th:if="${order.status.name() == 'PENDING'}">
                                             <i class="bi bi-clock-history me-1"></i>Chờ xử lý
                                         </span>
-                                        <span class="order-status badge-info" th:if="${order.status == 'PROCESSING'}">
+                                        <span class="order-status badge-info" th:if="${order.status.name() == 'PROCESSING'}">
                                             <i class="bi bi-arrow-repeat me-1"></i>Đang xử lý
                                         </span>
-                                        <span class="order-status badge-primary" th:if="${order.status == 'SHIPPING'}">
+                                        <span class="order-status badge-primary" th:if="${order.status.name() == 'SHIPPED'}">
                                             <i class="bi bi-truck me-1"></i>Đang giao
                                         </span>
-                                        <span class="order-status badge-success" th:if="${order.status == 'DELIVERED'}">
+                                        <span class="order-status badge-success" th:if="${order.status.name() == 'DELIVERED'}">
                                             <i class="bi bi-check-circle me-1"></i>Đã giao
                                         </span>
-                                        <span class="order-status badge-danger" th:if="${order.status == 'CANCELLED'}">
+                                        <span class="order-status badge-success" th:if="${order.status.name() == 'COMPLETED'}">
+                                            <i class="bi bi-check-all me-1"></i>Hoàn thành
+                                        </span>
+                                        <span class="order-status badge-warning" th:if="${order.status.name() == 'CANCELLATION_REQUESTED'}">
+                                            <i class="bi bi-hourglass-split me-1"></i>Chờ duyệt hủy
+                                        </span>
+                                        <span class="order-status badge-danger" th:if="${order.status.name() == 'CANCELLED'}">
                                             <i class="bi bi-x-circle me-1"></i>Đã hủy
                                         </span>
                                     </div>
@@ -938,6 +954,83 @@
             icon.classList.add('bi-eye');
         }
     }
+
+    // Validate profile form
+    document.getElementById('profileForm')?.addEventListener('submit', function(e) {
+        const emailInput = document.getElementById('profileEmail');
+        const phoneInput = document.getElementById('profilePhone');
+        let isValid = true;
+
+        // Email validation
+        if (emailInput) {
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(emailInput.value)) {
+                emailInput.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                emailInput.classList.remove('is-invalid');
+            }
+        }
+
+        // Phone validation (Vietnamese phone numbers)
+        if (phoneInput && phoneInput.value) {
+            const phoneRegex = /^(0|\+84)(\s|\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\d)(\s|\.)?(\d{3})(\s|\.)?(\d{3})$/;
+            const cleanPhone = phoneInput.value.replace(/\s/g, '');
+            if (!phoneRegex.test(cleanPhone)) {
+                phoneInput.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                phoneInput.classList.remove('is-invalid');
+            }
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('Vui lòng kiểm tra lại thông tin email và số điện thoại!');
+            return false;
+        }
+    });
+
+    // Real-time validation for email
+    document.getElementById('profileEmail')?.addEventListener('blur', function() {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (this.value && !emailRegex.test(this.value)) {
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+
+    // Real-time validation and formatting for phone
+    document.getElementById('profilePhone')?.addEventListener('input', function() {
+        let value = this.value.replace(/\D/g, ''); // Remove non-digits
+        
+        // Auto-format as user types
+        if (value.startsWith('84')) {
+            value = '+84' + value.substring(2);
+        } else if (value.startsWith('0') && value.length <= 10) {
+            // Format: 0912 345 678
+            if (value.length > 4 && value.length <= 7) {
+                value = value.substring(0, 4) + ' ' + value.substring(4);
+            } else if (value.length > 7) {
+                value = value.substring(0, 4) + ' ' + value.substring(4, 7) + ' ' + value.substring(7, 10);
+            }
+        }
+        
+        this.value = value;
+    });
+
+    document.getElementById('profilePhone')?.addEventListener('blur', function() {
+        if (this.value) {
+            const phoneRegex = /^(0|\+84)(\s|\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\d)(\s|\.)?(\d{3})(\s|\.)?(\d{3})$/;
+            const cleanPhone = this.value.replace(/\s/g, '');
+            if (!phoneRegex.test(cleanPhone)) {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+            }
+        }
+    });
 
     // Validate password form
     document.getElementById('passwordForm')?.addEventListener('submit', function(e) {

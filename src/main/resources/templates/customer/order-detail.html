@@ -69,6 +69,9 @@
                             <span class="status-badge completed" th:if="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).COMPLETED}">
                                 <i class="bi bi-check-circle me-1"></i>Hoàn thành
                             </span>
+                            <span class="status-badge pending" th:if="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).CANCELLATION_REQUESTED}">
+                                <i class="bi bi-hourglass-split me-1"></i>Chờ duyệt hủy
+                            </span>
                             <span class="status-badge cancelled" th:if="${order.status == T(com.sieuvjp.greenbook.enums.OrderStatus).CANCELLED}">
                                 <i class="bi bi-x-circle me-1"></i>Đã hủy
                             </span>

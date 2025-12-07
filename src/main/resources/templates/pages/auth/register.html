@@ -534,12 +534,16 @@
                            id="email"
                            th:field="*{email}"
                            placeholder=""
+                           maxlength="100"
+                           pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                           title="Vui lòng nhập địa chỉ email hợp lệ (ví dụ: example@email.com)"
                            required>
                     <label for="email">Email</label>
                     <div class="input-icon">
                         <i class="fas fa-envelope"></i>
                     </div>
                     <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Lỗi email</div>
+                    <small class="form-text text-muted">Ví dụ: example@email.com</small>
                 </div>
 
                 <!-- Full Name Field -->
@@ -565,12 +569,15 @@
                            th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid' : ''"
                            id="phone"
                            th:field="*{phone}"
-                           placeholder="">
-                    <label for="phone">Số điện thoại</label>
+                           placeholder=""
+                           pattern="^(0|\+84)(\s|\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\d)(\s|\.)?(\d{3})(\s|\.)?(\d{3})$"
+                           title="Vui lòng nhập số điện thoại Việt Nam hợp lệ (ví dụ: 0912345678)">
+                    <label for="phone">Số điện thoại (tùy chọn)</label>
                     <div class="input-icon">
                         <i class="fas fa-phone"></i>
                     </div>
                     <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Lỗi số điện thoại</div>
+                    <small class="form-text text-muted">Ví dụ: 0912345678 hoặc +84912345678</small>
                 </div>
 
                 <!-- Address Field -->
@@ -672,9 +679,10 @@
 
             // Email validation
             if (field.type === 'email' && value) {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
                 if (!emailRegex.test(value)) {
                     field.classList.add('is-invalid');
+                    showFieldError(field, 'Email không hợp lệ. Vui lòng nhập đúng định dạng (ví dụ: example@email.com)');
                     return false;
                 }
             }
@@ -687,11 +695,23 @@
                 }
             }
 
-            // Phone validation (basic)
+            // Phone validation (Vietnamese phone numbers)
             if (field.type === 'tel' && value) {
-                const phoneRegex = /^[\+]?[0-9\s\-\(\)]{8,}$/;
-                if (!phoneRegex.test(value)) {
+                // Vietnamese phone number regex: 0912345678 or +84912345678
+                const phoneRegex = /^(0|\+84)(\s|\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\d)(\s|\.)?(\d{3})(\s|\.)?(\d{3})$/;
+                if (!phoneRegex.test(value.replace(/\s/g, ''))) {
                     field.classList.add('is-invalid');
+                    showFieldError(field, 'Số điện thoại không hợp lệ. Vui lòng nhập số Việt Nam (ví dụ: 0912345678)');
+                    return false;
+                }
+            }
+            
+            // Username validation
+            if (field.id === 'username' && value) {
+                const usernameRegex = /^[a-zA-Z0-9_]{3,50}$/;
+                if (!usernameRegex.test(value)) {
+                    field.classList.add('is-invalid');
+                    showFieldError(field, 'Tên đăng nhập chỉ được chứa chữ cái, số và dấu gạch dưới (3-50 ký tự)');
                     return false;
                 }
             }
@@ -700,6 +720,37 @@
             field.style.borderColor = '#28a745';
             field.style.boxShadow = '0 0 0 0.2rem rgba(40, 167, 69, 0.25)';
             return true;
+        }
+        
+        // Helper function to show custom error message
+        function showFieldError(field, message) {
+            const feedback = field.parentElement.querySelector('.invalid-feedback');
+            if (feedback) {
+                feedback.textContent = message;
+                feedback.style.display = 'block';
+            }
+        }
+        
+        // Phone number formatting on input
+        const phoneInput = document.getElementById('phone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = this.value.replace(/\D/g, ''); // Remove non-digits
+                
+                // Auto-format as user types
+                if (value.startsWith('84')) {
+                    value = '+84' + value.substring(2);
+                } else if (value.startsWith('0') && value.length <= 10) {
+                    // Format: 0912 345 678
+                    if (value.length > 4 && value.length <= 7) {
+                        value = value.substring(0, 4) + ' ' + value.substring(4);
+                    } else if (value.length > 7) {
+                        value = value.substring(0, 4) + ' ' + value.substring(4, 7) + ' ' + value.substring(7, 10);
+                    }
+                }
+                
+                this.value = value;
+            });
         }
 
         // Keyboard shortcuts

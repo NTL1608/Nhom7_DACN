@@ -27,14 +27,14 @@
 
                     <ul class="navbar-nav mb-auto w-100">
                         <li class="menu-label pt-0 mt-0">
-                            <span>Main Menu</span>
+                            <span>Menu chính</span>
                         </li>
 
                         <!-- FIX: Đổi / thành /admin/dashboard -->
                         <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                             <a class="nav-link" th:href="@{/admin/dashboard}">
                                 <i class="iconoir-home-simple menu-icon"></i>
-                                <span>Dashboards</span>
+                                <span>Tổng quan</span>
                             </a>
                         </li>
 
@@ -142,11 +142,10 @@
                                 class="d-flex justify-content-center align-items-center thumb-lg update-icon-box  rounded-circle mx-auto">
                             <i class="iconoir-peace-hand h3 align-self-center mb-0 text-primary"></i>
                         </div>
-                        <h5 class="mt-3">Nhóm 7</h5>
-                        <p class="mb-3 text-muted">Hey there! Are you a magician? Because whenever I look at you,
-                            everyone else disappears!</p>
-                        <a href="#" class="btn text-primary shadow-sm rounded-pill">Upgrade your
-                            plan</a>
+                                        <h5 class="mt-3">Nhóm 7</h5>
+                        <p class="mb-3 text-muted">Xin chào! Mọi thứ đang hoạt động tốt! Hãy tiếp tục phát huy!</p>
+                        <a href="#" class="btn text-primary shadow-sm rounded-pill">Nâng cấp
+                            gói dịch vụ</a>
                     </div>
                 </div>
             </div>
