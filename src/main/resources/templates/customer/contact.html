@@ -77,9 +77,14 @@
                                 </label>
                                 <input type="email"
                                        name="email"
+                                       id="contactEmail"
                                        class="form-control-modern"
-                                       placeholder="email@example.com"
+                                       placeholder="example@email.com"
+                                       maxlength="100"
+                                       pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                                       title="Vui lòng nhập địa chỉ email hợp lệ"
                                        required>
+                                <div class="invalid-feedback">Email không hợp lệ</div>
                             </div>
 
                             <!-- Phone -->
@@ -89,8 +94,13 @@
                                 </label>
                                 <input type="tel"
                                        name="phone"
+                                       id="contactPhone"
                                        class="form-control-modern"
-                                       placeholder="0123456789">
+                                       placeholder="0912345678"
+                                       pattern="^(0|\+84)(\s|\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\d)(\s|\.)?(\d{3})(\s|\.)?(\d{3})$"
+                                       title="Vui lòng nhập số điện thoại Việt Nam hợp lệ">
+                                <div class="invalid-feedback">Số điện thoại không hợp lệ</div>
+                                <small class="text-muted">Ví dụ: 0912345678</small>
                             </div>
 
                             <!-- Subject -->
@@ -905,9 +915,88 @@
         }
     }
 
+    // Email and phone validation
+    const emailInput = document.getElementById('contactEmail');
+    const phoneInput = document.getElementById('contactPhone');
+
+    // Real-time email validation
+    if (emailInput) {
+        emailInput.addEventListener('blur', function() {
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (this.value && !emailRegex.test(this.value)) {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+            }
+        });
+
+        emailInput.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+        });
+    }
+
+    // Real-time phone validation and formatting
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, ''); // Remove non-digits
+            
+            // Auto-format as user types
+            if (value.startsWith('84')) {
+                value = '+84' + value.substring(2);
+            } else if (value.startsWith('0') && value.length <= 10) {
+                // Format: 0912 345 678
+                if (value.length > 4 && value.length <= 7) {
+                    value = value.substring(0, 4) + ' ' + value.substring(4);
+                } else if (value.length > 7) {
+                    value = value.substring(0, 4) + ' ' + value.substring(4, 7) + ' ' + value.substring(7, 10);
+                }
+            }
+            
+            this.value = value;
+            this.classList.remove('is-invalid');
+        });
+
+        phoneInput.addEventListener('blur', function() {
+            if (this.value) {
+                const phoneRegex = /^(0|\+84)(\s|\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\d)(\s|\.)?(\d{3})(\s|\.)?(\d{3})$/;
+                const cleanPhone = this.value.replace(/\s/g, '');
+                if (!phoneRegex.test(cleanPhone)) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            }
+        });
+    }
+
     // Form submission handler
     document.querySelector('.contact-form')?.addEventListener('submit', function(e) {
         e.preventDefault();
+        let isValid = true;
+
+        // Validate email
+        if (emailInput) {
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(emailInput.value)) {
+                emailInput.classList.add('is-invalid');
+                isValid = false;
+            }
+        }
+
+        // Validate phone (if provided)
+        if (phoneInput && phoneInput.value) {
+            const phoneRegex = /^(0|\+84)(\s|\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\d)(\s|\.)?(\d{3})(\s|\.)?(\d{3})$/;
+            const cleanPhone = phoneInput.value.replace(/\s/g, '');
+            if (!phoneRegex.test(cleanPhone)) {
+                phoneInput.classList.add('is-invalid');
+                isValid = false;
+            }
+        }
+
+        if (!isValid) {
+            alert('Vui lòng kiểm tra lại thông tin email và số điện thoại!');
+            return;
+        }
 
         // Show success message (you can customize this)
         alert('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong vòng 24h.');

@@ -27,10 +27,12 @@ public class AdminDashboardController {
         // Total revenue
         double totalRevenue = orderService.getTotalRevenue();
 
-        // Revenue for current month
-        LocalDateTime startOfMonth = LocalDateTime.now().withDayOfMonth(1).truncatedTo(ChronoUnit.DAYS);
-        LocalDateTime now = LocalDateTime.now();
-        double monthlyRevenue = orderService.getRevenueBetween(startOfMonth, now);
+        // Revenue for current month (chỉ tính đơn hàng COMPLETED)
+        LocalDateTime startOfMonth = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime endOfMonth = LocalDateTime.now()
+                .withDayOfMonth(LocalDateTime.now().toLocalDate().lengthOfMonth())
+                .withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+        double monthlyRevenue = orderService.getRevenueBetween(startOfMonth, endOfMonth);
 
         // Total orders
         long totalOrders = orderService.getOrderCountBetween(

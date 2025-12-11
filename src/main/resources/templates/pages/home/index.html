@@ -365,7 +365,7 @@
             <div class="col-12">
                 <!-- Dashboard Header -->
                 <div class="dashboard-header">
-                    <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h1 class="dashboard-title">Trang tổng quan</h1>
                             <p class="dashboard-subtitle mb-0">
@@ -373,7 +373,7 @@
                             </p>
                         </div>
                         <div class="text-end">
-                            <div class="fs-4 fw-bold" id="currentTime">12:34 PM</div>
+                            <div class="fs-4 fw-bold" id="currentTime">12:34</div>
                             <div class="opacity-75" id="currentDate">Hôm nay</div>
                         </div>
                     </div>
@@ -463,7 +463,7 @@
                             <div class="stat-value" th:text="${pendingOrders}">0</div>
                             <div class="stat-change" th:classappend="${pendingOrders > 0 ? 'negative' : 'positive'}">
                                 <i th:class="${pendingOrders > 0 ? 'fas fa-exclamation-triangle' : 'fas fa-check'}"></i>
-                                <span th:text="${pendingOrders > 0 ? 'Requires attention' : 'All up to date'}">Trạng thái</span>
+                                <span th:text="${pendingOrders > 0 ? 'Cần xử lý' : 'Tất cả đã cập nhật'}">Trạng thái</span>
                             </div>
                         </div>
                         <div class="stat-icon pending">
@@ -542,7 +542,7 @@
                                 <td colspan="4">
                                     <div class="no-data-state">
                                         <i class="fas fa-check-circle"></i>
-                                        <h5>All Stock Levels Good</h5>
+                                        <h5>Tồn kho ổn định</h5>
                                         <p class="mb-0">Hiện tại không có cảnh báo hàng tồn kho thấp</p>
                                     </div>
                                 </td>
@@ -609,7 +609,7 @@
                                 <td colspan="4">
                                     <div class="no-data-state">
                                         <i class="fas fa-chart-bar"></i>
-                                        <h5>No Sales Data</h5>
+                                        <h5>Chưa có dữ liệu bán hàng</h5>
                                         <p class="mb-0">Dữ liệu bán hàng sẽ hiển thị tại đây khi có đơn hàng được đặt</p>
                                     </div>
                                 </td>
@@ -634,7 +634,7 @@
                                 </td>
                                 <td>
                                     <span class="fw-bold" th:text="${book.soldQuantity}">100</span>
-                                    <small class="text-muted"> units</small>
+                                    <small class="text-muted"> đơn vị</small>
                                 </td>
                                 <td>
                                     <div class="revenue-amount" th:text="${#numbers.formatDecimal(book.revenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">1,000,000 đ</div>
@@ -645,11 +645,82 @@
                     </div>
                 </div>
             </div>
-            <!-- Nút xuất báo cáo đơn giản -->
+            <!-- Nút xuất báo cáo với modal -->
             <div class="export-report-wrapper mt-3 d-flex justify-content-center" style="z-index: 999;">
-                <a href="/admin/report/export" target="_blank" class="btn btn-success">
-                    <i class="fas fa-file-export"></i> Xuất báo cáo
-                </a>
+                <button type="button" class="btn btn-success btn-lg shadow-sm" data-bs-toggle="modal" data-bs-target="#exportReportModal">
+                    <i class="fas fa-file-pdf me-2"></i>Xuất báo cáo PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Xuất Báo Cáo -->
+    <div class="modal fade" id="exportReportModal" tabindex="-1" aria-labelledby="exportReportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <h5 class="modal-title text-white" id="exportReportModalLabel">
+                        <i class="fas fa-file-pdf me-2"></i>Xuất Báo Cáo PDF
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="exportReportForm" method="GET" action="/admin/report/export" target="_blank">
+                        <div class="mb-3">
+                            <label for="reporterName" class="form-label">
+                                <i class="fas fa-user me-2 text-primary"></i>Người lập báo cáo
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="reporterName" 
+                                   name="reporterName" 
+                                   placeholder="Nhập họ tên người lập báo cáo"
+                                   required>
+                            <div class="form-text">Ví dụ: Nguyễn Văn A</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="reporterPosition" class="form-label">
+                                <i class="fas fa-briefcase me-2 text-primary"></i>Chức danh
+                            </label>
+                            <select class="form-select" id="reporterPosition" name="reporterPosition" required>
+                                <option value="">-- Chọn chức danh --</option>
+                                <option value="Quản trị viên">Quản trị viên</option>
+                                <option value="Kế toán trưởng">Kế toán trưởng</option>
+                                <option value="Giám đốc">Giám đốc</option>
+                                <option value="Phó giám đốc">Phó giám đốc</option>
+                                <option value="Trưởng phòng">Trưởng phòng</option>
+                                <option value="Nhân viên">Nhân viên</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="reportNote" class="form-label">
+                                <i class="fas fa-sticky-note me-2 text-primary"></i>Ghi chú (tùy chọn)
+                            </label>
+                            <textarea class="form-control" 
+                                      id="reportNote" 
+                                      name="reportNote" 
+                                      rows="3" 
+                                      placeholder="Nhập ghi chú bổ sung cho báo cáo (nếu có)"
+                                      maxlength="500"></textarea>
+                            <div class="form-text">Tối đa 500 ký tự</div>
+                        </div>
+
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <small>Báo cáo sẽ bao gồm doanh thu tháng hiện tại, so sánh với tháng trước, top sách bán chạy và phân tích chi tiết.</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Hủy
+                    </button>
+                    <button type="submit" form="exportReportForm" class="btn btn-success">
+                        <i class="fas fa-download me-2"></i>Xuất báo cáo
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -700,8 +771,8 @@
                 const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
                 const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
-                document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', timeOptions);
-                document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', dateOptions);
+                document.getElementById('currentTime').textContent = now.toLocaleTimeString('vi-VN', timeOptions);
+                document.getElementById('currentDate').textContent = now.toLocaleDateString('vi-VN', dateOptions);
             }
 
             updateDateTime();
@@ -721,68 +792,102 @@
             const months = Object.keys(monthlySalesData);
             const salesValues = Object.values(monthlySalesData);
 
+            // Đảo ngược thứ tự để hiển thị từ cũ đến mới
+            const reversedMonths = months.reverse();
+            const reversedSalesValues = salesValues.reverse();
+
             const monthlySalesCtx = document.getElementById('monthlySalesChart');
-            new Chart(monthlySalesCtx, {
-                type: 'line',
-                data: {
-                    labels: months,
-                    datasets: [{
-                        label: 'Revenue (VND)',
-                        data: salesValues,
-                        borderColor: chartColors.primary,
-                        backgroundColor: chartColors.primary + '20',
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: chartColors.primary,
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointRadius: 6,
-                        pointHoverRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            cornerRadius: 8,
-                            displayColors: false
-                        }
+            if (monthlySalesCtx) {
+                new Chart(monthlySalesCtx, {
+                    type: 'line',
+                    data: {
+                        labels: reversedMonths,
+                        datasets: [{
+                            label: 'Doanh thu',
+                            data: reversedSalesValues,
+                            borderColor: chartColors.primary,
+                            backgroundColor: chartColors.primary + '20',
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: chartColors.primary,
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6,
+                            pointHoverRadius: 8
+                        }]
                     },
-                    scales: {
-                        x: {
-                            grid: {
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
                                 display: false
                             },
-                            ticks: {
-                                color: '#6c757d'
-                            }
-                        },
-                        y: {
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.1)'
-                            },
-                            ticks: {
-                                color: '#6c757d',
-                                callback: function(value) {
-                                    return new Intl.NumberFormat('vi-VN').format(value) + ' đ';
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                cornerRadius: 8,
+                                displayColors: false,
+                                padding: 12,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += new Intl.NumberFormat('vi-VN', {
+                                                style: 'currency',
+                                                currency: 'VND',
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0
+                                            }).format(context.parsed.y);
+                                        }
+                                        return label;
+                                    }
                                 }
                             }
-                        }
-                    },
-                    elements: {
-                        point: {
-                            hoverBackgroundColor: chartColors.primary
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#6c757d',
+                                    font: {
+                                        size: 11
+                                    }
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#6c757d',
+                                    callback: function(value) {
+                                        // Format ngắn gọn: 1.5M, 2.3M
+                                        if (value >= 1000000) {
+                                            return (value / 1000000).toFixed(1) + 'M';
+                                        } else if (value >= 1000) {
+                                            return (value / 1000).toFixed(0) + 'K';
+                                        }
+                                        return value;
+                                    }
+                                },
+                                beginAtZero: true
+                            }
+                        },
+                        elements: {
+                            point: {
+                                hoverBackgroundColor: chartColors.primary
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
 
             // Sales Distribution Chart
             const topBooks = /*[[${topSellingBooks}]]*/ [];
@@ -875,6 +980,46 @@
                     }, 500);
                 }
             });
+
+            // Export Report Form Validation
+            const exportReportForm = document.getElementById('exportReportForm');
+            if (exportReportForm) {
+                exportReportForm.addEventListener('submit', function(e) {
+                    const reporterName = document.getElementById('reporterName').value.trim();
+                    const reporterPosition = document.getElementById('reporterPosition').value;
+
+                    if (!reporterName) {
+                        e.preventDefault();
+                        alert('Vui lòng nhập tên người lập báo cáo!');
+                        document.getElementById('reporterName').focus();
+                        return false;
+                    }
+
+                    if (!reporterPosition) {
+                        e.preventDefault();
+                        alert('Vui lòng chọn chức danh!');
+                        document.getElementById('reporterPosition').focus();
+                        return false;
+                    }
+
+                    // Show loading message
+                    const submitBtn = exportReportForm.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang tạo báo cáo...';
+
+                    // Re-enable button after 3 seconds
+                    setTimeout(function() {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                        // Close modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('exportReportModal'));
+                        if (modal) {
+                            modal.hide();
+                        }
+                    }, 3000);
+                });
+            }
         });
     </script>
 </th:block>

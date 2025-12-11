@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -166,15 +167,37 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Map<String, Double> getMonthlySales() {
         List<Object[]> monthlySales = orderRepository.getMonthlySales();
-        Map<String, Double> result = new HashMap<>();
+        Map<String, Double> result = new LinkedHashMap<>(); // Giữ thứ tự
 
+        // Tên tháng tiếng Việt
+        String[] monthNames = {
+            "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
+            "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
+        };
+
+        // Chỉ lấy 6 tháng gần nhất
+        int count = 0;
         for (Object[] row : monthlySales) {
+            if (count >= 6) break; // Giới hạn 6 tháng
+            
             int month = (int) row[0];
             int year = (int) row[1];
             Double amount = (Double) row[2];
 
-            String key = Month.of(month).name() + " " + year;
-            result.put(key, amount);
+            // Format: "Tháng 12/2024"
+            String key = monthNames[month - 1] + "/" + year;
+            result.put(key, amount != null ? amount : 0.0);
+            count++;
+        }
+
+        // Nếu không có dữ liệu, tạo dữ liệu mẫu cho 6 tháng gần nhất
+        if (result.isEmpty()) {
+            LocalDateTime now = LocalDateTime.now();
+            for (int i = 5; i >= 0; i--) {
+                LocalDateTime date = now.minusMonths(i);
+                String key = monthNames[date.getMonthValue() - 1] + "/" + date.getYear();
+                result.put(key, 0.0);
+            }
         }
 
         return result;

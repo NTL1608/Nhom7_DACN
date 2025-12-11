@@ -80,11 +80,40 @@
                             <li class="nav-item">
                                 <a class="nav-link" th:classappend="${status == null ? 'active' : ''}" th:href="@{/admin/orders}">Tất cả</a>
                             </li>
-                            <li class="nav-item" th:each="orderStatus : ${orderStatuses}">
+                            <li class="nav-item">
                                 <a class="nav-link"
-                                   th:classappend="${status != null && status == orderStatus ? 'active' : ''}"
-                                   th:href="@{/admin/orders/by-status/{status}(status=${orderStatus})}"
-                                   th:text="${orderStatus}">Trạng thái</a>
+                                   th:classappend="${status != null && status.name() == 'PENDING' ? 'active' : ''}"
+                                   th:href="@{/admin/orders/by-status/PENDING}">Đang chờ xử lý</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   th:classappend="${status != null && status.name() == 'PROCESSING' ? 'active' : ''}"
+                                   th:href="@{/admin/orders/by-status/PROCESSING}">Đang xử lý</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   th:classappend="${status != null && status.name() == 'SHIPPED' ? 'active' : ''}"
+                                   th:href="@{/admin/orders/by-status/SHIPPED}">Đã gửi hàng</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   th:classappend="${status != null && status.name() == 'DELIVERED' ? 'active' : ''}"
+                                   th:href="@{/admin/orders/by-status/DELIVERED}">Đã giao hàng</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   th:classappend="${status != null && status.name() == 'COMPLETED' ? 'active' : ''}"
+                                   th:href="@{/admin/orders/by-status/COMPLETED}">Hoàn thành</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   th:classappend="${status != null && status.name() == 'CANCELLATION_REQUESTED' ? 'active' : ''}"
+                                   th:href="@{/admin/orders/by-status/CANCELLATION_REQUESTED}">Chờ duyệt hủy</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   th:classappend="${status != null && status.name() == 'CANCELLED' ? 'active' : ''}"
+                                   th:href="@{/admin/orders/by-status/CANCELLED}">Đã hủy</a>
                             </li>
                         </ul>
                     </div>
@@ -130,7 +159,8 @@
                                         <span th:if="${order.status.name() == 'PROCESSING'}" class="badge bg-info">Đang xử lý</span>
                                         <span th:if="${order.status.name() == 'SHIPPED'}" class="badge bg-primary">Đã gửi hàng</span>
                                         <span th:if="${order.status.name() == 'DELIVERED'}" class="badge bg-success">Đã giao hàng</span>
-                                        <span th:if="${order.status.name() == 'COMPLETED'}" class="badge bg-success">COMPLETED</span>
+                                        <span th:if="${order.status.name() == 'COMPLETED'}" class="badge bg-success">Hoàn thành</span>
+                                        <span th:if="${order.status.name() == 'CANCELLATION_REQUESTED'}" class="badge bg-warning">Chờ duyệt hủy</span>
                                         <span th:if="${order.status.name() == 'CANCELLED'}" class="badge bg-danger">Đã hủy</span>
                                     </td>
                                     <td>
